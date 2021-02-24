@@ -1,0 +1,8 @@
+.react-datepicker-popper {
+    z-index: 9999 !important;
+}
+
+.history-search-row {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}

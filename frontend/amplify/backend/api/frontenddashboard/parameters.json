@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "frontenddashboard",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authfrontend29f1a031",
+      "Outputs.UserPoolId"
+    ]
+  }
+}
