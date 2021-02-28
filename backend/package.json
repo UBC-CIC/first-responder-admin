@@ -1,0 +1,27 @@
+{
+  "name": "first-responder-admin-backend",
+  "version": "1.0.0",
+  "description": "Backend for the First Responder App",
+  "private": true,
+  "scripts": {
+    "build": "tsc && cp src/package.json build/src/package.json && cd build/src && npm install --only=production",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "clean": "rm -rf build"
+  },
+  "author": {
+    "name": "UBC-AWS CIC // FLASH Vancouver"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^10.17.0",
+    "typescript": "~3.7.2"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigateway": "*",
+    "@aws-cdk/aws-dynamodb": "*",
+    "@aws-cdk/aws-lambda": "*",
+    "@aws-cdk/core": "*",
+    "aws-sdk": "*"
+  }
+}
