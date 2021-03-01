@@ -2,6 +2,8 @@ import apigateway = require('@aws-cdk/aws-apigateway');
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
+import { Role, ServicePrincipal, PolicyDocument, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
+
 
 export class FirstResponderAdminBackendStack extends cdk.Stack {
   constructor(app: cdk.App, id: string) {
@@ -18,6 +20,71 @@ export class FirstResponderAdminBackendStack extends cdk.Stack {
       // the new table, and it will remain in your account until manually deleted. By setting the policy to 
       // DESTROY, cdk destroy will delete the table (even if it has data in it)
       removalPolicy: cdk.RemovalPolicy.DESTROY, // NOT recommended for production code
+    });
+
+
+    const lambdaRole = new Role(this, 'First_Responder_Lambda_Role', {
+        roleName: 'First_Responder_Lambda_Role',
+        assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+        inlinePolicies: {
+            additional: new PolicyDocument({
+                    statements: [
+                    new PolicyStatement({
+                        effect: Effect.ALLOW,
+                        actions: [
+                            // Chime
+                            'chime:CreateMeeting',
+                            'chime:DeleteMeeting',
+                            'chime:CreateAttendee',
+                            'chime:DeleteAttendee',
+                            'chime:ListAttendees',
+                            // DynamoDB
+                            'dynamodb:Scan',
+                            'dynamodb:GetItem',
+                            'dynamodb:PutItem',
+                            'dynamodb:Query',
+                            'dynamodb:UpdateItem',
+                            'dynamodb:DeleteItem',
+                            'dynamodb:BatchWriteItem',
+                            'dynamodb:BatchGetItem',
+                            // IAM
+                            'iam:GetRole',
+                            'iam:PassRole',
+                            // Lambda
+                            'lambda:InvokeFunction',
+                            // S3
+                            's3:GetObject',
+                            's3:PutObject',
+                            's3:ListBucket',
+                            'kms:Decrypt',
+                            'kms:Encrypt',
+                            'kms:GenerateDataKey',
+                            // SNS
+                            'sns:*',
+                            // STS
+                            'sts:AssumeRole',
+                            // CloudWatch
+                            'cloudwatch:*',
+                            'logs:*'
+                        ],
+                        resources: ['*']
+                    })
+                ]
+            }),
+        },
+    });
+
+    const callHandlerLambda = new lambda.Function(this, 'callHandlerFunction', {
+      code: new lambda.AssetCode('build/src'),
+      handler: 'call-handler.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      environment: {
+        TABLE_NAME: dynamoTable.tableName,
+        PRIMARY_KEY: 'itemId'
+      },
+      role: lambdaRole,
+      memorySize: 512,
+      timeout: cdk.Duration.seconds(30)
     });
 
     const getOneLambda = new lambda.Function(this, 'getOneItemFunction', {
@@ -80,6 +147,7 @@ export class FirstResponderAdminBackendStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(30)
     });
     
+    dynamoTable.grantReadWriteData(callHandlerLambda);
     dynamoTable.grantReadWriteData(getAllLambda);
     dynamoTable.grantReadWriteData(getOneLambda);
     dynamoTable.grantReadWriteData(createOne);
