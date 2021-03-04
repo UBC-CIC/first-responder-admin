@@ -1,0 +1,14 @@
+{
+  "name": "first-responder-admin-backend-src",
+  "version": "1.0.0",
+  "description": "3rd party dependencies required by the Lambda functions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "uuid": "*"
+  }
+}
