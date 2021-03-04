@@ -17,7 +17,7 @@ cd src/
 npm install
 ```
 
-Deploy (run this from the root):
+Deploy (run this from the root). Make sure to deploy to the correct account/region by running `aws configure` if you have not already done so.
 ```
 npm run build
 cdk deploy
