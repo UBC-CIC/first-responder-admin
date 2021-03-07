@@ -1,3 +1,8 @@
 {
-    "app": "node build/index"
-}
+    "app": "npx ts-node bin/backend.ts",
+    "context": {
+      "@aws-cdk/core:enableStackNameDuplicates": "true",
+      "aws-cdk:enableDiffNoFail": "true",
+      "@aws-cdk/core:stackRelativeExports": "true"
+    }
+  }

@@ -5,7 +5,7 @@ import cdk = require('@aws-cdk/core');
 import { Role, ServicePrincipal, PolicyDocument, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
 
 
-export class FirstResponderAdminBackendStack extends cdk.Stack {
+export class FirstResponderAdminLambdaStack extends cdk.Stack {
   constructor(app: cdk.App, id: string) {
     super(app, id);
 
@@ -208,5 +208,5 @@ export function addCorsOptions(apiResource: apigateway.IResource) {
 }
 
 const app = new cdk.App();
-new FirstResponderAdminBackendStack(app, 'FirstResponderAdminBackend');
+new FirstResponderAdminLambdaStack(app, 'FirstResponderAdminLambda');
 app.synth();
