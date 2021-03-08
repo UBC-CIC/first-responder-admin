@@ -2,13 +2,15 @@ import * as dynamodb from "@aws-cdk/aws-dynamodb";
 import { BillingMode, ProjectionType } from "@aws-cdk/aws-dynamodb";
 import cdk = require('@aws-cdk/core');
 
+// The STARS DDB stack should be created in ca-central-1 for data and privacy reasons. 
+//
 export class StarsDynamoStack extends cdk.Stack {
     private static USER_PROFILE_TABLE_ID = "UserProfileDynamoTable"
-    private static USER_PROFILE_TABLE_NAME = "user-profile"
+    public static USER_PROFILE_TABLE_NAME = "user-profile"
     private static USER_STATUS_GLOBAL_INDEX_NAME = "userStatusGsi"
 
     private static MEETING_DETAIL_TABLE_ID = "MeetingDetailDynamoTable"
-    private static MEETING_DETAIL_TABLE_NAME = "meeting-detail"
+    public static MEETING_DETAIL_TABLE_NAME = "meeting-detail"
     private static MEETING_STATUS_GLOBAL_INDEX_NAME = "meetingStatusGsi"
 
     constructor(app: cdk.App, id: string) {
