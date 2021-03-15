@@ -1,16 +1,16 @@
 import AWS = require('aws-sdk');
+import { AttendeeType, MeetingDetailsDao } from './ddb/meeting-dao';
 const { v4: uuidv4 } = require('uuid');
 
 // The AWS Chime client is only available in select regions
 const chime = new AWS.Chime({ region: 'us-east-1', endpoint: 'service.chime.aws.amazon.com' });
 const db = new AWS.DynamoDB.DocumentClient({ region: 'ca-central-1' });
-const TABLE_NAME = process.env.TABLE_NAME || '';
 
 // Handler for the PSTN number SIP media application that automatically creates a new meeting upon dial-in.
 //
 export const handler = async (event: any = {}, context: any, callback: any): Promise<any> => {
     console.log("PSTN CREATE invoked with call details:" + JSON.stringify(event));
-    let actions;
+    let actions: any;
 
     switch (event.InvocationEventType) {
         case "NEW_INBOUND_CALL":
@@ -63,42 +63,34 @@ async function newCall(event: any) {
     const fromNumber = event.CallDetails.Participants[0].From;
     const callId = event.CallDetails.Participants[0].CallId;
 
+    const dao = new MeetingDetailsDao(db);
+    const externalMeetingId = await dao.generateExternalMeetingId();
+
     // Create a new Chime meeting
     const meetingResponse = await chime.createMeeting({
-        ExternalMeetingId: uuidv4(),
+        ExternalMeetingId: externalMeetingId,
         ClientRequestToken: uuidv4(),
-        MediaRegion: 'ca-central-1' // Specify the region in which to create the meeting.
+        MediaRegion: 'ca-central-1', // Meetings should always be held in this region for data privacy restrictions
     }).promise();
     console.log("meeting response:" + JSON.stringify(meetingResponse, null, 2));
 
     const meeting: AWS.Chime.Meeting = meetingResponse.Meeting!;
     const request: AWS.Chime.CreateAttendeeRequest = {
         MeetingId: meeting.MeetingId!,
-        ExternalUserId: uuidv4() // Link the attendee to an identity managed by your application.
+        ExternalUserId: uuidv4(),
     };
     const attendeeResponse = await chime.createAttendee(request).promise();
     console.log("attendee details:" + JSON.stringify(attendeeResponse, null, 2));
 
     // Registers the meeting in DDB
     //
-    const meetingObj: Object = {
-        "meeting_id": meeting.MeetingId!,
-        "attendees": [fromNumber],
-        "attendee_ids": [attendeeResponse.Attendee!.AttendeeId],
-        "create_date_time": new Date().toISOString(),
-        "call_id": callId
-    };
-    const params = {
-        TableName: TABLE_NAME,
-        Item: meetingObj
-    };
-    await db.put(params).promise();
+    await dao.createNewMeeting(meeting.MeetingId!, fromNumber, attendeeResponse.Attendee!.AttendeeId!, callId, externalMeetingId, AttendeeType.PSTN);
 
     // Return join meeting action to bridge user to meeting
     //
     joinChimeMeetingAction.Parameters.CallID = meeting.MeetingId!;
     joinChimeMeetingAction.Parameters.JoinToken = attendeeResponse.Attendee!.JoinToken!;
-    console.log("Join ...");
+    console.log(`Joining with external meeting ID ${externalMeetingId} ...`);
     console.log(joinChimeMeetingAction);
     return [joinChimeMeetingAction];
 }
@@ -107,6 +99,7 @@ async function newCall(event: any) {
 // 
 async function receivedDigits(event: any) {
     console.log("receivedDigits - no actions taken");
+    return [];
 }
 
 // Action successful handler

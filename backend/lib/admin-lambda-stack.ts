@@ -2,6 +2,8 @@ import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
 import { Role, ServicePrincipal, PolicyDocument, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
 import { Bucket, BucketEncryption } from '@aws-cdk/aws-s3';
+import events = require('@aws-cdk/aws-events');
+import eventsTargets = require('@aws-cdk/aws-events-targets');
 import { StarsDynamoStack } from './dynamodb-stack';
 
 // The Lambda stack must be created in us-east-1 or us-west-2 since Chime only supports one of these two regions.
@@ -108,6 +110,36 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
       role: lambdaRole,
       memorySize: 512,
       timeout: cdk.Duration.seconds(30)
+    });
+
+    const meetingCleanupFunction = new lambda.Function(this, 'meetingCleanupFunction', {
+      functionName: "FirstResponder-Meeting-Cleanup",
+      code: new lambda.AssetCode('build/src'),
+      handler: 'meeting-cleanup.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      role: lambdaRole,
+      memorySize: 512,
+      timeout: cdk.Duration.seconds(30)
+    });
+
+    const chimeEventRule = new events.Rule(this, 'ChimeEventRule', {
+      eventPattern: {
+        source: [
+          'aws.chime'
+        ],
+        detailType: [
+          'Chime Meeting State Change',
+        ],
+        detail: {
+          'eventType': [
+            'chime:MeetingStarted',
+            'chime:MeetingEnded',
+          ]
+        }
+      },
+      targets: [
+          new eventsTargets.LambdaFunction(meetingCleanupFunction)
+      ],
     });
   }
 }

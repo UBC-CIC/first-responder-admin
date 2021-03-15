@@ -33,7 +33,12 @@ npm install
 Deploy (run this from the root). Make sure to deploy to the correct account/region by running `aws configure` if you have not already done so.
 ```
 npm run build
-cdk deploy
+cdk deploy --all
+```
+
+If you have a profile configured and/or want to deploy a particular stack, you can refer to the following commands.
+```
+cdk deploy StarsDynamoStack --profile stars
 ```
 
 Clean (run this from the root):

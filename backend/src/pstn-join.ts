@@ -1,4 +1,6 @@
 import AWS = require('aws-sdk');
+import { MeetingDetailsDao } from './ddb/meeting-dao';
+const { v4: uuidv4 } = require('uuid');
 
 // The AWS Chime client is only available in select regions
 const chime = new AWS.Chime({ region: 'us-east-1', endpoint: 'service.chime.aws.amazon.com' });
@@ -10,7 +12,7 @@ const TABLE_NAME = process.env.TABLE_NAME || '';
 //
 export const handler = async (event: any = {}, context: any, callback: any): Promise<any> => {
     console.log("PSTN JOIN invoked with call details:" + JSON.stringify(event));
-    let actions;
+    let actions: any;
 
     switch (event.InvocationEventType) {
         case "NEW_INBOUND_CALL":
@@ -58,60 +60,89 @@ export const handler = async (event: any = {}, context: any, callback: any): Pro
 };
 
 // Handles a new incoming call by answering the call and gathering the DTMF tones.
+// If the user is supposed to be part of an existing meeting, we will join them 
+// automatically.
 // Since the call ID is expected to be pre-filled when the user is calling, 
 // we skip the traditional welcome message and go right into waiting for the user action.
 //
 async function newCall(event: any) {
-    return [playAudioAndGetDigitsAction];
+    const fromNumber = event.CallDetails.Participants[0].From;
+    const callId = event.CallDetails.Participants[0].CallId;
+    const dao = new MeetingDetailsDao(db);
+    const existingMeeting = await dao.getExistingMeetingWithPhoneNumber(fromNumber);
+    if (existingMeeting) {
+        console.log(`Existing meeting found for phone number ${fromNumber}`);
+
+        const request: AWS.Chime.CreateAttendeeRequest = {
+            MeetingId: existingMeeting.meeting_id,
+            ExternalUserId: uuidv4(),
+        };
+        const attendeeResponse = await chime.createAttendee(request).promise();
+        console.log("attendee details:" + JSON.stringify(attendeeResponse, null, 2));
+
+        // Update the meeting in DDB
+        existingMeeting.attendees.push({
+            "attendee_id": attendeeResponse.Attendee!.AttendeeId!,
+            "phone_number": fromNumber,
+        });
+        await dao.saveMeetingDetails(existingMeeting);
+
+        // Return join meeting action to bridge user to meeting
+        //
+        joinChimeMeetingAction.Parameters.CallID = callId;
+        joinChimeMeetingAction.Parameters.JoinToken = attendeeResponse.Attendee!.JoinToken!;
+        console.log(`Joining with external meeting ID ${existingMeeting.meeting_id} ...`);
+        console.log(joinChimeMeetingAction);
+        return [joinChimeMeetingAction];
+    } else {
+        console.log(`No existing meeting found for phone number ${fromNumber}, prompting user for meeting ID.`);
+        playAudioAndGetDigitsAction.Parameters.CallID = callId;
+        return [playAudioAndGetDigitsAction];
+    }
 }
 
 // We will ignore special inputs for now (like muting/unmuting).
 // 
 async function receivedDigits(event: any) {
     console.log("receivedDigits - no actions taken");
+    return [];
 }
 
 // Action successful handler
 async function actionSuccessful(event: any) {
     const fromNumber = event.CallDetails.Participants[0].From;
+    const callId = event.CallDetails.Participants[0].CallId;
     console.log(`actionSuccessful for phone number ${fromNumber}`);
     
     switch (event.ActionData.Type) {
         case "PlayAudioAndGetDigits":
             // Last action was PlayAudioAndGetDigits
-            const meetingId = event.ActionData.ReceivedDigits;
-            console.log(`Joining meeting using Meeting id - received: ${meetingId}`);
+            const externalMeetingId = event.ActionData.ReceivedDigits;
+            console.log(`Attempting to join an existing meeting - received: ${externalMeetingId}`);
 
-            // Get/create meeting
-            const meeting = await chime.createMeeting({ ClientRequestToken: meetingId, MediaRegion: 'ca-central-1' }).promise();
-            console.log("meeting details:" + JSON.stringify(meeting, null, 2));
+            const dao = new MeetingDetailsDao(db);
+            const existingMeeting = await dao.getMeetingWithExternalMeetingId(externalMeetingId);
+            if (!existingMeeting) {
+                // The meeting does not exist
+                console.error(`The meeting with ID ${externalMeetingId} does not exist!`);
+                playAudioAndGetDigitsAction.Parameters.CallID = callId;
+                return [playAudioAndGetDigitsAction];
+            }
 
             // Get/create attendee
-            const attendee = await chime.createAttendee({ MeetingId: meeting.Meeting!.MeetingId!, ExternalUserId: fromNumber }).promise();
+            const attendee = await chime.createAttendee({ MeetingId: existingMeeting.meeting_id, ExternalUserId: uuidv4() }).promise();
             console.log("attendee details:" + JSON.stringify(attendee, null, 2));
 
             // Updates the meeting in DDB
             //
-            let existingMeeting = await db.get({
-                TableName: TABLE_NAME,
-                Key: {
-                    "meeting_id": meeting.Meeting?.MeetingId!
-                }
-            }).promise();
-
-            if (existingMeeting.Item) {
-                console.log("Updating existing meeting with phone number")
-                existingMeeting.Item["attendees"].push(fromNumber)
-                const params = {
-                    TableName: TABLE_NAME,
-                    Item: existingMeeting
-                };
-                await db.put(params).promise();
-            } else {
-                console.log("Existing meeting not found!")
-            }
+            existingMeeting.attendees.push({
+                "attendee_id": attendee.Attendee?.AttendeeId!,
+                "phone_number": fromNumber
+            });
+            await dao.saveMeetingDetails(existingMeeting);
 
             // Return join meeting action to bridge user to meeting
+            joinChimeMeetingAction.Parameters.CallID = callId;
             joinChimeMeetingAction.Parameters.JoinToken = attendee.Attendee!.JoinToken!;
             return [joinChimeMeetingAction];
 
@@ -120,7 +151,7 @@ async function actionSuccessful(event: any) {
             console.log("Join meeting successful");
 
             // Play meeting joined and register for dtmf
-            playAudioAction.Parameters.AudioSource.Key = "pstn-create-welcome.wav";
+            playAudioAction.Parameters.AudioSource.Key = "pstn-connecting.wav";
             return [playAudioAction];
 
             // See https://github.com/aws-samples/chime-sipmediaapplication-samples for additional
@@ -133,6 +164,7 @@ async function actionSuccessful(event: any) {
             return [];
 
         default:
+            playAudioAndGetDigitsAction.Parameters.CallID = callId;
             return [playAudioAndGetDigitsAction];
     }
 }
@@ -147,20 +179,21 @@ const hangupAction = {
 const playAudioAndGetDigitsAction = {
     "Type": "PlayAudioAndGetDigits",
     "Parameters": {
-        "MinNumberOfDigits": 5,
-        "MaxNumberOfDigits": 5,
+        "CallID": "",
+        "MinNumberOfDigits": 8,
+        "MaxNumberOfDigits": 8,
         "Repeat": 3,
-        "InBetweenDigitsDurationInMilliseconds": 1000,
-        "RepeatDurationInMilliseconds": 5000,
+        "InBetweenDigitsDurationInMilliseconds": 10000,
+        "RepeatDurationInMilliseconds": 10000,
         "TerminatorDigits": ["#"],
         "AudioSource": {
             "Type": "S3",
-            "BucketName": process.env.BUCKET_NAME,
-            "Key": "pstn-connecting.wav"
+            "BucketName": "first-responder-audio-assets",
+            "Key": "pstn-meeting-pin.wav"
         },
         "FailureAudioSource": {
             "Type": "S3",
-            "BucketName": process.env.BUCKET_NAME,
+            "BucketName": "first-responder-audio-assets",
             "Key": "pstn-meeting-pin.wav"
         }
     }
