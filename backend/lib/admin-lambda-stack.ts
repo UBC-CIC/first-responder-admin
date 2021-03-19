@@ -4,7 +4,7 @@ import { Role, ServicePrincipal, PolicyDocument, PolicyStatement, Effect } from 
 import { Bucket, BucketEncryption } from '@aws-cdk/aws-s3';
 import events = require('@aws-cdk/aws-events');
 import eventsTargets = require('@aws-cdk/aws-events-targets');
-import { StarsDynamoStack } from './dynamodb-stack';
+import { FirstResponderAdminDynamoStack } from './admin-dynamodb-stack';
 
 // The Lambda stack must be created in us-east-1 or us-west-2 since Chime only supports one of these two regions.
 //
@@ -88,7 +88,7 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
       handler: 'pstn-create.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
       environment: {
-        TABLE_NAME: StarsDynamoStack.MEETING_DETAIL_TABLE_NAME,
+        TABLE_NAME: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
         PRIMARY_KEY: 'meeting_id',
         BUCKET_NAME: pstnAudioFilesBucket.bucketName,
       },
@@ -103,7 +103,7 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
       handler: 'pstn-join.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
       environment: {
-        TABLE_NAME: StarsDynamoStack.MEETING_DETAIL_TABLE_NAME,
+        TABLE_NAME: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
         PRIMARY_KEY: 'meeting_id',
         BUCKET_NAME: pstnAudioFilesBucket.bucketName,
       },
