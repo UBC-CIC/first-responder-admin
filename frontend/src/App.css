@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  padding-top: 100px; 
 }
 
 .App-logo {
@@ -37,6 +38,8 @@
   }
 }
 
-body { 
-  padding-top: 100px; 
+:root {
+    --amplify-primary-color: #152939;
+    --amplify-primary-tint: #00B9F2; 
+    --amplify-primary-shade: #55677D;
 }
