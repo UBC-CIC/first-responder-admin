@@ -5,10 +5,14 @@ Contains infrastructure and Lambda functions that runs the First Responder Admin
 ### `backend`
 
 Contains backend code and backend infrastructure stacks.\
-For `cdk deploy`\
+For `cdk deploy`
 ```
 Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`
-Stacks: FirstResponderAdminLambdaStack StarsDynamoStack
+Stacks: 
+ - FirstResponderAdminLambdaStack 
+ - FirstResponderAdminDynamoStack
+ - FirstResponderAdminCognitoStack
+ - FirstResponderAdminAppSyncStack
 ```
 
 ### `router` 

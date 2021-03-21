@@ -1,0 +1,79 @@
+type MeetingDetail @aws_cognito_user_pools @aws_iam {
+  meetingId: String!
+  meetingStatus: String
+  serviceDeskAttendee: String
+  attendeeList: [String]
+  createDateTime: AWSDateTime
+}
+
+type MeetingDetailConnection @aws_cognito_user_pools @aws_iam {
+  items: [MeetingDetail]
+  nextToken: String
+}
+
+# [input] MeetingDetailInput
+# CreateMeetingDetail, DeleteMeetingDetail and UpdateMeetingDetail use this input type
+input MeetingDetailInput {
+  meetingId: String!
+  meetingStatus: String
+  serviceDeskAttendee: String
+  attendeeList: [String]
+  createDateTime: AWSDateTime
+  createdAt: String
+  updatedAt: String
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelMeetingDetailFilterInput {
+  meetingId: ModelStringInput
+  meetingStatus: ModelStringInput
+  serviceDeskAttendee: ModelStringInput
+  attendeeList: ModelStringInput
+  createDateTime: ModelStringInput
+  and: [ModelMeetingDetailFilterInput]
+  or: [ModelMeetingDetailFilterInput]
+  not: ModelMeetingDetailFilterInput
+}
+
+input ModelMeetingDetailConditionInput {
+  meetingId: ModelStringInput
+  meetingStatus: ModelStringInput
+  serviceDeskAttendee: ModelStringInput
+  attendeeList: ModelStringInput
+  createDateTime: ModelStringInput
+  and: [ModelMeetingDetailConditionInput]
+  or: [ModelMeetingDetailConditionInput]
+  not: ModelMeetingDetailConditionInput
+}
+
+# [type] Query
+type Query @aws_cognito_user_pools @aws_iam {
+    getMeetingDetail(meetingId: String!): MeetingDetail
+    listMeetingDetails(filter: ModelMeetingDetailFilterInput, limit: Int, nextToken: String): MeetingDetailConnection
+}
+
+# [type] Mutation
+type Mutation @aws_cognito_user_pools @aws_iam {
+    createMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
+    updateMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
+    deleteMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
+}
+
+# [type] Subscription
+type Subscription @aws_cognito_user_pools @aws_iam {
+    onCreateMeetingDetail: MeetingDetail @aws_subscribe(mutations: ["createMeetingDetail"])
+    onUpdateMeetingDetail: MeetingDetail @aws_subscribe(mutations: ["updateMeetingDetail"])
+    onDeleteMeetingDetail: MeetingDetail @aws_subscribe(mutations: ["deleteMeetingDetail"])
+}

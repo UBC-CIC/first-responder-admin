@@ -1,0 +1,24 @@
+# This is to generate GraphQL files for Frontend/Lambdas based on 'schema.graphql'.
+# Amplify codegen is used to generate GraphQL files out of schema.graphql.
+# We don't use other amplify cli at all.
+#
+# Usage :
+# cd /graphql
+# amplify init // DO NOT RUN 'amplify push'
+# amplify codegen types
+# amplify codegen statements
+projects:
+  FirstResponderAdminAdjustment:
+    schemaPath: /graphql/schema.graphql
+    includes:
+      - common/**/*.js
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: javascript
+        generatedFileName: ''
+        docsFilePath: ./graphql
+extensions:
+  amplify:
+    version: 3
