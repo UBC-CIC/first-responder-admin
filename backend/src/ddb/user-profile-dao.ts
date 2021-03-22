@@ -9,8 +9,8 @@ export type UserProfile = {
     "organization": string; // User Organization (e.g. "St. Mercy's Hospital")
     "profile_picture": string; // S3 link to the user profile picture (e.g. "s3://test-bucket/abc.jpg")
     "notes": string; // Any notes (e.g. "Specialist in Radiology.")
-    "user_status": UserStatus; // Indicates whether any actions have been taken on behalf of this user.
-    "is_paged": boolean,
+    "user_status": UserStatus; // Indicates the current user availability - automatically updated every 30 minutes based on availability schedule.
+    "is_paged": boolean, // true if the user has been paged
     "availability": UserAvailability; // Stores their availability schedule and overrides. 
     "created_date_time": string; // When this user was created (ISO8601 format)
     "updated_date_time": string; // When this user was updated (ISO8601 format)
