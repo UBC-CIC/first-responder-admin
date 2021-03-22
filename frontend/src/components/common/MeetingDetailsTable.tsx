@@ -4,7 +4,7 @@ import React from 'react'
 import { Table, Badge } from 'react-bootstrap';
 //import BootstrapTable from 'react-bootstrap-table-next';
 //import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
-import { MeetingDetails } from '../../API';
+import { MeetingDetail } from '../../common/types/API';
 
 
 export default function MeetingDetailsTable(items: any) {
@@ -69,18 +69,18 @@ export default function MeetingDetailsTable(items: any) {
                 </thead>
                 <tbody>
                     {
-                        items.items.map((item: MeetingDetails) => (
+                        items.items.map((item: MeetingDetail) => (
                             <tr>
-                                <td>{item.meetingId}</td>
+                                <td>{item.meeting_id}</td>
                                 <td>
                                     {
-                                        item.status === "Live" ? (
+                                        item.meeting_status === "ACTIVE" ? (
                                             <Badge pill variant="success">
-                                                {item.status}
+                                                {item.meeting_status}
                                             </Badge>
                                         ) : (
                                                 <Badge pill variant="secondary">
-                                                    {item.status}
+                                                    {item.meeting_status}
                                                 </Badge>
                                             )
                                     }
@@ -88,11 +88,11 @@ export default function MeetingDetailsTable(items: any) {
                                 <td>
                                     <FontAwesomeIcon icon={faUser} />{' '}
                                     <Badge pill variant="dark">
-                                        {item.attendeeList?.length}
+                                        {item.attendee_list?.length}
                                     </Badge>
                                 </td>
                                 {
-                                    item.status === "Live" ? (
+                                    item.meeting_status === "ACTIVE" ? (
                                         <td>
                                             <FontAwesomeIcon icon={faPhoneSquareAlt} size="2x" color="#28a745" />{' | '}
                                             <FontAwesomeIcon icon={faUserPlus} size="2x" />{' | '}
@@ -108,9 +108,9 @@ export default function MeetingDetailsTable(items: any) {
                                 }
                                 <td>
                                     {
-                                        item.createDateTime !== undefined && item.createDateTime !== null ? (
-                                            new Date(item.createDateTime).toLocaleTimeString([],{ year: 'numeric', month: 'long', day: 'numeric' })
-                                        ) : (item.createDateTime)
+                                        item.create_date_time !== undefined && item.create_date_time !== null ? (
+                                            new Date(item.create_date_time).toLocaleTimeString([],{ year: 'numeric', month: 'long', day: 'numeric' })
+                                        ) : (item.create_date_time)
                                     }
                                 </td>
                                 <td>

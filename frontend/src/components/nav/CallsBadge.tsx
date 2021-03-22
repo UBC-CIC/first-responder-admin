@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Badge } from 'react-bootstrap';
 import { useEffect, useState, useRef } from 'react';
 import { API } from 'aws-amplify';
-import { onCreateMeetingDetails, onDeleteMeetingDetails, onUpdateMeetingDetails } from '../../graphql/subscriptions';
+import { onCreateMeetingDetail, onDeleteMeetingDetail, onUpdateMeetingDetail } from '../../common/graphql/subscriptions';
 
 
 export const CallsBadge = () => {
@@ -13,13 +13,13 @@ export const CallsBadge = () => {
     useEffect(() => {
         const subscribeCreateMeetings = () => {
             const subscription:any = API.graphql({
-                query: onCreateMeetingDetails
+                query: onCreateMeetingDetail
             })
 
             subscription.subscribe({
                 next: (data:any) => {
-                    console.log('data received from create subscription:', data.value.data.onCreateMeetingDetails.status);
-                    if (data.value.data !== undefined && data.value.data.onCreateMeetingDetails.status === 'Live') {
+                    console.log('data received from create subscription:', data.value.data.onCreateMeetingDetails.meeting_status);
+                    if (data.value.data !== undefined && data.value.data.onCreateMeetingDetails.meeting_status === 'ACTIVE') {
                         setMeetingCount(meetingCountRef.current + 1)
                     }
                 }
@@ -28,13 +28,13 @@ export const CallsBadge = () => {
 
         const subscribeUpdateMeetings = () => {
             const subscription:any = API.graphql({
-                query: onUpdateMeetingDetails
+                query: onUpdateMeetingDetail
             })
 
             subscription.subscribe({
                 next: (data:any) => {
                     console.log('data received from update subscription:', data);
-                    if (data.value.data !== undefined && data.value.data.onUpdateMeetingDetails.status === 'Ended') {
+                    if (data.value.data !== undefined && data.value.data.onUpdateMeetingDetails.meeting_status === 'CLOSED') {
                         var newCount = meetingCountRef.current - 1
                         setMeetingCount(newCount > 0 ? newCount : 0)
                     }
@@ -44,7 +44,7 @@ export const CallsBadge = () => {
 
         const subscribeDeleteMeetings = () => {
             const subscription:any = API.graphql({
-                query: onDeleteMeetingDetails
+                query: onDeleteMeetingDetail
             })
 
             subscription.subscribe({

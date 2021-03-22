@@ -11,3 +11,35 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+}
+
+.ffc {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.align {
+  align-items: center;
+}
+
+.justify {
+  justify-content: center;
+}
+
+#root {
+  background-color: #f6f5f7;
+  height: 100%;
+}

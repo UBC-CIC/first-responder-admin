@@ -10,6 +10,7 @@
 
 # production
 /build
+/src/common
 
 # misc
 .DS_Store
@@ -40,3 +41,4 @@ amplify-build-config.json
 amplify-gradle-config.json
 amplifytools.xcconfig
 .secret-*
+../common/graphql/amplify/mock-data

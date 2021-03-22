@@ -1,8 +1,0 @@
-type MeetingDetails @model {
-  id: ID!
-  meetingId: String!
-  status: String
-  service_desk_attendee: String
-  attendeeList: [String]
-  createDateTime: AWSDateTime
-}

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import NotificationSystem from 'react-notification-system';
 import { API } from 'aws-amplify';
-import { onCreateMeetingDetails } from '../../graphql/subscriptions';
+import { onCreateMeetingDetail } from '../../common/graphql/subscriptions';
 import { SOUNDS_DICTIONARY } from './sounds/Sounds';
 
 // TODO: Override style. To see what can properties be overridden see https://github.com/igorprado/react-notification-system/blob/master/src/styles.js
@@ -27,17 +27,17 @@ export const CallNotification = () => {
   useEffect(() => {
     const subscribeCreateMeetings = () => {
       const subscription: any = API.graphql({
-        query: onCreateMeetingDetails
+        query: onCreateMeetingDetail
       })
 
       subscription.subscribe({
         next: (data: any) => {
           console.log('data received from create subscription:', data.value.data.onCreateMeetingDetails.status);
-          if (data.value.data !== undefined && data.value.data.onCreateMeetingDetails.status === 'Live') {
+          if (data.value.data !== undefined && data.value.data.onCreateMeetingDetails.meeting_status === 'ACTIVE') {
             const currentNotifications = notificationSystemRef.current;
             if (currentNotifications) {
               currentNotifications.addNotification({
-                message: 'New call in progress with meeting id : ' + data.value.data.onCreateMeetingDetails.meetingId,
+                message: 'New call in progress with meeting id : ' + data.value.data.onCreateMeetingDetails.meeting_id,
                 level: 'success',
                 autoDismiss: 0,
                 dismissible: 'both'

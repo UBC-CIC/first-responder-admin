@@ -1,23 +1,21 @@
 import { Nav, Navbar } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { CallsBadge } from './CallsBadge';
+import { AmplifySignOut } from '@aws-amplify/ui-react';
 import './header.css';
 
-export const Header = () => {
+export const Header = (props: {userName: String}) => {
 
     return (
-        <Navbar collapseOnSelect bg="dark" variant="dark" fixed="top" expand='lg'>
+        <Navbar collapseOnSelect fixed="top" expand='lg'>
 
             <Navbar.Brand>
                 <NavLink className='nav-link' activeClassName='activeRoute' to='/dashboard'>
-                    {
-                      //<img src='logo-stars-dark.svg' alt='STARS' className="responsive"/>
-                    }
-                    STARS - Service Desk
+                    <span className="brand-logo"><i>STARS</i><span className="brand-logo-sub">Service Desk</span></span>
                 </NavLink>
             </Navbar.Brand>
 
-            <Navbar.Toggle aria-controls='responsive-navbar-nav'/>
+            <Navbar.Toggle aria-controls='responsive-navbar-nav' />
 
             <Navbar.Collapse id='responsive-navbar-nav'>
                 <Nav className="ml-auto" variant='pills' defaultActiveKey='/dashboard' as='ul'>
@@ -44,7 +42,10 @@ export const Header = () => {
                     </Nav.Item>
                 </Nav>
             </Navbar.Collapse>
-
+            <span>
+                Hello {props.userName}
+            </span>
+            <AmplifySignOut button-text="Sign Out"></AmplifySignOut>
         </Navbar>
     )
 }
