@@ -2,6 +2,9 @@ import { Nav, Navbar } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { CallsBadge } from './CallsBadge';
 import { AmplifySignOut } from '@aws-amplify/ui-react';
+import { faStarOfLife } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import './header.css';
 
 export const Header = (props: {userName: String}) => {
@@ -11,7 +14,7 @@ export const Header = (props: {userName: String}) => {
 
             <Navbar.Brand>
                 <NavLink className='nav-link' activeClassName='activeRoute' to='/dashboard'>
-                    <span className="brand-logo"><i>STARS</i><span className="brand-logo-sub">Service Desk</span></span>
+                    <FontAwesomeIcon icon={faStarOfLife} />{' '}<span className="brand-logo"><i>STARS</i><span className="brand-logo-sub">Service Desk</span></span>
                 </NavLink>
             </Navbar.Brand>
 
