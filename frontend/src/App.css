@@ -43,3 +43,8 @@
     --amplify-primary-tint: #00B9F2; 
     --amplify-primary-shade: #55677D;
 }
+
+amplify-authenticator {
+  background: tomato;
+  padding: 5px;
+}

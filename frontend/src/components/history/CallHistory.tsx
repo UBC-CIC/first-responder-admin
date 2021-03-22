@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { API } from 'aws-amplify';
-import { listMeetingDetailss } from '../../graphql/queries';
+import { listMeetingDetails } from '../../common/graphql/queries';
 import MeetingDetailsTable from '../common/MeetingDetailsTable';
 import DatePicker from 'react-datepicker';
 
@@ -17,16 +17,16 @@ export const CallHistory = () => {
     const onGetHistoryByTimeRange = async () => {
         try {
             const meetings: any = await API.graphql({
-                query: listMeetingDetailss,
+                query: listMeetingDetails,
                 variables: { limit: 25 }
             });
-            updateItems(meetings['data']['listMeetingDetailss']['items']);
-            console.log('listMeetingDetailss meetings:', meetings);
+            updateItems(meetings['data']['listMeetingDetails']['items']);
+            console.log('listMeetingDetails meetings:', meetings);
             if (statusRef.current) {
               console.log('Status is :', statusRef.current.value)
             }
         } catch (e) {
-            console.log('listMeetingDetailss errors:', e.errors);
+            console.log('listMeetingDetails errors:', e.errors);
         }
     };
 

@@ -38,10 +38,11 @@
     "yup": "^0.32.9"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "cp -R ../common/ ./src/common && react-scripts start",
+    "build": "cp -R ../common/ ./src/common && react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "clean": "rm -rf build && rm -rf src/common"
   },
   "eslintConfig": {
     "extends": [

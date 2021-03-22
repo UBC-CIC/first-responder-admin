@@ -4,10 +4,10 @@ import Dashboard from '../dashboard/Dashboard';
 import Settings from '../settings/Settings';
 import CallHistory from '../history/CallHistory';
 
-export const Navigation = () => {
+export const Navigation = (props: {userName: String}) => {
     return (
         <BrowserRouter>
-            <Header/>
+            <Header userName={props.userName}/>
            <Switch>
                 <Route path='/' exact component={Dashboard}/>
                 <Route path='/dashboard' component={Dashboard}/>

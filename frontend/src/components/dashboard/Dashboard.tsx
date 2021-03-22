@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap';
 import { API } from 'aws-amplify';
-import { listMeetingDetailss } from '../../graphql/queries';
+import { listMeetingDetails } from '../../common/graphql/queries';
 import MeetingDetailsTable from '../common/MeetingDetailsTable';
 
 export const Dashboard = () => {
@@ -11,13 +11,13 @@ export const Dashboard = () => {
         async function callListAllMeetings() {
             try {
                 const meetings: any = await API.graphql({
-                    query: listMeetingDetailss,
+                    query: listMeetingDetails,
                     variables: {limit: 25}
                 });
-                updateItems(meetings['data']['listMeetingDetailss']['items']);
-                console.log('listMeetingDetailss meetings:', meetings);
+                updateItems(meetings['data']['listMeetingDetails']['items']);
+                console.log('listMeetingDetails meetings:', meetings);
             } catch (e) {
-                console.log('listMeetingDetailss errors:', e.errors);
+                console.log('listMeetingDetails errors:', e.errors);
             }
         }
 

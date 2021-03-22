@@ -1,15 +1,15 @@
 import React from 'react';
 import './App.css';
-import { Navigation } from './components/nav/Navigation'
-import { AmplifyAuthenticator, AmplifySignUp, withAuthenticator } from '@aws-amplify/ui-react'
+import { AmplifyAuthenticator, AmplifySignUp } from '@aws-amplify/ui-react';
 import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
+import { Navigation } from './components/nav/Navigation'
 import { CallNotification } from './components/notifications/Notification';
 import { url } from 'inspector';
 
 function App() {
 
     const [authState, setAuthState] = React.useState<AuthState>();
-    const [user, setUser] = React.useState<object | undefined>();
+    const [user, setUser] = React.useState<any>();
 
     React.useEffect(() => {
         return onAuthUIStateChange((nextAuthState, authData) => {
@@ -25,7 +25,7 @@ function App() {
     return authState === AuthState.SignedIn && user ? (
         <div className="App">
             <CallNotification />
-            <Navigation />
+            <Navigation userName={user.username}/>
         </div>
     ) : (
             <div slot="sign-in" style={{
