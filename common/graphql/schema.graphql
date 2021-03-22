@@ -1,9 +1,10 @@
+# Schema for meeting-detail DDB Table
 type MeetingDetail @aws_cognito_user_pools @aws_iam {
-  meetingId: String!
-  meetingStatus: String
-  serviceDeskAttendee: String
-  attendeeList: [String]
-  createDateTime: AWSDateTime
+  meeting_id: String!
+  meeting_status: String
+  service_desk_attendee: String
+  attendee_list: [String]
+  create_date_time: AWSDateTime
 }
 
 type MeetingDetailConnection @aws_cognito_user_pools @aws_iam {
@@ -14,13 +15,11 @@ type MeetingDetailConnection @aws_cognito_user_pools @aws_iam {
 # [input] MeetingDetailInput
 # CreateMeetingDetail, DeleteMeetingDetail and UpdateMeetingDetail use this input type
 input MeetingDetailInput {
-  meetingId: String!
-  meetingStatus: String
-  serviceDeskAttendee: String
-  attendeeList: [String]
-  createDateTime: AWSDateTime
-  createdAt: String
-  updatedAt: String
+  meeting_id: String!
+  meeting_status: String
+  service_desk_attendee: String
+  attendee_list: [String]
+  create_date_time: AWSDateTime
 }
 
 input ModelStringInput {
@@ -37,22 +36,21 @@ input ModelStringInput {
 }
 
 input ModelMeetingDetailFilterInput {
-  meetingId: ModelStringInput
-  meetingStatus: ModelStringInput
-  serviceDeskAttendee: ModelStringInput
-  attendeeList: ModelStringInput
-  createDateTime: ModelStringInput
+  meeting_id: ModelStringInput
+  meeting_status: ModelStringInput
+  service_desk_attendee: ModelStringInput
+  attendee_list: ModelStringInput
+  create_date_time: ModelStringInput
   and: [ModelMeetingDetailFilterInput]
   or: [ModelMeetingDetailFilterInput]
   not: ModelMeetingDetailFilterInput
 }
 
 input ModelMeetingDetailConditionInput {
-  meetingId: ModelStringInput
-  meetingStatus: ModelStringInput
-  serviceDeskAttendee: ModelStringInput
-  attendeeList: ModelStringInput
-  createDateTime: ModelStringInput
+  meeting_status: ModelStringInput
+  service_desk_attendee: ModelStringInput
+  attendee_list: ModelStringInput
+  create_date_time: ModelStringInput
   and: [ModelMeetingDetailConditionInput]
   or: [ModelMeetingDetailConditionInput]
   not: ModelMeetingDetailConditionInput
@@ -62,6 +60,7 @@ input ModelMeetingDetailConditionInput {
 type Query @aws_cognito_user_pools @aws_iam {
     getMeetingDetail(meetingId: String!): MeetingDetail
     listMeetingDetails(filter: ModelMeetingDetailFilterInput, limit: Int, nextToken: String): MeetingDetailConnection
+    getMeetingDetailsByStatus(meetingStatus: String!, limit: Int, nextToken: String): MeetingDetailConnection
 }
 
 # [type] Mutation

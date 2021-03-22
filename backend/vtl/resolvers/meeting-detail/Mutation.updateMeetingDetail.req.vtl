@@ -124,7 +124,7 @@ $util.qr($update.put("expression", "$expression"))
   "operation": "UpdateItem",
   "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   "meeting_id": {
-      "S": $util.toJson($context.args.input.meetingId)
+      "S": $util.toJson($context.args.input.meeting_id)
   }
 } #end,
   "update": $util.toJson($update),

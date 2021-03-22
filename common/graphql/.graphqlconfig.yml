@@ -8,16 +8,16 @@
 # amplify codegen types
 # amplify codegen statements
 projects:
-  FirstResponderAdminAdjustment:
+  AmplifyFirstResponderAdmin:
     schemaPath: /graphql/schema.graphql
     includes:
-      - common/**/*.js
+      - common/**/*.ts
     excludes:
       - ./amplify/**
     extensions:
       amplify:
-        codeGenTarget: javascript
-        generatedFileName: ''
+        codeGenTarget: typescript
+        generatedFileName: common/types/API.ts
         docsFilePath: ./graphql
 extensions:
   amplify:

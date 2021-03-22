@@ -71,42 +71,52 @@ export class FirstResponderAdminAppSyncStack extends Stack {
         //
         // DataSource to connect to meeting-detail DDB table
         // Import meeting-detail DDB table and grant AppSync to access the DDB table
-        const firstResponderAdminMeetingDetailTable = Table.fromTableName(this, 
-            'firstResponderAdminMeetingDetailTable', FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME);
-        firstResponderAdminMeetingDetailTable.grantFullAccess(firstResponderAdminAppSyncRole);
+        const meetingDetailTable = Table.fromTableAttributes(this, 
+            'meetingDetailTable', {
+                tableName: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
+                globalIndexes: [FirstResponderAdminDynamoStack.MEETING_STATUS_GLOBAL_INDEX_NAME]
+            });
+        meetingDetailTable.grantFullAccess(firstResponderAdminAppSyncRole);
 
         // Define Request DDB DataSource
-        const firstResponderAdminTableDataSource = api.addDynamoDbDataSource('firstResponderAdminMeetingDetailTableDataSource',firstResponderAdminMeetingDetailTable);
+        const meetingDetailTableDataSource = api.addDynamoDbDataSource('meetingDetailTableDataSource', meetingDetailTable);
 
-        firstResponderAdminTableDataSource.createResolver({
+        meetingDetailTableDataSource.createResolver({
             typeName: 'Query',
             fieldName: 'getMeetingDetail',
             requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Query.getMeetingDetail.req.vtl`),
             responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Query.getMeetingDetail.res.vtl`),
         });
 
-        firstResponderAdminTableDataSource.createResolver({
+        meetingDetailTableDataSource.createResolver({
             typeName: 'Query',
             fieldName: 'listMeetingDetails',
             requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Query.listMeetingDetails.req.vtl`),
-            responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Query.listMeetingDetails.req.vtl`),
+            responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Query.listMeetingDetails.res.vtl`),
         });
 
-        firstResponderAdminTableDataSource.createResolver({
+        meetingDetailTableDataSource.createResolver({
+            typeName: 'Query',
+            fieldName: 'getMeetingDetailsByStatus',
+            requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Query.getMeetingDetailsByStatus.req.vtl`),
+            responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Query.getMeetingDetailsByStatus.res.vtl`),
+        });
+
+        meetingDetailTableDataSource.createResolver({
             typeName: 'Mutation',
             fieldName: 'createMeetingDetail',
             requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Mutation.createMeetingDetail.req.vtl`),
             responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Mutation.createMeetingDetail.res.vtl`),
         });
 
-        firstResponderAdminTableDataSource.createResolver({
+        meetingDetailTableDataSource.createResolver({
             typeName: 'Mutation',
             fieldName: 'deleteMeetingDetail',
             requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Mutation.deleteMeetingDetail.req.vtl`),
             responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Mutation.deleteMeetingDetail.res.vtl`),
         });
 
-        firstResponderAdminTableDataSource.createResolver({
+        meetingDetailTableDataSource.createResolver({
             typeName: 'Mutation',
             fieldName: 'updateMeetingDetail',
             requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Mutation.updateMeetingDetail.req.vtl`),

@@ -5,39 +5,33 @@
 export const onCreateMeetingDetail = /* GraphQL */ `
   subscription OnCreateMeetingDetail {
     onCreateMeetingDetail {
-      meetingId
-      meetingStatus
-      serviceDeskAttendee
-      attendeeList
-      createDateTime
-      createdAt
-      updatedAt
+      meeting_id
+      meeting_status
+      service_desk_attendee
+      attendee_list
+      create_date_time
     }
   }
 `;
 export const onUpdateMeetingDetail = /* GraphQL */ `
   subscription OnUpdateMeetingDetail {
     onUpdateMeetingDetail {
-      meetingId
-      meetingStatus
-      serviceDeskAttendee
-      attendeeList
-      createDateTime
-      createdAt
-      updatedAt
+      meeting_id
+      meeting_status
+      service_desk_attendee
+      attendee_list
+      create_date_time
     }
   }
 `;
 export const onDeleteMeetingDetail = /* GraphQL */ `
   subscription OnDeleteMeetingDetail {
     onDeleteMeetingDetail {
-      meetingId
-      meetingStatus
-      serviceDeskAttendee
-      attendeeList
-      createDateTime
-      createdAt
-      updatedAt
+      meeting_id
+      meeting_status
+      service_desk_attendee
+      attendee_list
+      create_date_time
     }
   }
 `;

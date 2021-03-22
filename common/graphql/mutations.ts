@@ -4,49 +4,43 @@
 
 export const createMeetingDetail = /* GraphQL */ `
   mutation CreateMeetingDetail(
-    $input: MeetingDetailInput!
+    $input: MeetingDetailInput
     $condition: ModelMeetingDetailConditionInput
   ) {
     createMeetingDetail(input: $input, condition: $condition) {
-      meetingId
-      meetingStatus
-      serviceDeskAttendee
-      attendeeList
-      createDateTime
-      createdAt
-      updatedAt
+      meeting_id
+      meeting_status
+      service_desk_attendee
+      attendee_list
+      create_date_time
     }
   }
 `;
 export const updateMeetingDetail = /* GraphQL */ `
   mutation UpdateMeetingDetail(
-    $input: MeetingDetailInput!
+    $input: MeetingDetailInput
     $condition: ModelMeetingDetailConditionInput
   ) {
     updateMeetingDetail(input: $input, condition: $condition) {
-      meetingId
-      meetingStatus
-      serviceDeskAttendee
-      attendeeList
-      createDateTime
-      createdAt
-      updatedAt
+      meeting_id
+      meeting_status
+      service_desk_attendee
+      attendee_list
+      create_date_time
     }
   }
 `;
 export const deleteMeetingDetail = /* GraphQL */ `
   mutation DeleteMeetingDetail(
-    $input: MeetingDetailInput!
+    $input: MeetingDetailInput
     $condition: ModelMeetingDetailConditionInput
   ) {
     deleteMeetingDetail(input: $input, condition: $condition) {
-      meetingId
-      meetingStatus
-      serviceDeskAttendee
-      attendeeList
-      createDateTime
-      createdAt
-      updatedAt
+      meeting_id
+      meeting_status
+      service_desk_attendee
+      attendee_list
+      create_date_time
     }
   }
 `;

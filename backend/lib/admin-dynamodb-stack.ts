@@ -7,11 +7,11 @@ import cdk = require('@aws-cdk/core');
 export class FirstResponderAdminDynamoStack extends cdk.Stack {
     private static USER_PROFILE_TABLE_ID = "UserProfileDynamoTable"
     public static USER_PROFILE_TABLE_NAME = "user-profile"
-    private static USER_STATUS_GLOBAL_INDEX_NAME = "userStatusGsi"
+    public static USER_STATUS_GLOBAL_INDEX_NAME = "userStatusGsi"
 
     private static MEETING_DETAIL_TABLE_ID = "MeetingDetailDynamoTable"
     public static MEETING_DETAIL_TABLE_NAME = "meeting-detail"
-    private static MEETING_STATUS_GLOBAL_INDEX_NAME = "meetingStatusGsi"
+    public static MEETING_STATUS_GLOBAL_INDEX_NAME = "meetingStatusGsi"
 
     constructor(app: cdk.App, id: string) {
         super(app, id);

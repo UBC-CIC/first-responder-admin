@@ -1,11 +1,3 @@
-## [Start] Set default values. **
-$util.qr($context.args.input.put("id", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
-#set( $createdAt = $util.time.nowISO8601() )
-## Automatically set the createdAt timestamp. **
-$util.qr($context.args.input.put("createdAt", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
-## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put("updatedAt", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
-## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put("__typename", "MeetingDetail"))
 #set( $condition = {
@@ -31,7 +23,7 @@ $util.qr($context.args.input.put("__typename", "MeetingDetail"))
   "version": "2018-05-29",
   "operation": "PutItem",
   "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  "meeting_id":   $util.dynamodb.toDynamoDBJson($ctx.args.input.meetingId)
+  "meeting_id":   $util.dynamodb.toDynamoDBJson($ctx.args.input.meeting_id)
 } #end,
   "attributeValues": $util.dynamodb.toMapValuesJson($context.args.input),
   "condition": $util.toJson($condition)

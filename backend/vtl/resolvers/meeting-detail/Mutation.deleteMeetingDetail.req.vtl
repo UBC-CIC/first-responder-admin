@@ -58,7 +58,7 @@
   "version": "2018-05-29",
   "operation": "DeleteItem",
   "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  "meeting_id": $util.dynamodb.toDynamoDBJson($ctx.args.input.meetingId)
+  "meeting_id": $util.dynamodb.toDynamoDBJson($ctx.args.input.meeting_id)
 } #end,
   "condition": $util.toJson($condition)
 }
