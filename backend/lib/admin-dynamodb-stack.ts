@@ -28,7 +28,7 @@ export class FirstResponderAdminDynamoStack extends cdk.Stack {
         const userStatusGsiProps: dynamodb.GlobalSecondaryIndexProps = {
             indexName: FirstResponderAdminDynamoStack.USER_STATUS_GLOBAL_INDEX_NAME,
             partitionKey: {
-              name: 'meeting_status',
+              name: 'user_status',
               type: dynamodb.AttributeType.STRING
             },
             sortKey: {

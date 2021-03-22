@@ -51,3 +51,15 @@
 .activeRoute {
   font-weight: bold;
 }
+.responsive {
+    max-width: 100%;
+    height: auto;
+}
+
+.bg-dark {
+    background-color: #212529 !important;
+}
+
+.navbar-brand a {
+    color: #cccccc !important;
+}

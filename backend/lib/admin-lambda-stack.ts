@@ -1,35 +1,24 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
+import { App, Duration } from '@aws-cdk/core';
 import { Role, ServicePrincipal, PolicyDocument, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
 import { Bucket, BucketEncryption } from '@aws-cdk/aws-s3';
+import { Schedule, Rule } from '@aws-cdk/aws-events';
 import events = require('@aws-cdk/aws-events');
 import eventsTargets = require('@aws-cdk/aws-events-targets');
 import { FirstResponderAdminDynamoStack } from './admin-dynamodb-stack';
+import { LambdaFunction } from "@aws-cdk/aws-events-targets";
 
-// The Lambda stack must be created in us-east-1 or us-west-2 since Chime only supports one of these two regions.
+// The Lambda stack contains all the Lambda functions that are not directly related to Chime. 
+// These Lambda functions can be created safely in ca-central-1.
 //
 export class FirstResponderAdminLambdaStack extends cdk.Stack {
   constructor(app: cdk.App, id: string) {
     super(app, id, {
       env: {
-        region: 'us-east-1'
+        region: 'ca-central-1'
       },
     });
-
-    // Contains audio clips that are used as part of the Chime PSTN network.
-    const pstnAudioFilesBucket = new Bucket(this, 'FirstResponderAudio', {
-      bucketName: `first-responder-audio-assets`,
-      encryption: BucketEncryption.S3_MANAGED
-    });
-    pstnAudioFilesBucket.addToResourcePolicy(
-      new PolicyStatement({
-        resources: [
-          `arn:aws:s3:::${pstnAudioFilesBucket.bucketName}/*`,
-        ],
-        actions: ["s3:GetObject", "s3:PutObject", "s3:PutObjectAcl"],
-        principals: [new ServicePrincipal("voiceconnector.chime.amazonaws.com")],
-      })
-    )
 
     const lambdaRole = new Role(this, 'FirstResponderBackendLambdaRole', {
         roleName: 'FirstResponderBackendLambdaRole',
@@ -82,64 +71,37 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
         },
     });
 
-    const pstnCreateFunction = new lambda.Function(this, 'pstnCreateFunction', {
-      functionName: "FirstResponder-PSTN-Create",
-      code: new lambda.AssetCode('build/src'),
-      handler: 'pstn-create.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-      environment: {
-        TABLE_NAME: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
-        PRIMARY_KEY: 'meeting_id',
-        BUCKET_NAME: pstnAudioFilesBucket.bucketName,
-      },
-      role: lambdaRole,
-      memorySize: 512,
-      timeout: cdk.Duration.seconds(30)
+    const userCreateFunction = new lambda.Function(this, 'userCreateFunction', {
+        functionName: "FirstResponder-User-Create",
+        code: new lambda.AssetCode('build/src'),
+        handler: 'user-status-create.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        role: lambdaRole,
+        memorySize: 512,
+        timeout: cdk.Duration.seconds(300),
     });
 
-    const pstnJoinFunction = new lambda.Function(this, 'pstnJoinFunction', {
-      functionName: "FirstResponder-PSTN-Join",
-      code: new lambda.AssetCode('build/src'),
-      handler: 'pstn-join.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-      environment: {
-        TABLE_NAME: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
-        PRIMARY_KEY: 'meeting_id',
-        BUCKET_NAME: pstnAudioFilesBucket.bucketName,
-      },
-      role: lambdaRole,
-      memorySize: 512,
-      timeout: cdk.Duration.seconds(30)
+    const userStatusUpdateFunction = new lambda.Function(this, 'userStatusUpdateFunction', {
+        functionName: "FirstResponder-User-Status-Update",
+        code: new lambda.AssetCode('build/src'),
+        handler: 'user-status-update.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        role: lambdaRole,
+        memorySize: 512,
+        timeout: cdk.Duration.seconds(300), 
     });
 
-    const meetingCleanupFunction = new lambda.Function(this, 'meetingCleanupFunction', {
-      functionName: "FirstResponder-Meeting-Cleanup",
-      code: new lambda.AssetCode('build/src'),
-      handler: 'meeting-cleanup.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-      role: lambdaRole,
-      memorySize: 512,
-      timeout: cdk.Duration.seconds(30)
+    // Scheduled CloudWatch jobs to update status every 30 minutes
+    var dailyLambdaSchedule = Schedule.cron({
+        minute: "0,30"
     });
+    const attributesUpdateLambdaTarget = new LambdaFunction(userStatusUpdateFunction);
 
-    const chimeEventRule = new events.Rule(this, 'ChimeEventRule', {
-      eventPattern: {
-        source: [
-          'aws.chime'
-        ],
-        detailType: [
-          'Chime Meeting State Change',
-        ],
-        detail: {
-          'eventType': [
-            'chime:MeetingStarted',
-            'chime:MeetingEnded',
-          ]
-        }
-      },
-      targets: [
-          new eventsTargets.LambdaFunction(meetingCleanupFunction)
-      ],
+    new Rule(this, 'userStatusUpdateRule', {
+        schedule: dailyLambdaSchedule,
+        targets: [
+            attributesUpdateLambdaTarget,
+        ]
     });
   }
 }
