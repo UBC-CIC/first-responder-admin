@@ -8,7 +8,7 @@ type Attendee = {
     "attendee_id": string;
 };
 
-type MeetingDetails = {
+export type MeetingDetails = {
     "meeting_id": string;
     "attendees": Array<Attendee>;
     "create_date_time": string;
@@ -65,6 +65,23 @@ export class MeetingDetailsDao {
         };
         // Consider using a conditional write in the future to prevent overlapping external meeting IDs.
         await this.db.put(params).promise();
+    }
+
+    /**
+     * Add attendee by updating meeting details attendee list with new attendee.
+     * 
+     * @param meetingDetails details of the meeting to be added attendee to
+     * @param attendeeId     id of the new attendee to be added
+     * @param phoneNumber    phone number of the new attendee to be added
+     */
+    async addAttendee(meetingDetails: MeetingDetails, attendeeId: string, phoneNumber: string): Promise<void> {
+        const attendee = {
+            "attendee_id": attendeeId,
+            "phone_number": phoneNumber,
+        }
+
+        meetingDetails.attendees.push(attendee);
+        await this.saveMeetingDetails(meetingDetails);  
     }
 
     /**

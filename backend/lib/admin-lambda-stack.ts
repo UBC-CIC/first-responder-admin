@@ -2,14 +2,11 @@ import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
 import { App, Duration } from '@aws-cdk/core';
 import { Role, ServicePrincipal, PolicyDocument, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
-import { Bucket, BucketEncryption } from '@aws-cdk/aws-s3';
 import { Schedule, Rule } from '@aws-cdk/aws-events';
-import events = require('@aws-cdk/aws-events');
-import eventsTargets = require('@aws-cdk/aws-events-targets');
 import { FirstResponderAdminDynamoStack } from './admin-dynamodb-stack';
 import { LambdaFunction } from "@aws-cdk/aws-events-targets";
 
-// The Lambda stack contains all the Lambda functions that are not directly related to Chime. 
+// The Lambda stack contains all the Lambda functions that are not directly related to PSTN. 
 // These Lambda functions can be created safely in ca-central-1.
 //
 export class FirstResponderAdminLambdaStack extends cdk.Stack {
@@ -71,6 +68,21 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
         },
     });
 
+
+    const dataCreateFunction = new lambda.Function(this, 'dataCreateFunction', {
+      functionName: "FirstResponder-Data-Create",
+      code: new lambda.AssetCode('build/src'),
+      handler: 'data-create.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      environment: {
+        TABLE_NAME: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
+        PRIMARY_KEY: 'meeting_id',
+      },
+      role: lambdaRole,
+      memorySize: 512,
+      timeout: cdk.Duration.seconds(30)
+    });
+    
     const userCreateFunction = new lambda.Function(this, 'userCreateFunction', {
         functionName: "FirstResponder-User-Create",
         code: new lambda.AssetCode('build/src'),
