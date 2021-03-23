@@ -5,9 +5,12 @@ import cdk = require('@aws-cdk/core');
 // The DynamoDB stack should be created in ca-central-1 for data and privacy reasons. 
 //
 export class FirstResponderAdminDynamoStack extends cdk.Stack {
-    private static USER_PROFILE_TABLE_ID = "UserProfileDynamoTable"
-    public static USER_PROFILE_TABLE_NAME = "user-profile"
-    public static USER_STATUS_GLOBAL_INDEX_NAME = "userStatusGsi"
+    private static FIRST_RESPONDER_PROFILE_TABLE_ID = "FirstResponderProfileDynamoTable"
+    public static FIRST_RESPONDER_TABLE_NAME = "first-responder-profile"
+
+    private static SPECIALIST_PROFILE_TABLE_ID = "SpecialistProfileDynamoTable"
+    public static SPECIALIST_PROFILE_TABLE_NAME = "specialist-profile"
+    public static SPECIALIST_USER_STATUS_GLOBAL_INDEX_NAME = "userStatusGsi"
 
     private static MEETING_DETAIL_TABLE_ID = "MeetingDetailDynamoTable"
     public static MEETING_DETAIL_TABLE_NAME = "meeting-detail"
@@ -16,29 +19,38 @@ export class FirstResponderAdminDynamoStack extends cdk.Stack {
     constructor(app: cdk.App, id: string) {
         super(app, id);
     
-        const userProfileTable = new dynamodb.Table(this, FirstResponderAdminDynamoStack.USER_PROFILE_TABLE_ID, {
-            tableName: FirstResponderAdminDynamoStack.USER_PROFILE_TABLE_NAME,
+        const firstResponderProfileTable = new dynamodb.Table(this, FirstResponderAdminDynamoStack.FIRST_RESPONDER_PROFILE_TABLE_ID, {
+            tableName: FirstResponderAdminDynamoStack.FIRST_RESPONDER_TABLE_NAME,
             partitionKey: {
-                name: 'email',
+                name: 'phone_number',
                 type: dynamodb.AttributeType.STRING
               },
             billingMode: BillingMode.PAY_PER_REQUEST,
             pointInTimeRecovery: true
         });
-        const userStatusGsiProps: dynamodb.GlobalSecondaryIndexProps = {
-            indexName: FirstResponderAdminDynamoStack.USER_STATUS_GLOBAL_INDEX_NAME,
+
+        const specialistProfileTable = new dynamodb.Table(this, FirstResponderAdminDynamoStack.SPECIALIST_PROFILE_TABLE_ID, {
+            tableName: FirstResponderAdminDynamoStack.SPECIALIST_PROFILE_TABLE_NAME,
+            partitionKey: {
+                name: 'phone_number',
+                type: dynamodb.AttributeType.STRING
+              },
+            billingMode: BillingMode.PAY_PER_REQUEST,
+            pointInTimeRecovery: true
+        });
+        const specialistUserStatusGsiProps: dynamodb.GlobalSecondaryIndexProps = {
+            indexName: FirstResponderAdminDynamoStack.SPECIALIST_USER_STATUS_GLOBAL_INDEX_NAME,
             partitionKey: {
               name: 'user_status',
               type: dynamodb.AttributeType.STRING
             },
             sortKey: {
-              name: 'email',
+              name: 'phone_number',
               type: dynamodb.AttributeType.STRING
             },
             projectionType: dynamodb.ProjectionType.ALL
         };
-        userProfileTable.addGlobalSecondaryIndex(userStatusGsiProps);
-
+        specialistProfileTable.addGlobalSecondaryIndex(specialistUserStatusGsiProps);
 
         const meetingDetailsTable = new dynamodb.Table(this, FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_ID, {
             tableName: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,

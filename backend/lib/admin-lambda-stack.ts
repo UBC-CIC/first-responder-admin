@@ -68,7 +68,6 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
         },
     });
 
-
     const dataCreateFunction = new lambda.Function(this, 'dataCreateFunction', {
       functionName: "FirstResponder-Data-Create",
       code: new lambda.AssetCode('build/src'),
@@ -82,21 +81,21 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
       memorySize: 512,
       timeout: cdk.Duration.seconds(30)
     });
-    
-    const userCreateFunction = new lambda.Function(this, 'userCreateFunction', {
-        functionName: "FirstResponder-User-Create",
+
+    const specialistCreateFunction = new lambda.Function(this, 'specialistCreateFunction', {
+        functionName: "FirstResponder-Specialist-Create",
         code: new lambda.AssetCode('build/src'),
-        handler: 'user-status-create.handler',
+        handler: 'specialist-status-create.handler',
         runtime: lambda.Runtime.NODEJS_10_X,
         role: lambdaRole,
         memorySize: 512,
         timeout: cdk.Duration.seconds(300),
     });
 
-    const userStatusUpdateFunction = new lambda.Function(this, 'userStatusUpdateFunction', {
-        functionName: "FirstResponder-User-Status-Update",
+    const specialistStatusUpdateFunction = new lambda.Function(this, 'specialistStatusUpdateFunction', {
+        functionName: "FirstResponder-Specialist-Status-Update",
         code: new lambda.AssetCode('build/src'),
-        handler: 'user-status-update.handler',
+        handler: 'specialist-status-update.handler',
         runtime: lambda.Runtime.NODEJS_10_X,
         role: lambdaRole,
         memorySize: 512,
@@ -107,9 +106,9 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
     var dailyLambdaSchedule = Schedule.cron({
         minute: "0,30"
     });
-    const attributesUpdateLambdaTarget = new LambdaFunction(userStatusUpdateFunction);
+    const attributesUpdateLambdaTarget = new LambdaFunction(specialistStatusUpdateFunction);
 
-    new Rule(this, 'userStatusUpdateRule', {
+    new Rule(this, 'specialistStatusUpdateRule', {
         schedule: dailyLambdaSchedule,
         targets: [
             attributesUpdateLambdaTarget,
