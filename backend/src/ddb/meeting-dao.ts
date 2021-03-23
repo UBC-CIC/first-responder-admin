@@ -6,12 +6,15 @@ const chime = new Chime({ region: 'us-east-1', endpoint: 'service.chime.aws.amaz
 type Attendee = {
     "phone_number": string;
     "attendee_id": string;
+    "attendee_type"?: AttendeeType;
+    "attendee_join_type"?: AttendeeJoinType;
 };
 
 export type MeetingDetails = {
     "meeting_id": string;
     "attendees": Array<Attendee>;
     "create_date_time": string;
+    "end_date_time"?: string;
     "call_id": string;
     "external_meeting_id": string;
     "meeting_status": string;
@@ -22,9 +25,16 @@ export enum MeetingStatus {
     CLOSED = "CLOSED",
 }
 
-export enum AttendeeType {
+export enum AttendeeJoinType {
     PSTN = "PSTN",
     DATA = "DATA",
+}
+
+export enum AttendeeType {
+    FIRST_RESPONDER = "FIRST_RESPONDER",
+    SPECIALIST = "SPECIALIST",
+    SERVICE_DESK = "SERVICE_DESK",
+    NOT_SPECIFIED = "NOT_SPECIFIED",
 }
 
 export class MeetingDetailsDao {
@@ -43,16 +53,19 @@ export class MeetingDetailsDao {
      * @param attendeeId The attendee ID.
      * @param callId The call ID.
      * @param externalMeetingId The user-friendly meeting ID that users can use to dial in with.
-     * @param attendeeType Did the user join by data or PSTN?
+     * @param attendeeType Is this a first-responder? specialist?
+     * @param attendeeJoinType Did the user join by data or PSTN?
      * @returns An external meeting ID
      */
     async createNewMeeting(meetingId: string, phoneNumber: string, attendeeId: string, callId: string, 
-                           externalMeetingId: string, attendeeType: AttendeeType): Promise<void> {
+                           externalMeetingId: string, attendeeType: AttendeeType, attendeeJoinType: AttendeeJoinType, ): Promise<void> {
         const meetingObj: MeetingDetails = {
             "meeting_id": meetingId,
             "attendees": [{
                 "attendee_id": attendeeId,
                 "phone_number": phoneNumber,
+                "attendee_type": attendeeType,
+                "attendee_join_type": attendeeJoinType,
             }],
             "create_date_time": new Date().toISOString(),
             "call_id": callId,
@@ -93,6 +106,7 @@ export class MeetingDetailsDao {
         if (existingMeeting) {
             console.log(`Deleting existing meeting with meeting ID ${meetingId}`);
             existingMeeting.meeting_status = MeetingStatus.CLOSED.toString();
+            existingMeeting.end_date_time = new Date().toString();
             await this.saveMeetingDetails(existingMeeting);
         }
     }
