@@ -3,7 +3,7 @@ import { AttendeeType, MeetingDetails, MeetingDetailsDao } from './ddb/meeting-d
 const { v4: uuidv4 } = require('uuid');
 
 // The AWS Chime client is only available in select regions
-const chime = new AWS.Chime({ region: 'us-east-1', endpoint: 'service.chime.aws.amazon.com' });
+const chime = new AWS.Chime({ region: 'ca-central-1', endpoint: 'service.chime.aws.amazon.com' });
 const db = new AWS.DynamoDB.DocumentClient({ region: 'ca-central-1' });
 
 // Handler for data initiated calls to create and join Chime meeting
@@ -74,7 +74,6 @@ async function newCall(callId: string, phoneNumber: string, dao: MeetingDetailsD
 // 
 async function joinExistingCall(meetingDetails: MeetingDetails , event: any, dao: MeetingDetailsDao) {
     const {
-        title,
         externalAttendeeId,
         phoneNumber,
       } = event.arguments;
@@ -91,7 +90,7 @@ async function joinExistingCall(meetingDetails: MeetingDetails , event: any, dao
     await dao.addAttendee(meetingDetails, externalAttendeeId, phoneNumber)
     
       const joinInfo = {
-        id: title,
+        id: phoneNumber,
         Meeting: meetingDetails.meeting_id,
         Attendee: attendeeInfo.Attendee,
       };
