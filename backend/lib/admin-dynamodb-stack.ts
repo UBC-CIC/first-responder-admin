@@ -5,6 +5,9 @@ import cdk = require('@aws-cdk/core');
 // The DynamoDB stack should be created in ca-central-1 for data and privacy reasons. 
 //
 export class FirstResponderAdminDynamoStack extends cdk.Stack {
+    private static SERVICE_DESK_PROFILE_TABLE_ID = "ServiceDeskProfileDynamoTable"
+    public static SERVICE_DESK_TABLE_NAME = "service-desk-profile"
+
     private static FIRST_RESPONDER_PROFILE_TABLE_ID = "FirstResponderProfileDynamoTable"
     public static FIRST_RESPONDER_TABLE_NAME = "first-responder-profile"
 
@@ -19,6 +22,16 @@ export class FirstResponderAdminDynamoStack extends cdk.Stack {
     constructor(app: cdk.App, id: string) {
         super(app, id);
     
+        const serviceDeskProfileTable = new dynamodb.Table(this, FirstResponderAdminDynamoStack.SERVICE_DESK_PROFILE_TABLE_ID, {
+            tableName: FirstResponderAdminDynamoStack.SERVICE_DESK_TABLE_NAME,
+            partitionKey: {
+                name: 'email',
+                type: dynamodb.AttributeType.STRING
+              },
+            billingMode: BillingMode.PAY_PER_REQUEST,
+            pointInTimeRecovery: true
+        });
+
         const firstResponderProfileTable = new dynamodb.Table(this, FirstResponderAdminDynamoStack.FIRST_RESPONDER_PROFILE_TABLE_ID, {
             tableName: FirstResponderAdminDynamoStack.FIRST_RESPONDER_TABLE_NAME,
             partitionKey: {
