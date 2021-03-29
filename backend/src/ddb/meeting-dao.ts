@@ -121,9 +121,11 @@ export class MeetingDetailsDao {
     async getExistingMeetingWithPhoneNumber(fromNumber: string): Promise<MeetingDetails | null> {
         const activeMeetings = await this.getActiveMeetings();
         for (var activeMeeting of activeMeetings) {
-            for (var attendee of activeMeeting.attendees) {
-                if (attendee.phone_number == fromNumber) {
-                    return activeMeeting;
+            if (activeMeeting.attendees) {
+                for (var attendee of activeMeeting.attendees) {
+                    if (attendee.phone_number == fromNumber) {
+                        return activeMeeting;
+                    }
                 }
             }
         }
