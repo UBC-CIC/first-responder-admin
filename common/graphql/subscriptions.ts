@@ -6,10 +6,17 @@ export const onCreateMeetingDetail = /* GraphQL */ `
   subscription OnCreateMeetingDetail {
     onCreateMeetingDetail {
       meeting_id
-      meeting_status
-      service_desk_attendee
-      attendee_list
+      attendees {
+        phone_number
+        attendee_id
+        attendee_type
+        attendee_join_type
+      }
       create_date_time
+      end_date_time
+      call_id
+      external_meeting_id
+      meeting_status
     }
   }
 `;
@@ -17,10 +24,17 @@ export const onUpdateMeetingDetail = /* GraphQL */ `
   subscription OnUpdateMeetingDetail {
     onUpdateMeetingDetail {
       meeting_id
-      meeting_status
-      service_desk_attendee
-      attendee_list
+      attendees {
+        phone_number
+        attendee_id
+        attendee_type
+        attendee_join_type
+      }
       create_date_time
+      end_date_time
+      call_id
+      external_meeting_id
+      meeting_status
     }
   }
 `;
@@ -28,10 +42,17 @@ export const onDeleteMeetingDetail = /* GraphQL */ `
   subscription OnDeleteMeetingDetail {
     onDeleteMeetingDetail {
       meeting_id
-      meeting_status
-      service_desk_attendee
-      attendee_list
+      attendees {
+        phone_number
+        attendee_id
+        attendee_type
+        attendee_join_type
+      }
       create_date_time
+      end_date_time
+      call_id
+      external_meeting_id
+      meeting_status
     }
   }
 `;

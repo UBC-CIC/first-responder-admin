@@ -1,16 +1,19 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
-import { App, Duration } from '@aws-cdk/core';
+import { App, Duration, Fn } from '@aws-cdk/core';
 import { Role, ServicePrincipal, PolicyDocument, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
 import { Schedule, Rule } from '@aws-cdk/aws-events';
 import { FirstResponderAdminDynamoStack } from './admin-dynamodb-stack';
 import { LambdaFunction } from "@aws-cdk/aws-events-targets";
+import { Table } from '@aws-cdk/aws-dynamodb';
+import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
+import { StartingPosition } from '@aws-cdk/aws-lambda';
 
 // The Lambda stack contains all the Lambda functions that are not directly related to PSTN. 
 // These Lambda functions can be created safely in ca-central-1.
 //
 export class FirstResponderAdminLambdaStack extends cdk.Stack {
-  constructor(app: cdk.App, id: string) {
+  constructor(app: cdk.App, id: string, graphqlUrl: string) {
     super(app, id, {
       env: {
         region: 'ca-central-1'
@@ -101,6 +104,34 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
         memorySize: 512,
         timeout: cdk.Duration.seconds(300), 
     });
+
+    // Lambda triggered by meeting-details DDB stream event
+    const meetingDetailDynamoDBStreamLambda = new lambda.Function(this, 'MeetingDetailDynamoDBStreamLambda', {
+        functionName: 'MeetingDetailDynamoDBStreamLambda',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        handler: 'meeting-detail-ddbstream-event-handler.handler',
+        code: new lambda.AssetCode('build/src'),
+        memorySize: 512,
+        timeout: cdk.Duration.seconds(30),
+        environment: {
+            'GRAPHQL_URL': graphqlUrl
+        },
+        role: lambdaRole,
+    });
+  
+    // Grant the lambda to access meeting-detail table
+    const meetingDetailTable = Table.fromTableAttributes(this, 'MeetingDetailTable', {
+        tableName: 'meeting-detail',
+        tableStreamArn: Fn.importValue('MeetingDetailTableStreamArn')
+    });
+    meetingDetailTable.grantFullAccess(meetingDetailDynamoDBStreamLambda);
+  
+    // Add the lambda as a trigger on meeting-detail table
+    meetingDetailDynamoDBStreamLambda.addEventSource(new DynamoEventSource(meetingDetailTable, {
+        batchSize: 1,
+        startingPosition: StartingPosition.TRIM_HORIZON,
+        retryAttempts: 1
+    }));
 
     // Scheduled CloudWatch jobs to update status every 30 minutes
     var dailyLambdaSchedule = Schedule.cron({

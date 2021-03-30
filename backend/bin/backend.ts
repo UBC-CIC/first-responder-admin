@@ -8,8 +8,8 @@ import { FirstResponderAdminCognitoStack } from '../lib/admin-cognito-stack';
 
 const app = new App();
 new FirstResponderAdminLambdaPSTNStack(app, 'FirstResponderAdminLambdaPSTNStack');
-new FirstResponderAdminLambdaStack(app, 'FirstResponderAdminLambdaStack');
 new FirstResponderAdminDynamoStack(app, 'FirstResponderAdminDynamoStack');
 
 const cognito = new FirstResponderAdminCognitoStack(app, 'FirstResponderAdminCognitoStack');
 const appSync = new FirstResponderAdminAppSyncStack(app, 'FirstResponderAdminAppSyncStack', cognito.UserPoolId);
+new FirstResponderAdminLambdaStack(app, 'FirstResponderAdminLambdaStack', appSync.GraphQLUrl);

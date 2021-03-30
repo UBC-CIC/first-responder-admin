@@ -1,10 +1,31 @@
 # Schema for meeting-detail DDB Table
 type MeetingDetail @aws_cognito_user_pools @aws_iam {
   meeting_id: String!
-  meeting_status: String
-  service_desk_attendee: String
-  attendee_list: [String]
+  attendees: [Attendee]
   create_date_time: AWSDateTime
+  end_date_time: AWSDateTime
+  call_id: String
+  external_meeting_id: String
+  meeting_status: String
+}
+
+type Attendee @aws_cognito_user_pools @aws_iam {
+  phone_number: String
+  attendee_id: String
+  attendee_type: AttendeeType
+  attendee_join_type: AttendeeJoinType
+}
+
+enum AttendeeJoinType {
+    PSTN,
+    DATA,
+}
+
+enum AttendeeType {
+    FIRST_RESPONDER,
+    SPECIALIST,
+    SERVICE_DESK,
+    NOT_SPECIFIED,
 }
 
 type MeetingDetailConnection @aws_cognito_user_pools @aws_iam {
@@ -12,14 +33,23 @@ type MeetingDetailConnection @aws_cognito_user_pools @aws_iam {
   nextToken: String
 }
 
+input AttendeeInput {
+  phone_number: String
+  attendee_id: String
+  attendee_type: AttendeeType
+  attendee_join_type: AttendeeJoinType
+}
+
 # [input] MeetingDetailInput
 # CreateMeetingDetail, DeleteMeetingDetail and UpdateMeetingDetail use this input type
 input MeetingDetailInput {
   meeting_id: String!
-  meeting_status: String
-  service_desk_attendee: String
-  attendee_list: [String]
+  attendees: [AttendeeInput]
   create_date_time: AWSDateTime
+  end_date_time: AWSDateTime
+  call_id: String
+  external_meeting_id: String
+  meeting_status: String
 }
 
 input ModelStringInput {
@@ -37,20 +67,24 @@ input ModelStringInput {
 
 input ModelMeetingDetailFilterInput {
   meeting_id: ModelStringInput
-  meeting_status: ModelStringInput
-  service_desk_attendee: ModelStringInput
-  attendee_list: ModelStringInput
+  attendees: ModelStringInput
   create_date_time: ModelStringInput
+  end_date_time: AWSDateTime
+  call_id: ModelStringInput
+  external_meeting_id: ModelStringInput
+  meeting_status: ModelStringInput
   and: [ModelMeetingDetailFilterInput]
   or: [ModelMeetingDetailFilterInput]
   not: ModelMeetingDetailFilterInput
 }
 
 input ModelMeetingDetailConditionInput {
-  meeting_status: ModelStringInput
-  service_desk_attendee: ModelStringInput
-  attendee_list: ModelStringInput
+  attendees: ModelStringInput
   create_date_time: ModelStringInput
+  end_date_time: AWSDateTime
+  call_id: ModelStringInput
+  external_meeting_id: ModelStringInput
+  meeting_status: ModelStringInput
   and: [ModelMeetingDetailConditionInput]
   or: [ModelMeetingDetailConditionInput]
   not: ModelMeetingDetailConditionInput
@@ -61,6 +95,7 @@ type Query @aws_cognito_user_pools @aws_iam {
     getMeetingDetail(meetingId: String!): MeetingDetail
     listMeetingDetails(filter: ModelMeetingDetailFilterInput, limit: Int, nextToken: String): MeetingDetailConnection
     getMeetingDetailsByStatus(meetingStatus: String!, limit: Int, nextToken: String): MeetingDetailConnection
+    getMeetingDetailsByStatusAndCreateTime(meetingStatus: String!, startTime: String!, endTime: String!, limit: Int, nextToken: String): MeetingDetailConnection
 }
 
 # [type] Mutation
@@ -68,11 +103,12 @@ type Mutation @aws_cognito_user_pools @aws_iam {
     createMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
     updateMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
     deleteMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
+    publishMeetingDetailUpdates(meetingDetail: MeetingDetailInput!): MeetingDetail
 }
 
 # [type] Subscription
 type Subscription @aws_cognito_user_pools @aws_iam {
-    onCreateMeetingDetail: MeetingDetail @aws_subscribe(mutations: ["createMeetingDetail"])
-    onUpdateMeetingDetail: MeetingDetail @aws_subscribe(mutations: ["updateMeetingDetail"])
+    onCreateMeetingDetail: MeetingDetail @aws_subscribe(mutations: ["createMeetingDetail", "publishMeetingDetailUpdates"])
+    onUpdateMeetingDetail: MeetingDetail @aws_subscribe(mutations: ["updateMeetingDetail", "publishMeetingDetailUpdates"])
     onDeleteMeetingDetail: MeetingDetail @aws_subscribe(mutations: ["deleteMeetingDetail"])
 }

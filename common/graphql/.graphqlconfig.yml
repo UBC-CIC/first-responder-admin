@@ -3,21 +3,20 @@
 # We don't use other amplify cli at all.
 #
 # Usage :
-# cd /graphql
-# amplify init // DO NOT RUN 'amplify push'
+# cd first-responder-admin/common
 # amplify codegen types
 # amplify codegen statements
 projects:
   AmplifyFirstResponderAdmin:
     schemaPath: /graphql/schema.graphql
     includes:
-      - common/**/*.ts
+      - ../common/**/*.ts
     excludes:
       - ./amplify/**
     extensions:
       amplify:
         codeGenTarget: typescript
-        generatedFileName: common/types/API.ts
+        generatedFileName: types/API.ts
         docsFilePath: ./graphql
 extensions:
   amplify:

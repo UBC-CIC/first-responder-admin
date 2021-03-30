@@ -1,5 +1,6 @@
 import * as dynamodb from "@aws-cdk/aws-dynamodb";
-import { BillingMode } from "@aws-cdk/aws-dynamodb";
+import { BillingMode, StreamViewType } from "@aws-cdk/aws-dynamodb";
+import { CfnOutput } from "@aws-cdk/core";
 import cdk = require('@aws-cdk/core');
 
 // The DynamoDB stack should be created in ca-central-1 for data and privacy reasons. 
@@ -72,7 +73,8 @@ export class FirstResponderAdminDynamoStack extends cdk.Stack {
               type: dynamodb.AttributeType.STRING
             },
             billingMode: BillingMode.PAY_PER_REQUEST,
-            pointInTimeRecovery: true
+            pointInTimeRecovery: true,
+            stream: StreamViewType.NEW_AND_OLD_IMAGES,
         });
         const meetingStatusGsiProps: dynamodb.GlobalSecondaryIndexProps = {
             indexName: FirstResponderAdminDynamoStack.MEETING_STATUS_GLOBAL_INDEX_NAME,
@@ -87,5 +89,13 @@ export class FirstResponderAdminDynamoStack extends cdk.Stack {
             projectionType: dynamodb.ProjectionType.ALL
         };
         meetingDetailsTable.addGlobalSecondaryIndex(meetingStatusGsiProps);
+
+        if (meetingDetailsTable.tableStreamArn) {
+          new CfnOutput(this, `MeetingDetailTableStreamArn`, {
+              exportName: `MeetingDetailTableStreamArn`,
+              value: meetingDetailsTable.tableStreamArn
+          })
+      }
+      
     }
 }

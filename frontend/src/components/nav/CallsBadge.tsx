@@ -18,8 +18,8 @@ export const CallsBadge = () => {
 
             subscription.subscribe({
                 next: (data:any) => {
-                    console.log('data received from create subscription:', data.value.data.onCreateMeetingDetails.meeting_status);
-                    if (data.value.data !== undefined && data.value.data.onCreateMeetingDetails.meeting_status === 'ACTIVE') {
+                    console.log('data received from create subscription:', data.value.data.onCreateMeetingDetail.meeting_status);
+                    if (data.value.data !== undefined && data.value.data.onCreateMeetingDetail.meeting_status === 'ACTIVE') {
                         setMeetingCount(meetingCountRef.current + 1)
                     }
                 }
@@ -34,7 +34,7 @@ export const CallsBadge = () => {
             subscription.subscribe({
                 next: (data:any) => {
                     console.log('data received from update subscription:', data);
-                    if (data.value.data !== undefined && data.value.data.onUpdateMeetingDetails.meeting_status === 'CLOSED') {
+                    if (data.value.data !== undefined && data.value.data.onUpdateMeetingDetail.meeting_status === 'CLOSED') {
                         var newCount = meetingCountRef.current - 1
                         setMeetingCount(newCount > 0 ? newCount : 0)
                     }
@@ -56,13 +56,6 @@ export const CallsBadge = () => {
                 }
             })
         }
-
-        // const unsubscribeAdjustment = (adjustmentId: number) => {
-        //     subscription.unsubscribe()
-        // }
-
-        // const currentRoute = window.location.pathname
-        // console.log('current route', currentRoute)
 
         subscribeCreateMeetings()
         subscribeUpdateMeetings()

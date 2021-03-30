@@ -32,12 +32,12 @@ export const CallNotification = () => {
 
       subscription.subscribe({
         next: (data: any) => {
-          console.log('data received from create subscription:', data.value.data.onCreateMeetingDetails.status);
-          if (data.value.data !== undefined && data.value.data.onCreateMeetingDetails.meeting_status === 'ACTIVE') {
+          console.log('data received from create subscription:', data.value.data.onCreateMeetingDetail.status);
+          if (data.value.data !== undefined && data.value.data.onCreateMeetingDetail.meeting_status === 'ACTIVE') {
             const currentNotifications = notificationSystemRef.current;
             if (currentNotifications) {
               currentNotifications.addNotification({
-                message: 'New call in progress with meeting id : ' + data.value.data.onCreateMeetingDetails.meeting_id,
+                message: 'New call in progress with meeting id : ' + data.value.data.onCreateMeetingDetail.meeting_id,
                 level: 'success',
                 autoDismiss: 0,
                 dismissible: 'both'

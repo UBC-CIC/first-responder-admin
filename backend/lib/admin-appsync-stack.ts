@@ -103,6 +103,13 @@ export class FirstResponderAdminAppSyncStack extends Stack {
         });
 
         meetingDetailTableDataSource.createResolver({
+            typeName: 'Query',
+            fieldName: 'getMeetingDetailsByStatusAndCreateTime',
+            requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Query.getMeetingDetailsByStatusAndCreateTime.req.vtl`),
+            responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Query.getMeetingDetailsByStatusAndCreateTime.res.vtl`),
+        });
+
+        meetingDetailTableDataSource.createResolver({
             typeName: 'Mutation',
             fieldName: 'createMeetingDetail',
             requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Mutation.createMeetingDetail.req.vtl`),
@@ -121,6 +128,17 @@ export class FirstResponderAdminAppSyncStack extends Stack {
             fieldName: 'updateMeetingDetail',
             requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Mutation.updateMeetingDetail.req.vtl`),
             responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Mutation.updateMeetingDetail.res.vtl`),
+        });
+
+        // None DataSource
+        //
+        // Add None DataSource for Local Resolver - to publish notification triggered by meeting-detail DDB
+        const meetingDetailNoneDataSource = api.addNoneDataSource('MeetingDetailNoneDataSource');
+        meetingDetailNoneDataSource.createResolver({
+            typeName: 'Mutation',
+            fieldName: 'publishMeeingDetailUpdates',
+            requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/None.publishMeetingDetailUpdates.req.vtl`),
+            responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/None.publishMeetingDetailUpdates.res.vtl`)
         });
 
         new CfnOutput(this, "GraphQLEndpoint", {

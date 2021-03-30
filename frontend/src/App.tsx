@@ -34,9 +34,8 @@ function App() {
                 alignItems: 'center',
                 width: '100%',
                 height: '100%',
-                backgroundImage: `url('/login-splash.jpg')`,
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
+                backgroundImage: `url('/login-splash-2.png')`,
+                backgroundRepeat: 'repeat',
                 backgroundPosition: 'center center',
             }}>
                 <AmplifyAuthenticator>
@@ -71,7 +70,6 @@ function App() {
                             },
                         ]}
                     />
-                    {/* <AmplifySignUp slot="sign-in" usernameAlias="email" /> */}
                 </AmplifyAuthenticator>
             </div>
         );

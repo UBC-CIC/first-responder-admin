@@ -6,10 +6,17 @@ export const getMeetingDetail = /* GraphQL */ `
   query GetMeetingDetail($meetingId: String!) {
     getMeetingDetail(meetingId: $meetingId) {
       meeting_id
-      meeting_status
-      service_desk_attendee
-      attendee_list
+      attendees {
+        phone_number
+        attendee_id
+        attendee_type
+        attendee_join_type
+      }
       create_date_time
+      end_date_time
+      call_id
+      external_meeting_id
+      meeting_status
     }
   }
 `;
@@ -22,10 +29,17 @@ export const listMeetingDetails = /* GraphQL */ `
     listMeetingDetails(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         meeting_id
-        meeting_status
-        service_desk_attendee
-        attendee_list
+        attendees {
+          phone_number
+          attendee_id
+          attendee_type
+          attendee_join_type
+        }
         create_date_time
+        end_date_time
+        call_id
+        external_meeting_id
+        meeting_status
       }
       nextToken
     }
@@ -44,10 +58,50 @@ export const getMeetingDetailsByStatus = /* GraphQL */ `
     ) {
       items {
         meeting_id
-        meeting_status
-        service_desk_attendee
-        attendee_list
+        attendees {
+          phone_number
+          attendee_id
+          attendee_type
+          attendee_join_type
+        }
         create_date_time
+        end_date_time
+        call_id
+        external_meeting_id
+        meeting_status
+      }
+      nextToken
+    }
+  }
+`;
+export const getMeetingDetailsByStatusAndCreateTime = /* GraphQL */ `
+  query GetMeetingDetailsByStatusAndCreateTime(
+    $meetingStatus: String!
+    $startTime: String!
+    $endTime: String!
+    $limit: Int
+    $nextToken: String
+  ) {
+    getMeetingDetailsByStatusAndCreateTime(
+      meetingStatus: $meetingStatus
+      startTime: $startTime
+      endTime: $endTime
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        meeting_id
+        attendees {
+          phone_number
+          attendee_id
+          attendee_type
+          attendee_join_type
+        }
+        create_date_time
+        end_date_time
+        call_id
+        external_meeting_id
+        meeting_status
       }
       nextToken
     }

@@ -5,6 +5,7 @@ import { Table, Badge } from 'react-bootstrap';
 //import BootstrapTable from 'react-bootstrap-table-next';
 //import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import { MeetingDetail } from '../../common/types/API';
+import Attendees from './Attendees';
 
 
 export default function MeetingDetailsTable(items: any) {
@@ -71,7 +72,7 @@ export default function MeetingDetailsTable(items: any) {
                     {
                         items.items.map((item: MeetingDetail) => (
                             <tr>
-                                <td>{item.meeting_id}</td>
+                                <td>{item.external_meeting_id}</td>
                                 <td>
                                     {
                                         item.meeting_status === "ACTIVE" ? (
@@ -86,10 +87,18 @@ export default function MeetingDetailsTable(items: any) {
                                     }
                                 </td>
                                 <td>
-                                    <FontAwesomeIcon icon={faUser} />{' '}
-                                    <Badge pill variant="dark">
-                                        {item.attendee_list?.length}
-                                    </Badge>
+                                    {
+                                        item.attendees && item.attendees.length > 0 ? (
+                                            <Attendees attendeeList={item.attendees} />
+                                        ) : (
+                                            <div>
+                                            <FontAwesomeIcon icon={faUser} />{' '}
+                                            <Badge pill variant="dark">
+                                                {0}
+                                            </Badge>
+                                            </div>
+                                        )
+                                    }
                                 </td>
                                 {
                                     item.meeting_status === "ACTIVE" ? (
@@ -115,7 +124,7 @@ export default function MeetingDetailsTable(items: any) {
                                 </td>
                                 <td>
                                     <FontAwesomeIcon icon={faHeadset} />{' '}
-                                    {item.service_desk_attendee}
+                                    {item.attendees}
                                 </td>
                             </tr>
                         ))
