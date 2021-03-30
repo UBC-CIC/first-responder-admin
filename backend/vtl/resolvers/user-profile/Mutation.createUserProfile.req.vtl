@@ -1,8 +1,9 @@
 ## [Start] Prepare DynamoDB PutItem Request. **
+$util.qr($context.args.input.put("__typename", "UserProfile"))
 #set( $condition = {
-  "expression": "attribute_not_exists(#meeting_id)",
+  "expression": "attribute_not_exists(#email_id)",
   "expressionNames": {
-      "#meeting_id": "meeting_id"
+      "#email_id": "email_id"
   }
 } )
 #if( $context.args.condition )
@@ -22,7 +23,7 @@
   "version": "2018-05-29",
   "operation": "PutItem",
   "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  "meeting_id":   $util.dynamodb.toDynamoDBJson($ctx.args.input.meeting_id)
+  "email_id":   $util.dynamodb.toDynamoDBJson($ctx.args.input.email_id)
 } #end,
   "attributeValues": $util.dynamodb.toMapValuesJson($context.args.input),
   "condition": $util.toJson($condition)

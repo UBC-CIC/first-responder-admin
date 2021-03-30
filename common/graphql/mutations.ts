@@ -9,10 +9,17 @@ export const createMeetingDetail = /* GraphQL */ `
   ) {
     createMeetingDetail(input: $input, condition: $condition) {
       meeting_id
-      meeting_status
-      service_desk_attendee
-      attendee_list
+      attendees {
+        phone_number
+        attendee_id
+        attendee_type
+        attendee_join_type
+      }
       create_date_time
+      end_date_time
+      call_id
+      external_meeting_id
+      meeting_status
     }
   }
 `;
@@ -23,10 +30,17 @@ export const updateMeetingDetail = /* GraphQL */ `
   ) {
     updateMeetingDetail(input: $input, condition: $condition) {
       meeting_id
-      meeting_status
-      service_desk_attendee
-      attendee_list
+      attendees {
+        phone_number
+        attendee_id
+        attendee_type
+        attendee_join_type
+      }
       create_date_time
+      end_date_time
+      call_id
+      external_meeting_id
+      meeting_status
     }
   }
 `;
@@ -37,10 +51,35 @@ export const deleteMeetingDetail = /* GraphQL */ `
   ) {
     deleteMeetingDetail(input: $input, condition: $condition) {
       meeting_id
-      meeting_status
-      service_desk_attendee
-      attendee_list
+      attendees {
+        phone_number
+        attendee_id
+        attendee_type
+        attendee_join_type
+      }
       create_date_time
+      end_date_time
+      call_id
+      external_meeting_id
+      meeting_status
+    }
+  }
+`;
+export const publishMeetingDetailUpdates = /* GraphQL */ `
+  mutation PublishMeetingDetailUpdates($meetingDetail: MeetingDetailInput!) {
+    publishMeetingDetailUpdates(meetingDetail: $meetingDetail) {
+      meeting_id
+      attendees {
+        phone_number
+        attendee_id
+        attendee_type
+        attendee_join_type
+      }
+      create_date_time
+      end_date_time
+      call_id
+      external_meeting_id
+      meeting_status
     }
   }
 `;

@@ -1,10 +1,11 @@
-import { Nav, Navbar } from 'react-bootstrap';
+import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { CallsBadge } from './CallsBadge';
 import { AmplifySignOut } from '@aws-amplify/ui-react';
 import { faStarOfLife } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import { Auth } from 'aws-amplify';
 import './header.css';
 
 export const Header = (props: {userName: String}) => {
@@ -14,7 +15,7 @@ export const Header = (props: {userName: String}) => {
 
             <Navbar.Brand>
                 <NavLink className='nav-link' activeClassName='activeRoute' to='/dashboard'>
-                    <FontAwesomeIcon icon={faStarOfLife} />{' '}<span className="brand-logo"><i>STARS</i><span className="brand-logo-sub">Service Desk</span></span>
+                    <span className="brand-logo"><i>STARS</i><span className="brand-logo-sub">Service Desk</span></span>
                 </NavLink>
             </Navbar.Brand>
 
@@ -38,17 +39,17 @@ export const Header = (props: {userName: String}) => {
                             Search
                         </NavLink>
                     </Nav.Item>
-                    <Nav.Item as='li' className='p-1'>
-                        <NavLink className='nav-link' activeClassName='activeRoute' to='/settings'>
+                    </Nav>
+                    <NavDropdown title={props.userName} id="user-dropdown">
+                        <NavDropdown.Item href="/settings">
                             Settings
-                        </NavLink>
-                    </Nav.Item>
-                </Nav>
+                        </NavDropdown.Item>
+                        <NavDropdown.Divider />
+                        <NavDropdown.Item onClick={() => Auth.signOut()}>
+                            Log Out
+                        </NavDropdown.Item>
+                    </NavDropdown>
             </Navbar.Collapse>
-            <span>
-                Hello {props.userName}
-            </span>
-            <AmplifySignOut button-text="Sign Out"></AmplifySignOut>
         </Navbar>
     )
 }

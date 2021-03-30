@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { API } from 'aws-amplify';
-import { listMeetingDetails } from '../../common/graphql/queries';
+import { getMeetingDetailsByStatusAndCreateTime } from '../../common/graphql/queries';
 import MeetingDetailsTable from '../common/MeetingDetailsTable';
 import DatePicker from 'react-datepicker';
 
@@ -16,17 +16,23 @@ export const CallHistory = () => {
 
     const onGetHistoryByTimeRange = async () => {
         try {
+            const meetingStatus = statusRef.current ? statusRef.current.value : "LIVE";
             const meetings: any = await API.graphql({
-                query: listMeetingDetails,
-                variables: { limit: 25 }
+                query: getMeetingDetailsByStatusAndCreateTime,
+                variables: { 
+                    meetingStatus: meetingStatus,
+                    startTime: startDate,
+                    endTime: endDate,
+                    limit: 25 
+                }
             });
-            updateItems(meetings['data']['listMeetingDetails']['items']);
-            console.log('listMeetingDetails meetings:', meetings);
+            updateItems(meetings['data']['getMeetingDetailsByStatusAndCreateTime']['items']);
+            console.log('getMeetingDetailsByStatusAndCreateTime meetings:', meetings);
             if (statusRef.current) {
               console.log('Status is :', statusRef.current.value)
             }
         } catch (e) {
-            console.log('listMeetingDetails errors:', e.errors);
+            console.log('getMeetingDetailsByStatusAndCreateTime errors:', e.errors);
         }
     };
 

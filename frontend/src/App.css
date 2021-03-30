@@ -15,7 +15,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #152939;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -45,6 +45,7 @@
 }
 
 amplify-authenticator {
-  background: tomato;
+  background: #152939;
+  background-repeat: repeat;
   padding: 5px;
 }

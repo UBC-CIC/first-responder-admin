@@ -40,11 +40,11 @@
   text-align: center;
 }
 
-.navbar {
-  background-color: #089767 !important;
+.navbar, .dropdown-menu {
+  background-color: #152939 !important;
 }
 
-.nav-link {
+.nav-link,.dropdown-item {
   color: white !important;
 }
 
@@ -62,4 +62,25 @@
 
 .navbar-brand a {
     color: #cccccc !important;
+}
+
+.user-welcome {
+  display: flex;
+  flex-flow: row wrap;
+
+  /* Then we define how is distributed the remaining space */
+  justify-content: space-around;
+
+  padding: 5px 10px 0px 10px;
+  font-family: "Work Sans", Helvetica, Arial, sans-serif;
+  margin: 0;
+  color: white;
+  font-size: 1em !important;
+  text-align: center;
+}
+
+.dropdown-menu {
+  right: 0 !important;
+  left: auto !important;
+  border-color: #55677D;
 }
