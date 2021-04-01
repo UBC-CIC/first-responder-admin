@@ -20,7 +20,11 @@ export class FirstResponderAdminAppSyncStack extends Stack {
     public readonly GraphQLUrl: string;
 
     constructor(scope: Construct, id: string, userPoolId: string) {
-        super(scope, id);
+        super(scope, id, {
+            env: {
+              region: 'ca-central-1'
+            },
+          });
 
         const meetingDetailResolverPath = './vtl/resolvers/meeting-detail'
 

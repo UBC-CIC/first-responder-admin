@@ -21,7 +21,11 @@ export class FirstResponderAdminDynamoStack extends cdk.Stack {
     public static MEETING_STATUS_GLOBAL_INDEX_NAME = "meetingStatusGsi"
 
     constructor(app: cdk.App, id: string) {
-        super(app, id);
+        super(app, id, {
+          env: {
+            region: 'ca-central-1'
+          },
+        });
     
         const serviceDeskProfileTable = new dynamodb.Table(this, FirstResponderAdminDynamoStack.SERVICE_DESK_PROFILE_TABLE_ID, {
             tableName: FirstResponderAdminDynamoStack.SERVICE_DESK_TABLE_NAME,
