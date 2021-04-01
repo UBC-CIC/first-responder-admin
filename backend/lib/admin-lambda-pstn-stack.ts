@@ -143,7 +143,3 @@ export class FirstResponderAdminLambdaPSTNStack extends cdk.Stack {
     });
   }
 }
-
-const app = new cdk.App();
-new FirstResponderAdminLambdaPSTNStack(app, 'FirstResponderAdminLambdaPSTN');
-app.synth();

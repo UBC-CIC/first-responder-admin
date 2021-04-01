@@ -22,7 +22,11 @@ export class FirstResponderAdminCognitoStack extends Stack {
     public readonly UserPoolId: string;
 
     constructor(scope: Construct, id: string) {
-        super(scope, id);
+        super(scope, id, {
+            env: {
+              region: 'ca-central-1'
+            },
+          });
 
         // User Pool
         const userPool = new UserPool(this, 'FirstResponderAdminUserPool', {

@@ -147,7 +147,3 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
     });
   }
 }
-
-const app = new cdk.App();
-new FirstResponderAdminLambdaStack(app, 'FirstResponderAdminLambda');
-app.synth();
