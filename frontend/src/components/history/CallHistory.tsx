@@ -16,7 +16,7 @@ export const CallHistory = () => {
 
     const onGetHistoryByTimeRange = async () => {
         try {
-            const meetingStatus = statusRef.current ? statusRef.current.value : "LIVE";
+            const meetingStatus = statusRef.current ? statusRef.current.value : "ACTIVE";
             const meetings: any = await API.graphql({
                 query: getMeetingDetailsByStatusAndCreateTime,
                 variables: { 

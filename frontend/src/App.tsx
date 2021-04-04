@@ -42,12 +42,17 @@ function App() {
                     <AmplifySignUp
                         slot="sign-up"
                         headerText="Create New Account"
-                        usernameAlias="email"
                         formFields={[
                             {
                                 type: "name",
                                 label: "Full Name",
                                 placeholder: "Full Name",
+                                required: true,
+                            },
+                            {
+                                type: "username",
+                                label: "User Name",
+                                placeholder: "User Name",
                                 required: true,
                             },
                             {

@@ -13,7 +13,7 @@ export const Dashboard = () => {
                 const meetings: any = await API.graphql({
                     query: getMeetingDetailsByStatus,
                     variables: {
-                        meetingStatus: "LIVE",
+                        meetingStatus: "ACTIVE",
                         limit: 25
                     }
                 });

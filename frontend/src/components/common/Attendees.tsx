@@ -1,39 +1,70 @@
-import { Badge, Button, Col, Container, OverlayTrigger, Popover, Row } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react'
+import { Badge, Button, Col, Container, Modal, Table, Row } from 'react-bootstrap';
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Attendee } from '../../common/types/API';
+import './Attendees.css';
 
 export const Attendees = (props: { attendeeList: (Attendee | null)[] }) => {
-    const popover = (
-        <Popover id="popover-basic">
-            <Popover.Title as="h3">Attendees List</Popover.Title>
-            <Popover.Content>
-                <Container>
-                    {props.attendeeList && props.attendeeList.map((attendee: Attendee | null) => (
-                        <Row>
-                            <Col xs={6} md={4}>
-                                {attendee?.phone_number}
-                            </Col>
-                            <Col xs={6} md={4}>
-                                {attendee?.attendee_join_type}
-                            </Col>
-                        </Row>
-                    ))}
-                </Container>
-            </Popover.Content>
-        </Popover>
-    );
 
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     return (
-        <OverlayTrigger trigger="click" placement="right" overlay={popover}>
-            <Button variant="light">
+        <>
+            <Button variant="light" onClick={handleShow}>
                 <FontAwesomeIcon icon={faUser} />{' '}
                 <Badge pill variant="dark">
                     {props.attendeeList?.length}
                 </Badge>
             </Button>
-        </OverlayTrigger>
+
+            <Modal 
+                show={show} 
+                onHide={handleClose}
+                dialogClassName="modal-90w"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Attendees List</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>Phone Number</th>
+                                <th>Name</th>
+                                <th>Organization</th>
+                                <th>Role</th>
+                                <th>Connected Via</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {props.attendeeList && props.attendeeList.map((attendee: Attendee | null) => (
+                                <tr>
+                                    <td>
+                                        {attendee?.phone_number}
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        {attendee?.attendee_join_type}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </>
     )
 }
 

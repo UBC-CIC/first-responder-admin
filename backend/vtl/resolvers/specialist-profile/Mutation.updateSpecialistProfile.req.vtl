@@ -6,8 +6,8 @@
       $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
     #end
   #else
-    $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#email_id)"))
-    $util.qr($condition.expressionNames.put("#email_id", "email_id"))
+    $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#phone_number)"))
+    $util.qr($condition.expressionNames.put("#phone_number", "phone_number"))
   #end
 #else
   #if( $modelObjectKey )
@@ -26,9 +26,9 @@
     #end
   #else
     #set( $condition = {
-  "expression": "attribute_exists(#email_id)",
+  "expression": "attribute_exists(#phone_number)",
   "expressionNames": {
-      "#email_id": "email_id"
+      "#phone_number": "phone_number"
   },
   "expressionValues": {}
 } )
@@ -64,7 +64,7 @@ $util.qr($context.args.input.put("__typename", "UserProfile"))
     $util.qr($keyFields.add("$entry.key"))
   #end
 #else
-  #set( $keyFields = ["email_id"] )
+  #set( $keyFields = ["phone_number"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
   #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey("$entry.key") )
@@ -121,8 +121,8 @@ $util.qr($update.put("expression", "$expression"))
   "version": "2018-05-29",
   "operation": "UpdateItem",
   "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  "email_id": {
-      "S": $util.toJson($context.args.input.email_id)
+  "phone_number": {
+      "S": $util.toJson($context.args.input.phone_number)
   }
 } #end,
   "update": $util.toJson($update),
