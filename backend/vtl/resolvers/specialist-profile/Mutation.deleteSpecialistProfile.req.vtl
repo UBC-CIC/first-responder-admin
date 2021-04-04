@@ -6,8 +6,8 @@
       $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
     #end
   #else
-    $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#email_id)"))
-    $util.qr($condition.expressionNames.put("#email_id", "email_id"))
+    $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#phone_number)"))
+    $util.qr($condition.expressionNames.put("#phone_number", "phone_number"))
   #end
 #else
   #if( $modelObjectKey )
@@ -25,9 +25,9 @@
     #end
   #else
     #set( $condition = {
-  "expression": "attribute_exists(#email_id)",
+  "expression": "attribute_exists(#phone_number)",
   "expressionNames": {
-      "#email_id": "email_id"
+      "#phone_number": "phone_number"
   }
 } )
   #end
@@ -58,7 +58,7 @@
   "version": "2018-05-29",
   "operation": "DeleteItem",
   "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  "email_id": $util.dynamodb.toDynamoDBJson($ctx.args.input.email_id)
+  "phone_number": $util.dynamodb.toDynamoDBJson($ctx.args.input.phone_number)
 } #end,
   "condition": $util.toJson($condition)
 }

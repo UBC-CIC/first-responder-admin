@@ -1,5 +1,6 @@
 import { Chime } from "aws-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { SpecialistProfileDao } from "./specialist-profile-dao";
 
 const chime = new Chime({ region: 'us-east-1', endpoint: 'service.chime.aws.amazon.com' });
 
@@ -8,6 +9,10 @@ type Attendee = {
     "attendee_id": string;
     "attendee_type"?: AttendeeType;
     "attendee_join_type"?: AttendeeJoinType;
+    "user_role"?: string; // If applicable, denotes the specific type of user (e.g. cardiologist, safety supervisor)
+    "organization"?: string;
+    "first_name"?: string;
+    "last_name"?: string;
 };
 
 export type MeetingDetails = {
@@ -55,10 +60,27 @@ export class MeetingDetailsDao {
      * @param externalMeetingId The user-friendly meeting ID that users can use to dial in with.
      * @param attendeeType Is this a first-responder? specialist?
      * @param attendeeJoinType Did the user join by data or PSTN?
-     * @returns An external meeting ID
      */
     async createNewMeeting(meetingId: string, phoneNumber: string, attendeeId: string, callId: string, 
-                           externalMeetingId: string, attendeeType: AttendeeType, attendeeJoinType: AttendeeJoinType, ): Promise<void> {
+                           externalMeetingId: string, attendeeType: AttendeeType, attendeeJoinType: AttendeeJoinType): Promise<void> {
+
+        // Retrieves additional information about the user
+        const specialistDao = new SpecialistProfileDao(this.db);
+        const specialistProfile = await specialistDao.getSpecialistProfile(phoneNumber);
+        let firstName = "";
+        let lastName = "";
+        let userRole = "";
+        let organization = "";
+        if (specialistProfile) {
+            console.log(`User with phone number ${phoneNumber} is a specialist`);
+            firstName = specialistProfile.first_name;
+            lastName = specialistProfile.last_name;
+            userRole = specialistProfile.user_role;
+            organization = specialistProfile.organization;
+            attendeeType = AttendeeType.SPECIALIST;
+        }
+        // TODO: Add support for other user types
+
         const meetingObj: MeetingDetails = {
             "meeting_id": meetingId,
             "attendees": [{
@@ -66,6 +88,10 @@ export class MeetingDetailsDao {
                 "phone_number": phoneNumber,
                 "attendee_type": attendeeType,
                 "attendee_join_type": attendeeJoinType,
+                "first_name": firstName,
+                "last_name": lastName,
+                "user_role": userRole,
+                "organization": organization,
             }],
             "create_date_time": new Date().toISOString(),
             "call_id": callId,
@@ -86,11 +112,37 @@ export class MeetingDetailsDao {
      * @param meetingDetails details of the meeting to be added attendee to
      * @param attendeeId     id of the new attendee to be added
      * @param phoneNumber    phone number of the new attendee to be added
+     * @param attendeeType Is this a first-responder? specialist?
+     * @param attendeeJoinType Did the user join by data or PSTN?
      */
-    async addAttendee(meetingDetails: MeetingDetails, attendeeId: string, phoneNumber: string): Promise<void> {
+    async addAttendee(meetingDetails: MeetingDetails, attendeeId: string, phoneNumber: string, 
+                      attendeeType: AttendeeType, attendeeJoinType: AttendeeJoinType): Promise<void> {
+        // Retrieves additional information about the user
+        const specialistDao = new SpecialistProfileDao(this.db);
+        const specialistProfile = await specialistDao.getSpecialistProfile(phoneNumber);
+        let firstName = "";
+        let lastName = "";
+        let userRole = "";
+        let organization = "";
+        if (specialistProfile) {
+            console.log(`User with phone number ${phoneNumber} is a specialist`);
+            firstName = specialistProfile.first_name;
+            lastName = specialistProfile.last_name;
+            userRole = specialistProfile.user_role;
+            organization = specialistProfile.organization;
+            attendeeType = AttendeeType.SPECIALIST;
+        }
+        // TODO: Add support for other user types
+
         const attendee = {
             "attendee_id": attendeeId,
             "phone_number": phoneNumber,
+            "attendee_type": attendeeType,
+            "attendee_join_type": attendeeJoinType,
+            "first_name": firstName,
+            "last_name": lastName,
+            "user_role": userRole,
+            "organization": organization,
         }
 
         meetingDetails.attendees.push(attendee);

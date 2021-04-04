@@ -27,6 +27,7 @@ export class FirstResponderAdminAppSyncStack extends Stack {
           });
 
         const meetingDetailResolverPath = './vtl/resolvers/meeting-detail'
+        const specialistProfileResolverPath = './vtl/resolvers/specialist-profile'
 
         const authorizationType = AuthorizationType.USER_POOL;
         const userPool = UserPool.fromUserPoolId(this, 'UserPool', userPoolId);
@@ -82,6 +83,13 @@ export class FirstResponderAdminAppSyncStack extends Stack {
             });
         meetingDetailTable.grantFullAccess(firstResponderAdminAppSyncRole);
 
+        const specialistProfileTable = Table.fromTableAttributes(this, 
+            'specialistProfileTable', {
+                tableName: FirstResponderAdminDynamoStack.SPECIALIST_PROFILE_TABLE_NAME,
+                globalIndexes: [FirstResponderAdminDynamoStack.SPECIALIST_USER_STATUS_GLOBAL_INDEX_NAME]
+            });
+        specialistProfileTable.grantFullAccess(firstResponderAdminAppSyncRole);
+
         // Define Request DDB DataSource
         const meetingDetailTableDataSource = api.addDynamoDbDataSource('meetingDetailTableDataSource', meetingDetailTable);
 
@@ -134,13 +142,44 @@ export class FirstResponderAdminAppSyncStack extends Stack {
             responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Mutation.updateMeetingDetail.res.vtl`),
         });
 
+
+        const specialistProfileTableDataSource = api.addDynamoDbDataSource('specialistProfileTableDataSource', specialistProfileTable);
+
+        specialistProfileTableDataSource.createResolver({
+            typeName: 'Mutation',
+            fieldName: 'createSpecialistProfile',
+            requestMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Mutation.createSpecialistProfile.req.vtl`),
+            responseMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Mutation.createSpecialistProfile.res.vtl`),
+        });
+
+        specialistProfileTableDataSource.createResolver({
+            typeName: 'Mutation',
+            fieldName: 'deleteSpecialistProfile',
+            requestMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Mutation.deleteSpecialistProfile.req.vtl`),
+            responseMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Mutation.deleteSpecialistProfile.res.vtl`),
+        });
+
+        specialistProfileTableDataSource.createResolver({
+            typeName: 'Mutation',
+            fieldName: 'updateSpecialistProfile',
+            requestMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Mutation.updateSpecialistProfile.req.vtl`),
+            responseMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Mutation.updateSpecialistProfile.res.vtl`),
+        });
+
+        specialistProfileTableDataSource.createResolver({
+            typeName: 'Query',
+            fieldName: 'getSpecialistProfile',
+            requestMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Query.getSpecialistProfile.req.vtl`),
+            responseMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Query.getSpecialistProfile.res.vtl`),
+        });
+
         // None DataSource
         //
         // Add None DataSource for Local Resolver - to publish notification triggered by meeting-detail DDB
         const meetingDetailNoneDataSource = api.addNoneDataSource('MeetingDetailNoneDataSource');
         meetingDetailNoneDataSource.createResolver({
             typeName: 'Mutation',
-            fieldName: 'publishMeeingDetailUpdates',
+            fieldName: 'publishMeetingDetailUpdates',
             requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/None.publishMeetingDetailUpdates.req.vtl`),
             responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/None.publishMeetingDetailUpdates.res.vtl`)
         });

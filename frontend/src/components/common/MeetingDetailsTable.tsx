@@ -124,7 +124,7 @@ export default function MeetingDetailsTable(items: any) {
                                 </td>
                                 <td>
                                     <FontAwesomeIcon icon={faHeadset} />{' '}
-                                    {item.attendees}
+                                    {/* {item.attendees} */}
                                 </td>
                             </tr>
                         ))

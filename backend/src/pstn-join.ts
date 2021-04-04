@@ -137,13 +137,7 @@ async function actionSuccessful(event: any) {
 
             // Updates the meeting in DDB
             //
-            existingMeeting.attendees.push({
-                "attendee_id": attendee.Attendee?.AttendeeId!,
-                "phone_number": fromNumber,
-                "attendee_type": AttendeeType.FIRST_RESPONDER,
-                "attendee_join_type": AttendeeJoinType.PSTN,
-            });
-            await dao.saveMeetingDetails(existingMeeting);
+            await dao.addAttendee(existingMeeting, attendee.Attendee?.AttendeeId!, fromNumber, AttendeeType.NOT_SPECIFIED, AttendeeJoinType.PSTN);
 
             // Return join meeting action to bridge user to meeting
             joinChimeMeetingAction.Parameters.CallID = callId;

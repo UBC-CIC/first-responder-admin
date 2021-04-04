@@ -1,0 +1,17 @@
+{
+    "version" : "2017-02-28",
+    "operation" : "Query",
+    "query" : {
+        "expression" : "#user_status = :user_status",
+        "expressionNames" : {
+            "#user_status" : "user_status",
+        },
+        "expressionValues" : {
+            ":user_status" : $util.dynamodb.toDynamoDBJson($context.arguments.userStatus)
+        },
+    },
+    "index" : "userStatusGsi",
+    "limit" : $util.defaultIfNull($context.arguments.limit, 100),
+    "nextToken" : $util.toJson($util.defaultIfNullOrBlank($context.arguments.nextToken, null)),
+    "select" : "ALL_ATTRIBUTES",
+}

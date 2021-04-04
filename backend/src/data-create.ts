@@ -87,7 +87,7 @@ async function joinExistingCall(meetingDetails: MeetingDetails , event: any, dao
 
     // Registers the new attendee in DDB
     //
-    await dao.addAttendee(meetingDetails, externalAttendeeId, phoneNumber)
+    await dao.addAttendee(meetingDetails, externalAttendeeId, phoneNumber, AttendeeType.NOT_SPECIFIED, AttendeeJoinType.DATA);
     
       const joinInfo = {
         id: phoneNumber,

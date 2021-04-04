@@ -10,7 +10,7 @@ export type SpecialistProfile = {
     "profile_picture": string; // S3 link to the user profile picture (e.g. "s3://test-bucket/abc.jpg")
     "notes": string; // Any notes (e.g. "Specialist in Radiology.")
     "user_status": SpecialistStatus; // Indicates the current user availability - automatically updated every 30 minutes based on availability schedule.
-    "is_paged": boolean, // true if the user has been paged
+    "is_paged": boolean; // true if the user has been paged
     "availability": SpecialistAvailability; // Stores their availability schedule and overrides. 
     "created_date_time": string; // When this user was created (ISO8601 format)
     "updated_date_time": string; // When this user was updated (ISO8601 format)
@@ -26,7 +26,7 @@ export type SpecialistAvalabilitySchedule = {
     "day_of_week": number; // day of week can be 0-6, where 0 is Sunday, 1 is Monday, etc..
     "start_seconds_since_midnight": number; // e.g. 3660 = 01:01:00 since midnight
     "end_seconds_since_midnight": number; // e.g. 3660 = 01:01:00 since midnight
-    "timezone": string, // the IANA formated timezone (e.g. "America/Vancouver")
+    "timezone": string; // the IANA formated timezone (e.g. "America/Vancouver")
     "availability_type": SpecialistStatus;
 };
 
@@ -39,6 +39,13 @@ export enum SpecialistStatus {
     AVAILABLE = "AVAILABLE", // User is available per their schedule
     NOT_AVAILABLE = "NOT_AVAILABLE", // User is not available per their schedule
     OFFLINE = "OFFLINE", // User has manually went offline
+}
+
+export enum AttendeeType {
+    FIRST_RESPONDER,
+    SPECIALIST,
+    SERVICE_DESK,
+    NOT_SPECIFIED,
 }
 
 export class SpecialistProfileDao {
