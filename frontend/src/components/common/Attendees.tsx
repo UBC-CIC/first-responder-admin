@@ -3,7 +3,7 @@ import { Badge, Button, Col, Container, Modal, Table, Row } from 'react-bootstra
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Attendee } from '../../common/types/API';
-import './Attendees.css';
+//import './Attendees.css';
 
 export const Attendees = (props: { attendeeList: (Attendee | null)[] }) => {
 

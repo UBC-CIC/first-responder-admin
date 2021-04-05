@@ -69,8 +69,8 @@ input SpecialistAvailabilityInput {
 type MeetingDetail @aws_cognito_user_pools @aws_iam {
   meeting_id: String!
   attendees: [Attendee]
-  create_date_time: AWSDateTime
-  end_date_time: AWSDateTime
+  create_date_time: String
+  end_date_time: String
   call_id: String
   external_meeting_id: String
   meeting_status: String
@@ -112,8 +112,8 @@ input AttendeeInput {
 input MeetingDetailInput {
   meeting_id: String!
   attendees: [AttendeeInput]
-  create_date_time: AWSDateTime
-  end_date_time: AWSDateTime
+  create_date_time: String
+  end_date_time: String
   call_id: String
   external_meeting_id: String
   meeting_status: String
@@ -176,7 +176,7 @@ type Mutation @aws_cognito_user_pools @aws_iam {
     createMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
     updateMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
     deleteMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
-    publishMeetingDetailUpdates(meetingDetail: MeetingDetailInput!): MeetingDetail
+    publishMeetingDetailUpdates(input: MeetingDetailInput!): MeetingDetail
 }
 
 # [type] Subscription

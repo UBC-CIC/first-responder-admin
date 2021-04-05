@@ -1,10 +1,6 @@
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { CallsBadge } from './CallsBadge';
-import { AmplifySignOut } from '@aws-amplify/ui-react';
-import { faStarOfLife } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 import { Auth } from 'aws-amplify';
 import './header.css';
 

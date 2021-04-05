@@ -8,6 +8,7 @@ import { LambdaFunction } from "@aws-cdk/aws-events-targets";
 import { Table } from '@aws-cdk/aws-dynamodb';
 import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
 import { StartingPosition } from '@aws-cdk/aws-lambda';
+import * as path from 'path';
 
 // The Lambda stack contains all the Lambda functions that are not directly related to PSTN. 
 // These Lambda functions can be created safely in ca-central-1.
@@ -62,7 +63,12 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
                             'sts:AssumeRole',
                             // CloudWatch
                             'cloudwatch:*',
-                            'logs:*'
+                            'logs:*',
+                            // AppSync
+                            "appsync:GraphQL",
+                            "appsync:GetGraphqlApi",
+                            "appsync:ListGraphqlApis",
+                            "appsync:ListApiKeys"
                         ],
                         resources: ['*']
                     })

@@ -142,6 +142,16 @@ export class FirstResponderAdminAppSyncStack extends Stack {
             responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/Mutation.updateMeetingDetail.res.vtl`),
         });
 
+        // None DataSource
+        //
+        // Add None DataSource for Local Resolver - to publish notification triggered by meeting-detail DDB
+        const meetingDetailNoneDataSource = api.addNoneDataSource('MeetingDetailNoneDataSource');
+        meetingDetailNoneDataSource.createResolver({
+            typeName: 'Mutation',
+            fieldName: 'publishMeetingDetailUpdates',
+            requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/None.publishMeetingDetailUpdates.req.vtl`),
+            responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/None.publishMeetingDetailUpdates.res.vtl`)
+        });
 
         const specialistProfileTableDataSource = api.addDynamoDbDataSource('specialistProfileTableDataSource', specialistProfileTable);
 
@@ -171,17 +181,6 @@ export class FirstResponderAdminAppSyncStack extends Stack {
             fieldName: 'getSpecialistProfile',
             requestMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Query.getSpecialistProfile.req.vtl`),
             responseMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Query.getSpecialistProfile.res.vtl`),
-        });
-
-        // None DataSource
-        //
-        // Add None DataSource for Local Resolver - to publish notification triggered by meeting-detail DDB
-        const meetingDetailNoneDataSource = api.addNoneDataSource('MeetingDetailNoneDataSource');
-        meetingDetailNoneDataSource.createResolver({
-            typeName: 'Mutation',
-            fieldName: 'publishMeetingDetailUpdates',
-            requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/None.publishMeetingDetailUpdates.req.vtl`),
-            responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/None.publishMeetingDetailUpdates.res.vtl`)
         });
 
         new CfnOutput(this, "GraphQLEndpoint", {

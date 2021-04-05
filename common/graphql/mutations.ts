@@ -66,8 +66,8 @@ export const deleteMeetingDetail = /* GraphQL */ `
   }
 `;
 export const publishMeetingDetailUpdates = /* GraphQL */ `
-  mutation PublishMeetingDetailUpdates($meetingDetail: MeetingDetailInput!) {
-    publishMeetingDetailUpdates(meetingDetail: $meetingDetail) {
+  mutation PublishMeetingDetailUpdates($input: MeetingDetailInput!) {
+    publishMeetingDetailUpdates(input: $input) {
       meeting_id
       attendees {
         phone_number

@@ -1,10 +1,10 @@
-import { DynamoDBStreamEvent } from './type/dynamodb-type';
+import { DynamoDBStreamEvent } from './meeting-detail/type/dynamodb-type';
 import { publishMeetingDetail } from './meeting-detail/publish-meetingdetail-updates';
 
 // Lambda triggered by DynamoDB stream of meeting-detail table
 // assuming DynamoDB stream is enabled and its trigger is configured with batch size 1,
 // so that the stream event would trigger this lambda every time data changes, which means Records length is always 1.
-exports.handler = async (event: DynamoDBStreamEvent) => {
+export const handler = async (event: DynamoDBStreamEvent) => {
     console.log('DynamoDBStreamEvent', JSON.stringify(event, null, ' '));
 
     if (!event || !event.Records || event.Records.length < 1 || !event.Records[0].eventSourceARN) {
@@ -34,4 +34,4 @@ exports.handler = async (event: DynamoDBStreamEvent) => {
             ody: 'record deleted'
         };
     }
-}
+};

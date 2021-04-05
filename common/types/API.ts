@@ -169,7 +169,7 @@ export type DeleteMeetingDetailMutation = {
 };
 
 export type PublishMeetingDetailUpdatesMutationVariables = {
-  meetingDetail?: MeetingDetailInput,
+  input?: MeetingDetailInput,
 };
 
 export type PublishMeetingDetailUpdatesMutation = {

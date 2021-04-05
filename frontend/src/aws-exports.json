@@ -3,7 +3,7 @@
       "GraphQLEndpoint": "https://rgy6miazj5elnjjnpvw73dugxm.appsync-api.ca-central-1.amazonaws.com/graphql",
       "Region": "ca-central-1",
       "GraphQLAuthorizationType": "AMAZON_COGNITO_USER_POOLS",
-      "DangerouslyConnectToHTTPEndpointForTesting": true
+      "DangerouslyConnectToHTTPEndpointForTesting": false
     },
     "FirstResponderAdminCognito": {
       "UserPoolClientId": "26im89981jcl4d206h6j1rg521",
