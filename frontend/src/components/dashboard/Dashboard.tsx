@@ -3,9 +3,10 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { API } from 'aws-amplify';
 import { getMeetingDetailsByStatus } from '../../common/graphql/queries';
 import MeetingDetailsTable from '../common/MeetingDetailsTable';
+import { MeetingDetail } from '../../common/types/API';
 
 export const Dashboard = () => {
-    const [items, updateItems] = useState([])
+    const [items, updateItems] = useState<Array<MeetingDetail>>(new Array<MeetingDetail>())
 
     useEffect(() => {
         async function callListAllMeetings() {
@@ -17,8 +18,9 @@ export const Dashboard = () => {
                         limit: 25
                     }
                 });
-                updateItems(meetings['data']['getMeetingDetailsByStatus']['items']);
-                console.log('getMeetingDetailsByStatus meetings:', meetings);
+                const itemsReturned: Array<MeetingDetail> = meetings['data']['getMeetingDetailsByStatus']['items'];
+                console.log('getMeetingDetailsByStatus meetings:', itemsReturned);
+                updateItems(itemsReturned);
             } catch (e) {
                 console.log('getMeetingDetailsByStatus errors:', e.errors);
             }

@@ -8,7 +8,7 @@ import { MeetingDetail } from '../../common/types/API';
 import Attendees from './Attendees';
 
 
-export default function MeetingDetailsTable(items: any) {
+export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
 
     // const columns = [{
     //     dataField: 'meetingId',
@@ -70,7 +70,7 @@ export default function MeetingDetailsTable(items: any) {
                 </thead>
                 <tbody>
                     {
-                        items.items.map((item: MeetingDetail) => (
+                        props.items.map((item: MeetingDetail) => (
                             <tr>
                                 <td>{item.external_meeting_id}</td>
                                 <td>
@@ -124,7 +124,7 @@ export default function MeetingDetailsTable(items: any) {
                                 </td>
                                 <td>
                                     <FontAwesomeIcon icon={faHeadset} />{' '}
-                                    {/* {item.attendees} */}
+                                    {/*item.attendees[0]?.attendee_id*/}
                                 </td>
                             </tr>
                         ))
@@ -134,3 +134,5 @@ export default function MeetingDetailsTable(items: any) {
         </div>
     )
 }
+
+export default MeetingDetailsTable;

@@ -1,7 +1,7 @@
-import { publishMeetingDetailUpdates } from '../../../common/graphql/mutations';
-import { MeetingDetail } from '../../../common/types/API';
-import { initAppSyncClient } from '../utils/appsync-client';
-import { ServerError, Success } from '../utils/response';
+import { publishMeetingDetailUpdates } from '../common/graphql/mutations';
+import { MeetingDetailInput } from '../common/types/API';
+import { initAppSyncClient } from './utils/appsync-client';
+import { ServerError, Success } from './utils/response';
 
 const aws = require("aws-sdk");
 const gql = require('graphql-tag');
@@ -18,18 +18,18 @@ export const publishMeetingDetail = async (ddbNewImage: any) => {
     console.log('New event arrived - ddbNewImage:', JSON.stringify(ddbNewImage, null, ' '));
 
     try {
-        const meetingDetail: MeetingDetail = aws.DynamoDB.Converter.unmarshall(ddbNewImage)
-        console.log('meeting detail to publish', meetingDetail);
+        const meetingDetailInput: MeetingDetailInput = aws.DynamoDB.Converter.unmarshall(ddbNewImage)
+        console.log('meeting detail input to publish', meetingDetailInput);
 
         // Initialize AppSync GraphQL client
         const graphqlClient = initAppSyncClient()
 
-        console.log('publishMeetingetailUpdates request', meetingDetail)
+        console.log('publishMeetingetailUpdates request', meetingDetailInput)
         const mutation = gql`${publishMeetingDetailUpdates}`;
         const appSyncResponse = await graphqlClient.mutate({
             mutation,
             variables: {
-                meetingDetail: meetingDetail
+                input: meetingDetailInput
             }
         });
 
