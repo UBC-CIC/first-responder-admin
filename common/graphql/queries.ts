@@ -2,6 +2,86 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const getSpecialistProfile = /* GraphQL */ `
+  query GetSpecialistProfile($phoneNumber: String!) {
+    getSpecialistProfile(phoneNumber: $phoneNumber) {
+      email
+      first_name
+      last_name
+      phone_number
+      user_role
+      organization
+      profile_picture
+      notes
+      user_status
+      is_paged
+      availability {
+        overrides {
+          start_time
+          end_time
+          override_type
+        }
+        schedules {
+          start_time
+          end_time
+          override_type
+        }
+      }
+      created_date_time
+      updated_date_time
+    }
+  }
+`;
+export const listSpecialistProfilesByStatus = /* GraphQL */ `
+  query ListSpecialistProfilesByStatus(
+    $userStatus: SpecialistStatus
+    $limit: Int
+    $nextToken: String
+  ) {
+    listSpecialistProfilesByStatus(
+      userStatus: $userStatus
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        email
+        first_name
+        last_name
+        phone_number
+        user_role
+        organization
+        profile_picture
+        notes
+        user_status
+        is_paged
+        created_date_time
+        updated_date_time
+      }
+      nextToken
+    }
+  }
+`;
+export const listSpecialistProfiles = /* GraphQL */ `
+  query ListSpecialistProfiles($limit: Int, $nextToken: String) {
+    listSpecialistProfiles(limit: $limit, nextToken: $nextToken) {
+      items {
+        email
+        first_name
+        last_name
+        phone_number
+        user_role
+        organization
+        profile_picture
+        notes
+        user_status
+        is_paged
+        created_date_time
+        updated_date_time
+      }
+      nextToken
+    }
+  }
+`;
 export const getMeetingDetail = /* GraphQL */ `
   query GetMeetingDetail($meetingId: String!) {
     getMeetingDetail(meetingId: $meetingId) {
@@ -11,6 +91,10 @@ export const getMeetingDetail = /* GraphQL */ `
         attendee_id
         attendee_type
         attendee_join_type
+        user_role
+        organization
+        first_name
+        last_name
       }
       create_date_time
       end_date_time
@@ -34,6 +118,10 @@ export const listMeetingDetails = /* GraphQL */ `
           attendee_id
           attendee_type
           attendee_join_type
+          user_role
+          organization
+          first_name
+          last_name
         }
         create_date_time
         end_date_time
@@ -63,6 +151,10 @@ export const getMeetingDetailsByStatus = /* GraphQL */ `
           attendee_id
           attendee_type
           attendee_join_type
+          user_role
+          organization
+          first_name
+          last_name
         }
         create_date_time
         end_date_time
@@ -96,6 +188,10 @@ export const getMeetingDetailsByStatusAndCreateTime = /* GraphQL */ `
           attendee_id
           attendee_type
           attendee_join_type
+          user_role
+          organization
+          first_name
+          last_name
         }
         create_date_time
         end_date_time
