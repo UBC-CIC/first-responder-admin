@@ -42,14 +42,19 @@ export const Attendees = (props: { attendeeList: (Attendee | null)[] }) => {
                         </thead>
                         <tbody>
                             {props.attendeeList && props.attendeeList.map((attendee: Attendee | null) => (
-                                <tr>
+                                <tr key={attendee?.attendee_id}>
                                     <td>
                                         {attendee?.phone_number}
                                     </td>
                                     <td>
+                                        {attendee?.first_name}{' '}{attendee?.last_name}
                                     </td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>
+                                        {attendee?.organization}
+                                    </td>
+                                    <td>
+                                        {attendee?.user_role}
+                                    </td>
                                     <td>
                                         {attendee?.attendee_join_type}
                                     </td>

@@ -1,5 +1,6 @@
 import { Chime } from "aws-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { FirstResponderProfileDao } from "./first-responder-profile-dao";
 import { SpecialistProfileDao } from "./specialist-profile-dao";
 
 const chime = new Chime({ region: 'us-east-1', endpoint: 'service.chime.aws.amazon.com' });
@@ -13,6 +14,7 @@ type Attendee = {
     "organization"?: string;
     "first_name"?: string;
     "last_name"?: string;
+    "username"?: string;
 };
 
 export type MeetingDetails = {
@@ -71,6 +73,7 @@ export class MeetingDetailsDao {
         let lastName = "";
         let userRole = "";
         let organization = "";
+        let username = "";
         if (specialistProfile) {
             console.log(`User with phone number ${phoneNumber} is a specialist`);
             firstName = specialistProfile.first_name;
@@ -92,6 +95,7 @@ export class MeetingDetailsDao {
                 "last_name": lastName,
                 "user_role": userRole,
                 "organization": organization,
+                "username": username,
             }],
             "create_date_time": new Date().toISOString(),
             "call_id": callId,
@@ -131,8 +135,18 @@ export class MeetingDetailsDao {
             userRole = specialistProfile.user_role;
             organization = specialistProfile.organization;
             attendeeType = AttendeeType.SPECIALIST;
+        } else {
+            const firstResponderDao = new FirstResponderProfileDao(this.db);
+            const firstResponderProfile = await firstResponderDao.getFirstResponderProfile(phoneNumber);
+            if (firstResponderProfile) {
+                console.log(`User with phone number ${phoneNumber} is a first responder`);
+                firstName = firstResponderProfile.first_name;
+                lastName = firstResponderProfile.last_name;
+                userRole = firstResponderProfile.occupation;
+                organization = firstResponderProfile.organization;
+                attendeeType = AttendeeType.FIRST_RESPONDER;
+            }
         }
-        // TODO: Add support for other user types
 
         const attendee = {
             "attendee_id": attendeeId,
@@ -158,7 +172,7 @@ export class MeetingDetailsDao {
         if (existingMeeting) {
             console.log(`Deleting existing meeting with meeting ID ${meetingId}`);
             existingMeeting.meeting_status = MeetingStatus.CLOSED.toString();
-            existingMeeting.end_date_time = new Date().toString();
+            existingMeeting.end_date_time = new Date().toISOString();
             await this.saveMeetingDetails(existingMeeting);
         }
     }
