@@ -3,7 +3,6 @@ import './App.css';
 import { AmplifyAuthenticator, AmplifySignUp } from '@aws-amplify/ui-react';
 import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
 import { Navigation } from './components/nav/Navigation'
-import { CallNotification } from './components/notifications/Notification';
 
 function App() {
 
@@ -19,7 +18,6 @@ function App() {
 
     return authState === AuthState.SignedIn && user ? (
         <div className="App">
-            <CallNotification />
             <Navigation userName={user.username} authState={authState}/>
         </div>
     ) : (

@@ -5,6 +5,7 @@ import { API } from 'aws-amplify';
 import { onCreateMeetingDetail } from '../../common/graphql/subscriptions';
 import { SOUNDS_DICTIONARY } from './sounds/Sounds';
 import { COOKIE_ALERT_SOUND, COOKIE_SOUND_STATUS, COOKIE_VOLUME } from '../settings/Settings';
+import { Link } from "react-router-dom";
 
 // TODO: Override style. To see what can properties be overridden see https://github.com/igorprado/react-notification-system/blob/master/src/styles.js
 const style = {
@@ -25,7 +26,6 @@ const style = {
 export const CallNotification = () => {
   const notificationSystemRef = useRef<NotificationSystem.System>(null);
 
-
   useEffect(() => {
     const subscribeCreateMeetings = () => {
       const subscription: any = API.graphql({
@@ -39,15 +39,20 @@ export const CallNotification = () => {
             const currentNotifications = notificationSystemRef.current;
             if (currentNotifications) {
               currentNotifications.addNotification({
-                message: 'New call in progress with meeting id : ' + data.value.data.onCreateMeetingDetail.meeting_id,
+                message: 'New call in progress with meeting id : ' + data.value.data.onCreateMeetingDetail.external_meeting_id,
                 level: 'success',
                 autoDismiss: 0,
-                dismissible: 'both'
+                dismissible: 'both',
+                children: (
+                  <div>
+                    <Link to="/dashboard" onClick={() => window.location.reload()}>Go to Dashboard</Link>
+                  </div>
+                )
               });
               const cookies = new Cookies();
               const soundCookie =
               cookies.get(COOKIE_SOUND_STATUS) === "false" ? false : true;
-              const volumeCookie = cookies.get(COOKIE_VOLUME);
+              const volumeCookie = cookies.get(COOKIE_VOLUME) ? cookies.get(COOKIE_VOLUME) : 50;
               const alertSoundCookie = cookies.get(COOKIE_ALERT_SOUND) ? cookies.get(COOKIE_ALERT_SOUND) : 'beep';
               const alarmAudio = new Audio(SOUNDS_DICTIONARY.get(alertSoundCookie));
               alarmAudio.volume = volumeCookie / 100;

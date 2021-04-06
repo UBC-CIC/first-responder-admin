@@ -5,10 +5,12 @@ import { Dashboard } from "../dashboard/Dashboard";
 import { Settings } from "../settings/Settings";
 import { CallHistory } from "../history/CallHistory";
 import { AppAuthStateProps } from "../../types/propTypes";
+import { CallNotification } from '../notifications/Notification';
 
 export const Navigation = (props: AppAuthStateProps) => {
   return (
     <BrowserRouter>
+      <CallNotification />
       <Header userName={props.userName} authState={props.authState} />
       {props.authState === AuthState.SignedIn ? (
         <Switch>
