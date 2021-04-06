@@ -1,10 +1,11 @@
-import { faUser, faPhoneSquareAlt, faPhoneSquare, faUserPlus, faHeadset } from '@fortawesome/free-solid-svg-icons'
+import { navItem } from '@aws-amplify/ui';
+import { faUser, faPhoneSquareAlt, faPhoneSquare, faUserPlus, faHeadset, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react'
-import { Table, Badge } from 'react-bootstrap';
+import { Table, Badge, Button } from 'react-bootstrap';
 //import BootstrapTable from 'react-bootstrap-table-next';
 //import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
-import { MeetingDetail } from '../../common/types/API';
+import { AttendeeType, MeetingDetail } from '../../common/types/API';
 import Attendees from './Attendees';
 
 
@@ -42,6 +43,17 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
     //     headerStyle: { width: '140px' }
     // }];
 
+    const getServiceDeskAttendee = (item: MeetingDetail) => {
+        if (item.attendees) {
+            for (let attendee of item.attendees) {
+                if (attendee?.attendee_type == AttendeeType.SERVICE_DESK) {
+                    return attendee.username;
+                }
+            }
+        }
+        return "";
+    }
+
     return (
         <div>
             {/* <BootstrapTable
@@ -71,7 +83,7 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
                 <tbody>
                     {
                         props.items.map((item: MeetingDetail) => (
-                            <tr>
+                            <tr key={item.meeting_id}>
                                 <td>{item.external_meeting_id}</td>
                                 <td>
                                     {
@@ -123,8 +135,10 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
                                     }
                                 </td>
                                 <td>
-                                    <FontAwesomeIcon icon={faHeadset} />{' '}
-                                    {/*item.attendees[0]?.attendee_id*/}
+                                    {
+                                        getServiceDeskAttendee(item) === "" ? 
+                                            <><FontAwesomeIcon icon={faHeadset} />{' '}{getServiceDeskAttendee(item)}</> : <><FontAwesomeIcon icon={faExclamationTriangle} />{' '}No Service Desk Attendees</>
+                                    }
                                 </td>
                             </tr>
                         ))

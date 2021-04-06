@@ -85,6 +85,7 @@ export type AttendeeInput = {
   organization?: string | null,
   first_name?: string | null,
   last_name?: string | null,
+  username?: string | null,
 };
 
 export enum AttendeeType {
@@ -147,6 +148,7 @@ export type Attendee = {
   organization?: string | null,
   first_name?: string | null,
   last_name?: string | null,
+  username?: string | null,
 };
 
 export type SpecialistConnection = {
