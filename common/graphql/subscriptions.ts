@@ -11,6 +11,10 @@ export const onCreateMeetingDetail = /* GraphQL */ `
         attendee_id
         attendee_type
         attendee_join_type
+        user_role
+        organization
+        first_name
+        last_name
       }
       create_date_time
       end_date_time
@@ -29,6 +33,10 @@ export const onUpdateMeetingDetail = /* GraphQL */ `
         attendee_id
         attendee_type
         attendee_join_type
+        user_role
+        organization
+        first_name
+        last_name
       }
       create_date_time
       end_date_time
@@ -47,6 +55,10 @@ export const onDeleteMeetingDetail = /* GraphQL */ `
         attendee_id
         attendee_type
         attendee_join_type
+        user_role
+        organization
+        first_name
+        last_name
       }
       create_date_time
       end_date_time

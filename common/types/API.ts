@@ -2,6 +2,70 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type SpecialistProfileInput = {
+  email?: string | null,
+  first_name?: string | null,
+  last_name?: string | null,
+  phone_number: string,
+  user_role?: string | null,
+  organization?: string | null,
+  profile_picture?: string | null,
+  notes?: string | null,
+  user_status?: SpecialistStatus | null,
+  is_paged?: boolean | null,
+  availability?: SpecialistAvailabilityInput | null,
+  created_date_time?: string | null,
+  updated_date_time?: string | null,
+};
+
+export enum SpecialistStatus {
+  AVAILABLE = "AVAILABLE",
+  NOT_AVAILABLE = "NOT_AVAILABLE",
+  OFFLINE = "OFFLINE",
+}
+
+
+export type SpecialistAvailabilityInput = {
+  overrides?: Array< SpecialistAvalabilityOverrideInput | null > | null,
+  schedules?: Array< SpecialistAvalabilityOverrideInput | null > | null,
+};
+
+export type SpecialistAvalabilityOverrideInput = {
+  start_time?: string | null,
+  end_time?: string | null,
+  override_type?: SpecialistStatus | null,
+};
+
+export type SpecialistProfile = {
+  __typename: "SpecialistProfile",
+  email?: string | null,
+  first_name?: string | null,
+  last_name?: string | null,
+  phone_number?: string,
+  user_role?: string | null,
+  organization?: string | null,
+  profile_picture?: string | null,
+  notes?: string | null,
+  user_status?: SpecialistStatus | null,
+  is_paged?: boolean | null,
+  availability?: SpecialistAvailability,
+  created_date_time?: string | null,
+  updated_date_time?: string | null,
+};
+
+export type SpecialistAvailability = {
+  __typename: "SpecialistAvailability",
+  overrides?:  Array<SpecialistAvalabilityOverride | null > | null,
+  schedules?:  Array<SpecialistAvalabilityOverride | null > | null,
+};
+
+export type SpecialistAvalabilityOverride = {
+  __typename: "SpecialistAvalabilityOverride",
+  start_time?: string | null,
+  end_time?: string | null,
+  override_type?: SpecialistStatus | null,
+};
+
 export type MeetingDetailInput = {
   meeting_id: string,
   attendees?: Array< AttendeeInput | null > | null,
@@ -17,6 +81,10 @@ export type AttendeeInput = {
   attendee_id?: string | null,
   attendee_type?: AttendeeType | null,
   attendee_join_type?: AttendeeJoinType | null,
+  user_role?: string | null,
+  organization?: string | null,
+  first_name?: string | null,
+  last_name?: string | null,
 };
 
 export enum AttendeeType {
@@ -75,6 +143,16 @@ export type Attendee = {
   attendee_id?: string | null,
   attendee_type?: AttendeeType | null,
   attendee_join_type?: AttendeeJoinType | null,
+  user_role?: string | null,
+  organization?: string | null,
+  first_name?: string | null,
+  last_name?: string | null,
+};
+
+export type SpecialistConnection = {
+  __typename: "SpecialistConnection",
+  items?:  Array<SpecialistProfile | null > | null,
+  nextToken?: string | null,
 };
 
 export type ModelMeetingDetailFilterInput = {
@@ -96,6 +174,117 @@ export type MeetingDetailConnection = {
   nextToken?: string | null,
 };
 
+export type CreateSpecialistProfileMutationVariables = {
+  input?: SpecialistProfileInput,
+};
+
+export type CreateSpecialistProfileMutation = {
+  createSpecialistProfile?:  {
+    __typename: "SpecialistProfile",
+    email?: string | null,
+    first_name?: string | null,
+    last_name?: string | null,
+    phone_number: string,
+    user_role?: string | null,
+    organization?: string | null,
+    profile_picture?: string | null,
+    notes?: string | null,
+    user_status?: SpecialistStatus | null,
+    is_paged?: boolean | null,
+    availability?:  {
+      __typename: "SpecialistAvailability",
+      overrides?:  Array< {
+        __typename: "SpecialistAvalabilityOverride",
+        start_time?: string | null,
+        end_time?: string | null,
+        override_type?: SpecialistStatus | null,
+      } | null > | null,
+      schedules?:  Array< {
+        __typename: "SpecialistAvalabilityOverride",
+        start_time?: string | null,
+        end_time?: string | null,
+        override_type?: SpecialistStatus | null,
+      } | null > | null,
+    } | null,
+    created_date_time?: string | null,
+    updated_date_time?: string | null,
+  } | null,
+};
+
+export type UpdateSpecialistProfileMutationVariables = {
+  input?: SpecialistProfileInput,
+};
+
+export type UpdateSpecialistProfileMutation = {
+  updateSpecialistProfile?:  {
+    __typename: "SpecialistProfile",
+    email?: string | null,
+    first_name?: string | null,
+    last_name?: string | null,
+    phone_number: string,
+    user_role?: string | null,
+    organization?: string | null,
+    profile_picture?: string | null,
+    notes?: string | null,
+    user_status?: SpecialistStatus | null,
+    is_paged?: boolean | null,
+    availability?:  {
+      __typename: "SpecialistAvailability",
+      overrides?:  Array< {
+        __typename: "SpecialistAvalabilityOverride",
+        start_time?: string | null,
+        end_time?: string | null,
+        override_type?: SpecialistStatus | null,
+      } | null > | null,
+      schedules?:  Array< {
+        __typename: "SpecialistAvalabilityOverride",
+        start_time?: string | null,
+        end_time?: string | null,
+        override_type?: SpecialistStatus | null,
+      } | null > | null,
+    } | null,
+    created_date_time?: string | null,
+    updated_date_time?: string | null,
+  } | null,
+};
+
+export type DeleteSpecialistProfileMutationVariables = {
+  input?: SpecialistProfileInput,
+};
+
+export type DeleteSpecialistProfileMutation = {
+  deleteSpecialistProfile?:  {
+    __typename: "SpecialistProfile",
+    email?: string | null,
+    first_name?: string | null,
+    last_name?: string | null,
+    phone_number: string,
+    user_role?: string | null,
+    organization?: string | null,
+    profile_picture?: string | null,
+    notes?: string | null,
+    user_status?: SpecialistStatus | null,
+    is_paged?: boolean | null,
+    availability?:  {
+      __typename: "SpecialistAvailability",
+      overrides?:  Array< {
+        __typename: "SpecialistAvalabilityOverride",
+        start_time?: string | null,
+        end_time?: string | null,
+        override_type?: SpecialistStatus | null,
+      } | null > | null,
+      schedules?:  Array< {
+        __typename: "SpecialistAvalabilityOverride",
+        start_time?: string | null,
+        end_time?: string | null,
+        override_type?: SpecialistStatus | null,
+      } | null > | null,
+    } | null,
+    created_date_time?: string | null,
+    updated_date_time?: string | null,
+  } | null,
+};
+
 export type CreateMeetingDetailMutationVariables = {
   input?: MeetingDetailInput | null,
   condition?: ModelMeetingDetailConditionInput | null,
@@ -111,6 +300,10 @@ export type CreateMeetingDetailMutation = {
       attendee_id?: string | null,
       attendee_type?: AttendeeType | null,
       attendee_join_type?: AttendeeJoinType | null,
+      user_role?: string | null,
+      organization?: string | null,
+      first_name?: string | null,
+      last_name?: string | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -135,6 +328,10 @@ export type UpdateMeetingDetailMutation = {
       attendee_id?: string | null,
       attendee_type?: AttendeeType | null,
       attendee_join_type?: AttendeeJoinType | null,
+      user_role?: string | null,
+      organization?: string | null,
+      first_name?: string | null,
+      last_name?: string | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -159,6 +356,10 @@ export type DeleteMeetingDetailMutation = {
       attendee_id?: string | null,
       attendee_type?: AttendeeType | null,
       attendee_join_type?: AttendeeJoinType | null,
+      user_role?: string | null,
+      organization?: string | null,
+      first_name?: string | null,
+      last_name?: string | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -182,12 +383,108 @@ export type PublishMeetingDetailUpdatesMutation = {
       attendee_id?: string | null,
       attendee_type?: AttendeeType | null,
       attendee_join_type?: AttendeeJoinType | null,
+      user_role?: string | null,
+      organization?: string | null,
+      first_name?: string | null,
+      last_name?: string | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+  } | null,
+};
+
+export type GetSpecialistProfileQueryVariables = {
+  phoneNumber?: string,
+};
+
+export type GetSpecialistProfileQuery = {
+  getSpecialistProfile?:  {
+    __typename: "SpecialistProfile",
+    email?: string | null,
+    first_name?: string | null,
+    last_name?: string | null,
+    phone_number: string,
+    user_role?: string | null,
+    organization?: string | null,
+    profile_picture?: string | null,
+    notes?: string | null,
+    user_status?: SpecialistStatus | null,
+    is_paged?: boolean | null,
+    availability?:  {
+      __typename: "SpecialistAvailability",
+      overrides?:  Array< {
+        __typename: "SpecialistAvalabilityOverride",
+        start_time?: string | null,
+        end_time?: string | null,
+        override_type?: SpecialistStatus | null,
+      } | null > | null,
+      schedules?:  Array< {
+        __typename: "SpecialistAvalabilityOverride",
+        start_time?: string | null,
+        end_time?: string | null,
+        override_type?: SpecialistStatus | null,
+      } | null > | null,
+    } | null,
+    created_date_time?: string | null,
+    updated_date_time?: string | null,
+  } | null,
+};
+
+export type ListSpecialistProfilesByStatusQueryVariables = {
+  userStatus?: SpecialistStatus | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListSpecialistProfilesByStatusQuery = {
+  listSpecialistProfilesByStatus?:  {
+    __typename: "SpecialistConnection",
+    items?:  Array< {
+      __typename: "SpecialistProfile",
+      email?: string | null,
+      first_name?: string | null,
+      last_name?: string | null,
+      phone_number: string,
+      user_role?: string | null,
+      organization?: string | null,
+      profile_picture?: string | null,
+      notes?: string | null,
+      user_status?: SpecialistStatus | null,
+      is_paged?: boolean | null,
+      created_date_time?: string | null,
+      updated_date_time?: string | null,
+    } | null > | null,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type ListSpecialistProfilesQueryVariables = {
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListSpecialistProfilesQuery = {
+  listSpecialistProfiles?:  {
+    __typename: "SpecialistConnection",
+    items?:  Array< {
+      __typename: "SpecialistProfile",
+      email?: string | null,
+      first_name?: string | null,
+      last_name?: string | null,
+      phone_number: string,
+      user_role?: string | null,
+      organization?: string | null,
+      profile_picture?: string | null,
+      notes?: string | null,
+      user_status?: SpecialistStatus | null,
+      is_paged?: boolean | null,
+      created_date_time?: string | null,
+      updated_date_time?: string | null,
+    } | null > | null,
+    nextToken?: string | null,
   } | null,
 };
 
@@ -205,6 +502,10 @@ export type GetMeetingDetailQuery = {
       attendee_id?: string | null,
       attendee_type?: AttendeeType | null,
       attendee_join_type?: AttendeeJoinType | null,
+      user_role?: string | null,
+      organization?: string | null,
+      first_name?: string | null,
+      last_name?: string | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -232,6 +533,10 @@ export type ListMeetingDetailsQuery = {
         attendee_id?: string | null,
         attendee_type?: AttendeeType | null,
         attendee_join_type?: AttendeeJoinType | null,
+        user_role?: string | null,
+        organization?: string | null,
+        first_name?: string | null,
+        last_name?: string | null,
       } | null > | null,
       create_date_time?: string | null,
       end_date_time?: string | null,
@@ -261,6 +566,10 @@ export type GetMeetingDetailsByStatusQuery = {
         attendee_id?: string | null,
         attendee_type?: AttendeeType | null,
         attendee_join_type?: AttendeeJoinType | null,
+        user_role?: string | null,
+        organization?: string | null,
+        first_name?: string | null,
+        last_name?: string | null,
       } | null > | null,
       create_date_time?: string | null,
       end_date_time?: string | null,
@@ -292,6 +601,10 @@ export type GetMeetingDetailsByStatusAndCreateTimeQuery = {
         attendee_id?: string | null,
         attendee_type?: AttendeeType | null,
         attendee_join_type?: AttendeeJoinType | null,
+        user_role?: string | null,
+        organization?: string | null,
+        first_name?: string | null,
+        last_name?: string | null,
       } | null > | null,
       create_date_time?: string | null,
       end_date_time?: string | null,
@@ -313,6 +626,10 @@ export type OnCreateMeetingDetailSubscription = {
       attendee_id?: string | null,
       attendee_type?: AttendeeType | null,
       attendee_join_type?: AttendeeJoinType | null,
+      user_role?: string | null,
+      organization?: string | null,
+      first_name?: string | null,
+      last_name?: string | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -332,6 +649,10 @@ export type OnUpdateMeetingDetailSubscription = {
       attendee_id?: string | null,
       attendee_type?: AttendeeType | null,
       attendee_join_type?: AttendeeJoinType | null,
+      user_role?: string | null,
+      organization?: string | null,
+      first_name?: string | null,
+      last_name?: string | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -351,6 +672,10 @@ export type OnDeleteMeetingDetailSubscription = {
       attendee_id?: string | null,
       attendee_type?: AttendeeType | null,
       attendee_join_type?: AttendeeJoinType | null,
+      user_role?: string | null,
+      organization?: string | null,
+      first_name?: string | null,
+      last_name?: string | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,

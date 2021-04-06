@@ -81,6 +81,10 @@ type Attendee @aws_cognito_user_pools @aws_iam {
   attendee_id: String
   attendee_type: AttendeeType
   attendee_join_type: AttendeeJoinType
+  user_role: String
+  organization: String
+  first_name: String
+  last_name: String
 }
 
 enum AttendeeJoinType {
@@ -105,6 +109,10 @@ input AttendeeInput {
   attendee_id: String
   attendee_type: AttendeeType
   attendee_join_type: AttendeeJoinType
+  user_role: String
+  organization: String
+  first_name: String
+  last_name: String
 }
 
 # [input] MeetingDetailInput

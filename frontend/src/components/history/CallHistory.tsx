@@ -36,29 +36,13 @@ export const CallHistory = () => {
         }
     };
 
-    // useEffect(() => {
-    //     async function callListAllMeetings() {
-    //         try {
-    //             const meetings: any = await API.graphql({
-    //                 query: listMeetingDetailss,
-    //                 variables: { limit: 25 }
-    //             });
-    //             updateItems(meetings['data']['listMeetingDetailss']['items']);
-    //             console.log('listMeetingDetailss meetings:', meetings);
-    //         } catch (e) {
-    //             console.log('listMeetingDetailss errors:', e.errors);
-    //         }
-    //     }
-    //     callListAllMeetings()
-    // }, []);
-
 
     return (
         <Container fluid >
             <Row className="history-search-row">
                 <Col>
                 <Form onSubmit={() => onGetHistoryByTimeRange()}>
-                    <Row>
+                    <Row xs={1} md={4} lg={4}>
                         <Col>
                            <DatePicker
                              selected={startDate}
@@ -80,9 +64,8 @@ export const CallHistory = () => {
                               as="select" 
                               placeholder="Call Status" 
                               ref={statusRef}>
-                                <option>Stage...</option>
-                                <option>Live</option>
-                                <option>Ended</option>
+                                <option>ACTIVE</option>
+                                <option>CLOSED</option>
                             </Form.Control>
                         </Col>
                         <Col>
