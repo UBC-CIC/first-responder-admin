@@ -2,11 +2,13 @@ import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { CallsBadge } from './CallsBadge';
 import { Auth } from 'aws-amplify';
+import { AuthState } from '@aws-amplify/ui-components';
 import './header.css';
+import { AppAuthStateProps } from '../../types/propTypes';
 
-export const Header = (props: {userName: String}) => {
+export const Header = (props: AppAuthStateProps) => {
 
-    return (
+    return props.authState === AuthState.SignedIn && props.userName !== '' ? (
         <Navbar collapseOnSelect fixed="top" expand='lg'>
 
             <Navbar.Brand>
@@ -46,6 +48,13 @@ export const Header = (props: {userName: String}) => {
                         </NavDropdown.Item>
                     </NavDropdown>
             </Navbar.Collapse>
+        </Navbar>
+    ) : (
+        <Navbar collapseOnSelect fixed="top" expand='lg'>
+            <Navbar.Brand>
+                <span className="brand-logo"><i>STARS</i><span className="brand-logo-sub">Service Desk</span></span>
+            </Navbar.Brand>
+            <Navbar.Toggle aria-controls='responsive-navbar-nav' />
         </Navbar>
     )
 }

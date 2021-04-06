@@ -1,20 +1,26 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { AuthState } from "@aws-amplify/ui-components";
 import { Header } from "./Header";
-import Dashboard from "../dashboard/Dashboard";
-import Settings from "../settings/Settings";
-import CallHistory from "../history/CallHistory";
+import { Dashboard } from "../dashboard/Dashboard";
+import { Settings } from "../settings/Settings";
+import { CallHistory } from "../history/CallHistory";
+import { AppAuthStateProps } from "../../types/propTypes";
 
-export const Navigation = (props: { userName: String }) => {
+export const Navigation = (props: AppAuthStateProps) => {
   return (
     <BrowserRouter>
-      <Header userName={props.userName} />
-      <Switch>
-        <Route path="/" exact component={Dashboard} />
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/history" component={CallHistory} />
-        <Route path="/search" component={Dashboard} />
-        <Route path="/settings" component={Settings} />
-      </Switch>
+      <Header userName={props.userName} authState={props.authState} />
+      {props.authState === AuthState.SignedIn ? (
+        <Switch>
+          <Route path="/" exact component={Dashboard} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/history" component={CallHistory} />
+          <Route path="/search" component={Dashboard} />
+          <Route path="/settings" component={Settings} />
+        </Switch>
+      ) : (
+        <div/>
+      )}
     </BrowserRouter>
   );
 };

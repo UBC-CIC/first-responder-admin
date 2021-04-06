@@ -4,7 +4,6 @@ import { AmplifyAuthenticator, AmplifySignUp } from '@aws-amplify/ui-react';
 import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
 import { Navigation } from './components/nav/Navigation'
 import { CallNotification } from './components/notifications/Notification';
-import { url } from 'inspector';
 
 function App() {
 
@@ -18,14 +17,10 @@ function App() {
         });
     }, []);
 
-    const authenticatorTheme: any = {
-        signInButtonIcon: { backgroundColor: 'none' },
-    }
-
     return authState === AuthState.SignedIn && user ? (
         <div className="App">
             <CallNotification />
-            <Navigation userName={user.username}/>
+            <Navigation userName={user.username} authState={authState}/>
         </div>
     ) : (
             <div slot="sign-in" style={{
@@ -34,10 +29,9 @@ function App() {
                 alignItems: 'center',
                 width: '100%',
                 height: '100%',
-                backgroundImage: `url('/login-splash-2.png')`,
-                backgroundRepeat: 'repeat',
-                backgroundPosition: 'center center',
+                backgroundColor: 'white'
             }}>
+                <Navigation userName={''} authState={authState}/>
                 <AmplifyAuthenticator>
                     <AmplifySignUp
                         slot="sign-up"
