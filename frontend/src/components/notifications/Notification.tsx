@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
 import NotificationSystem from 'react-notification-system';
+import Cookies from "universal-cookie";
 import { API } from 'aws-amplify';
 import { onCreateMeetingDetail } from '../../common/graphql/subscriptions';
 import { SOUNDS_DICTIONARY } from './sounds/Sounds';
+import { COOKIE_ALERT_SOUND, COOKIE_SOUND_STATUS, COOKIE_VOLUME } from '../settings/Settings';
 
 // TODO: Override style. To see what can properties be overridden see https://github.com/igorprado/react-notification-system/blob/master/src/styles.js
 const style = {
@@ -42,8 +44,14 @@ export const CallNotification = () => {
                 autoDismiss: 0,
                 dismissible: 'both'
               });
-              const alarmAudio = new Audio(SOUNDS_DICTIONARY.get('beep'));
-              alarmAudio.play();
+              const cookies = new Cookies();
+              const soundCookie =
+              cookies.get(COOKIE_SOUND_STATUS) === "false" ? false : true;
+              const volumeCookie = cookies.get(COOKIE_VOLUME);
+              const alertSoundCookie = cookies.get(COOKIE_ALERT_SOUND) ? cookies.get(COOKIE_ALERT_SOUND) : 'beep';
+              const alarmAudio = new Audio(SOUNDS_DICTIONARY.get(alertSoundCookie));
+              alarmAudio.volume = volumeCookie / 100;
+              soundCookie && alarmAudio.play();
             }
           }
         }

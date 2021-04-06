@@ -95,6 +95,7 @@ export const getMeetingDetail = /* GraphQL */ `
         organization
         first_name
         last_name
+        username
       }
       create_date_time
       end_date_time
@@ -122,6 +123,7 @@ export const listMeetingDetails = /* GraphQL */ `
           organization
           first_name
           last_name
+          username
         }
         create_date_time
         end_date_time
@@ -155,6 +157,7 @@ export const getMeetingDetailsByStatus = /* GraphQL */ `
           organization
           first_name
           last_name
+          username
         }
         create_date_time
         end_date_time
@@ -192,6 +195,7 @@ export const getMeetingDetailsByStatusAndCreateTime = /* GraphQL */ `
           organization
           first_name
           last_name
+          username
         }
         create_date_time
         end_date_time
