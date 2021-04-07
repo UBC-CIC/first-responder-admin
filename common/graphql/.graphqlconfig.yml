@@ -5,7 +5,9 @@
 # Usage :
 # cd first-responder-admin/common
 # amplify codegen types
-# amplify codegen statements
+# amplify codegen statements (This generates graphql file.)
+# To generate statements in typescript run command
+# amplify-graphql-docs-generator --schema graphql/schema.graphql --output ./graphql --language typescript --separateFiles --maxDepth 10
 projects:
   AmplifyFirstResponderAdmin:
     schemaPath: /graphql/schema.graphql

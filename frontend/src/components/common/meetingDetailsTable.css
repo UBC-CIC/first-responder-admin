@@ -1,0 +1,13 @@
+.meeting-table {
+  overflow: auto;
+  height:auto;
+  width: 100%;
+  max-height: 100vh;
+}
+
+.meeting-table th {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+}

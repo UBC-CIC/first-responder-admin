@@ -54,6 +54,18 @@ export const listSpecialistProfilesByStatus = /* GraphQL */ `
         notes
         user_status
         is_paged
+        availability {
+          overrides {
+            start_time
+            end_time
+            override_type
+          }
+          schedules {
+            start_time
+            end_time
+            override_type
+          }
+        }
         created_date_time
         updated_date_time
       }
@@ -75,6 +87,18 @@ export const listSpecialistProfiles = /* GraphQL */ `
         notes
         user_status
         is_paged
+        availability {
+          overrides {
+            start_time
+            end_time
+            override_type
+          }
+          schedules {
+            start_time
+            end_time
+            override_type
+          }
+        }
         created_date_time
         updated_date_time
       }

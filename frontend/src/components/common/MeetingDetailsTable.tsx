@@ -7,7 +7,7 @@ import { Table, Badge, Button } from 'react-bootstrap';
 //import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import { AttendeeType, MeetingDetail } from '../../common/types/API';
 import Attendees from './Attendees';
-
+import './meetingDetailsTable.css';
 
 export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
 
@@ -55,7 +55,7 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
     }
 
     return (
-        <div>
+        <div className="meeting-table">
             {/* <BootstrapTable
                 bootstrap4
                 hover

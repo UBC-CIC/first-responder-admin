@@ -460,6 +460,21 @@ export type ListSpecialistProfilesByStatusQuery = {
       notes?: string | null,
       user_status?: SpecialistStatus | null,
       is_paged?: boolean | null,
+      availability?:  {
+        __typename: "SpecialistAvailability",
+        overrides?:  Array< {
+          __typename: "SpecialistAvalabilityOverride",
+          start_time?: string | null,
+          end_time?: string | null,
+          override_type?: SpecialistStatus | null,
+        } | null > | null,
+        schedules?:  Array< {
+          __typename: "SpecialistAvalabilityOverride",
+          start_time?: string | null,
+          end_time?: string | null,
+          override_type?: SpecialistStatus | null,
+        } | null > | null,
+      } | null,
       created_date_time?: string | null,
       updated_date_time?: string | null,
     } | null > | null,
@@ -487,6 +502,21 @@ export type ListSpecialistProfilesQuery = {
       notes?: string | null,
       user_status?: SpecialistStatus | null,
       is_paged?: boolean | null,
+      availability?:  {
+        __typename: "SpecialistAvailability",
+        overrides?:  Array< {
+          __typename: "SpecialistAvalabilityOverride",
+          start_time?: string | null,
+          end_time?: string | null,
+          override_type?: SpecialistStatus | null,
+        } | null > | null,
+        schedules?:  Array< {
+          __typename: "SpecialistAvalabilityOverride",
+          start_time?: string | null,
+          end_time?: string | null,
+          override_type?: SpecialistStatus | null,
+        } | null > | null,
+      } | null,
       created_date_time?: string | null,
       updated_date_time?: string | null,
     } | null > | null,

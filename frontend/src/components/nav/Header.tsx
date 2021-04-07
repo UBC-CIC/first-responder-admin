@@ -54,7 +54,6 @@ export const Header = (props: AppAuthStateProps) => {
             <Navbar.Brand>
                 <span className="brand-logo"><i>STARS</i><span className="brand-logo-sub">Service Desk</span></span>
             </Navbar.Brand>
-            <Navbar.Toggle aria-controls='responsive-navbar-nav' />
         </Navbar>
     )
 }
