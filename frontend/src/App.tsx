@@ -29,7 +29,7 @@ function App() {
                 height: '100%',
                 backgroundColor: 'white'
             }}>
-                <Navigation userName={''} authState={authState}/>
+                <Navigation />
                 <AmplifyAuthenticator>
                     <AmplifySignUp
                         slot="sign-up"
