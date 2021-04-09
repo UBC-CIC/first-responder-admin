@@ -11,8 +11,14 @@ import {
 import {
     Role,
     FederatedPrincipal,
-    ManagedPolicy
-} from "@aws-cdk/aws-iam";
+    ManagedPolicy, 
+    ServicePrincipal, 
+    PolicyDocument, 
+    PolicyStatement, 
+    Effect 
+} from '@aws-cdk/aws-iam';
+import lambda = require('@aws-cdk/aws-lambda');
+import cdk = require('@aws-cdk/core');
 
 /**
  * FirstResponderAdminCognitoStack defines a Cognito User and Identity Pool. The user pool will be used for authenticating
@@ -24,9 +30,50 @@ export class FirstResponderAdminCognitoStack extends Stack {
     constructor(scope: Construct, id: string) {
         super(scope, id, {
             env: {
-              region: 'ca-central-1'
+                region: 'ca-central-1'
             },
-          });
+        });
+
+        const lambdaRole = new Role(this, 'FirstResponderCognitoLambdaRole', {
+            roleName: 'FirstResponderCognitoLambdaRole',
+            assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+            inlinePolicies: {
+                additional: new PolicyDocument({
+                        statements: [
+                        new PolicyStatement({
+                            effect: Effect.ALLOW,
+                            actions: [
+                                // DynamoDB
+                                'dynamodb:Scan',
+                                'dynamodb:GetItem',
+                                'dynamodb:PutItem',
+                                'dynamodb:Query',
+                                'dynamodb:UpdateItem',
+                                'dynamodb:DeleteItem',
+                                'dynamodb:BatchWriteItem',
+                                'dynamodb:BatchGetItem',
+                                // Lambda
+                                'lambda:InvokeFunction',
+                                // CloudWatch
+                                'cloudwatch:*',
+                                'logs:*',
+                            ],
+                            resources: ['*']
+                        })
+                    ]
+                }),
+            },
+        });
+
+        const createServiceDeskProfileFn = new lambda.Function(this, 'CreateServiceDeskProfile', {
+            functionName: "Service-Desk-Create",
+            code: new lambda.AssetCode('build/src'),
+            handler: 'service-desk-create.handler',
+            runtime: lambda.Runtime.NODEJS_12_X,
+            memorySize: 512,
+            timeout: cdk.Duration.seconds(30),
+            role: lambdaRole,
+        });
 
         // User Pool
         const userPool = new UserPool(this, 'FirstResponderAdminUserPool', {
@@ -47,18 +94,21 @@ export class FirstResponderAdminCognitoStack extends Stack {
             },
             standardAttributes: {
                 fullname: {
-                  required: true,
-                  mutable: false,
+                    required: true,
+                    mutable: false,
                 },
                 address: {
-                  required: false,
-                  mutable: true,
+                    required: false,
+                    mutable: true,
                 },
-              },
-              customAttributes: {
-                'joinedOn': new DateTimeAttribute(),
-              },
-              accountRecovery: AccountRecovery.EMAIL_ONLY,
+            },
+            customAttributes: {
+            'joinedOn': new DateTimeAttribute(),
+            },
+            accountRecovery: AccountRecovery.EMAIL_ONLY,
+            lambdaTriggers: {
+                postConfirmation: createServiceDeskProfileFn,
+            }
         });
         this.UserPoolId = userPool.userPoolId;
 

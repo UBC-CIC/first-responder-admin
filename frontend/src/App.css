@@ -49,3 +49,11 @@ amplify-authenticator {
   background-repeat: repeat;
   padding: 5px;
 }
+
+.authenticator-toast {
+    position: fixed;
+    top: 72px;
+    left: 16px;
+    right: 16px;
+    z-index: 2048;
+}

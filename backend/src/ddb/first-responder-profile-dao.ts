@@ -5,7 +5,7 @@ export type FirstResponderProfile = {
     "last_name": string; // Last Name (e.g. "Doe")
     "phone_number": string; // Phone Number (e.g. "+16041111111")
     "occupation": string; // User Role (e.g. "First Aid Attendant")
-    "organization": string; // User Role (e.g. "Talicum Mining")
+    "organization": string; // Organization (e.g. "Talicum Mining")
 };
 
 export class FirstResponderProfileDao {
@@ -69,8 +69,7 @@ export class FirstResponderProfileDao {
     /**
      * Retrieves all first responder profiles that match the provided search parameters.
      * 
-     * @param userStatus The user status
-     * @returns The meeting if it exists, null otherwise.
+     * @returns The first responder profiles.
      */
     async getFirstResponders(): Promise<FirstResponderProfile[]> {
         const params: DocumentClient.QueryInput = {

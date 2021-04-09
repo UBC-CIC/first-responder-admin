@@ -1,13 +1,19 @@
 import React from 'react';
-import './App.css';
 import { AmplifyAuthenticator, AmplifySignUp } from '@aws-amplify/ui-react';
 import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
-import { Navigation } from './components/nav/Navigation'
+import { Navigation } from './components/nav/Navigation';
+import { Hub, HubCallback } from '@aws-amplify/core';
+import {
+ UI_AUTH_CHANNEL, TOAST_AUTH_ERROR_EVENT
+} from '@aws-amplify/ui-components';
+import './App.css';
+import { Alert } from 'react-bootstrap';
 
 function App() {
 
     const [authState, setAuthState] = React.useState<AuthState>();
     const [user, setUser] = React.useState<any>();
+    const [alertMessage, setAlertMessage] = React.useState('');
 
     React.useEffect(() => {
         return onAuthUIStateChange((nextAuthState, authData) => {
@@ -15,6 +21,17 @@ function App() {
             setUser(authData)
         });
     }, []);
+
+    const handleToastErrors: HubCallback = ({ payload }) => {
+        if (payload.event === TOAST_AUTH_ERROR_EVENT && payload.message) {
+        setAlertMessage(payload.message);
+        }
+    };
+
+    React.useEffect(() => {
+        Hub.listen(UI_AUTH_CHANNEL, handleToastErrors);
+        return () => Hub.remove(UI_AUTH_CHANNEL, handleToastErrors);
+    });
 
     return authState === AuthState.SignedIn && user ? (
         <div className="App">
@@ -30,7 +47,8 @@ function App() {
                 backgroundColor: 'white'
             }}>
                 <Navigation />
-                <AmplifyAuthenticator>
+                {alertMessage && (<Alert className="authenticator-toast" variant="danger" onClose={() => setAlertMessage("")} dismissible>{alertMessage}</Alert>)}
+                <AmplifyAuthenticator hideToast>
                     <AmplifySignUp
                         slot="sign-up"
                         headerText="Create New Account"
