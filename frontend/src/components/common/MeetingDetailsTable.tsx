@@ -7,6 +7,7 @@ import { Table, Badge, Button } from 'react-bootstrap';
 //import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import { AttendeeType, MeetingDetail } from '../../common/types/API';
 import Attendees from './Attendees';
+import Specialists from './Specialists';
 import './meetingDetailsTable.css';
 
 export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
@@ -115,8 +116,7 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
                                 {
                                     item.meeting_status === "ACTIVE" ? (
                                         <td>
-                                            <FontAwesomeIcon icon={faPhoneSquareAlt} size="2x" color="#28a745" />{' | '}
-                                            <FontAwesomeIcon icon={faUserPlus} size="2x" />{' | '}
+                                            <Specialists status="AVAILABLE" />{' | '}
                                             <FontAwesomeIcon icon={faPhoneSquare} size="2x" color="red" />{'  '}
                                         </td>
                                     ) : (

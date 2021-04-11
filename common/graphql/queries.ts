@@ -73,6 +73,39 @@ export const listSpecialistProfilesByStatus = /* GraphQL */ `
     }
   }
 `;
+export const getSpecialistProfilesByStatus = /* GraphQL */ `
+  query GetSpecialistProfilesByStatus($userStatus: SpecialistStatus) {
+    getSpecialistProfilesByStatus(userStatus: $userStatus) {
+      items {
+        email
+        first_name
+        last_name
+        phone_number
+        user_role
+        organization
+        profile_picture
+        notes
+        user_status
+        is_paged
+        availability {
+          overrides {
+            start_time
+            end_time
+            override_type
+          }
+          schedules {
+            start_time
+            end_time
+            override_type
+          }
+        }
+        created_date_time
+        updated_date_time
+      }
+      nextToken
+    }
+  }
+`;
 export const listSpecialistProfiles = /* GraphQL */ `
   query ListSpecialistProfiles($limit: Int, $nextToken: String) {
     listSpecialistProfiles(limit: $limit, nextToken: $nextToken) {
