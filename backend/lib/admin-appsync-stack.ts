@@ -183,6 +183,13 @@ export class FirstResponderAdminAppSyncStack extends Stack {
             responseMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Query.getSpecialistProfile.res.vtl`),
         });
 
+        specialistProfileTableDataSource.createResolver({
+            typeName: 'Query',
+            fieldName: 'getSpecialistProfilesByStatus',
+            requestMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Query.getSpecialistProfilesByStatus.req.vtl`),
+            responseMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Query.getSpecialistProfilesByStatus.res.vtl`),
+        });
+
         new CfnOutput(this, "GraphQLEndpoint", {
             value: api.graphqlUrl
         });

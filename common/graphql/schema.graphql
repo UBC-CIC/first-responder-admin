@@ -171,6 +171,7 @@ input ModelMeetingDetailConditionInput {
 type Query @aws_cognito_user_pools @aws_iam {
     getSpecialistProfile(phoneNumber: String!): SpecialistProfile
     listSpecialistProfilesByStatus(userStatus: SpecialistStatus, limit: Int, nextToken: String): SpecialistConnection
+    getSpecialistProfilesByStatus(userStatus: SpecialistStatus): SpecialistConnection
     listSpecialistProfiles(limit: Int, nextToken: String): SpecialistConnection
     getMeetingDetail(meetingId: String!): MeetingDetail
     listMeetingDetails(filter: ModelMeetingDetailFilterInput, limit: Int, nextToken: String): MeetingDetailConnection
