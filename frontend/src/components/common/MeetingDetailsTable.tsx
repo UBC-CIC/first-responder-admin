@@ -1,11 +1,11 @@
 import { navItem } from '@aws-amplify/ui';
-import { faUser, faPhoneSquareAlt, faPhoneSquare, faUserPlus, faHeadset, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faPhoneSquareAlt, faPhoneSquare, faUserPlus, faHeadset, faExclamationTriangle, faPhone } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react'
-import { Table, Badge, Button } from 'react-bootstrap';
+import { Table, Badge, Button, Alert, Tooltip, OverlayTrigger } from 'react-bootstrap';
 //import BootstrapTable from 'react-bootstrap-table-next';
 //import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
-import { AttendeeType, MeetingDetail } from '../../common/types/API';
+import { AttendeeState, AttendeeType, MeetingDetail } from '../../common/types/API';
 import Attendees from './Attendees';
 import Specialists from './Specialists';
 import './meetingDetailsTable.css';
@@ -52,7 +52,7 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
                 }
             }
         }
-        return "";
+        return null;
     }
 
     return (
@@ -101,8 +101,8 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
                                 </td>
                                 <td>
                                     {
-                                        item.attendees && item.attendees.length > 0 ? (
-                                            <Attendees attendeeList={item.attendees} />
+                                        item.attendees && item.attendees.filter(a => a?.attendee_state === AttendeeState.IN_CALL).length > 0 ? (
+                                            <Attendees attendeeList={item.attendees.filter(a => a?.attendee_state === AttendeeState.IN_CALL)} />
                                         ) : (
                                             <div>
                                             <FontAwesomeIcon icon={faUser} />{' '}
@@ -116,8 +116,9 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
                                 {
                                     item.meeting_status === "ACTIVE" ? (
                                         <td>
-                                            <Specialists status="AVAILABLE" />{' | '}
-                                            <FontAwesomeIcon icon={faPhoneSquare} size="2x" color="red" />{'  '}
+                                            <Specialists status="AVAILABLE" />
+                                            {' '}
+                                            <Button variant="danger" title="End Meeting"><FontAwesomeIcon icon={faPhone} />{'  '}</Button>
                                         </td>
                                     ) : (
                                         <td>
@@ -136,8 +137,8 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
                                 </td>
                                 <td>
                                     {
-                                        getServiceDeskAttendee(item) === "" ? 
-                                            <><FontAwesomeIcon icon={faHeadset} />{' '}{getServiceDeskAttendee(item)}</> : <><FontAwesomeIcon icon={faExclamationTriangle} />{' '}No Service Desk Attendees</>
+                                        getServiceDeskAttendee(item) ? 
+                                            <><FontAwesomeIcon icon={faHeadset} />{' '}{getServiceDeskAttendee(item)}</> : <Badge variant="danger">No Check-Ins</Badge>
                                     }
                                 </td>
                             </tr>

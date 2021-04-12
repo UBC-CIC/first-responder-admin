@@ -133,6 +133,7 @@ export class FirstResponderAdminLambdaPSTNStack extends cdk.Stack {
         detail: {
           'eventType': [
             'chime:MeetingStarted',
+            'chime:AttendeeLeft',
             'chime:MeetingEnded',
           ]
         }

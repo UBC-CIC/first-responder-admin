@@ -39,7 +39,7 @@ export const Specialists = (props: { status: String }) => {
 
     return (
         <>
-            <Button variant="light" onClick={onGetAvailableSpecialists}>
+            <Button variant="light" onClick={onGetAvailableSpecialists} title="Add Specialists">
                 <FontAwesomeIcon icon={faUserPlus} />
             </Button>
 

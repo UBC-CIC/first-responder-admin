@@ -1,5 +1,5 @@
 import AWS = require('aws-sdk');
-import { AttendeeJoinType, AttendeeType, MeetingDetails, MeetingDetailsDao } from './ddb/meeting-dao';
+import { AttendeeJoinType, AttendeeState, AttendeeType, MeetingDetails, MeetingDetailsDao } from './ddb/meeting-dao';
 const { v4: uuidv4 } = require('uuid');
 
 // The AWS Chime client is only available in select regions
@@ -59,7 +59,7 @@ async function newCall(callId: string, phoneNumber: string, dao: MeetingDetailsD
 
     // Registers the meeting in DDB
     //
-    await dao.createNewMeeting(meeting.MeetingId!, phoneNumber, attendeeResponse.Attendee!.AttendeeId!, callId, externalMeetingId, AttendeeType.NOT_SPECIFIED, AttendeeJoinType.DATA);
+    await dao.createNewMeeting(meeting.MeetingId!, phoneNumber, attendeeResponse.Attendee!.AttendeeId!, callId, externalMeetingId, AttendeeJoinType.DATA, AttendeeState.IN_CALL);
 
     const joinInfo = {
         id: callId,
@@ -87,7 +87,7 @@ async function joinExistingCall(meetingDetails: MeetingDetails , event: any, dao
 
     // Registers the new attendee in DDB
     //
-    await dao.addAttendee(meetingDetails, externalAttendeeId, phoneNumber, AttendeeType.NOT_SPECIFIED, AttendeeJoinType.DATA);
+    await dao.addAttendeeByPhoneNumber(meetingDetails, externalAttendeeId, phoneNumber, AttendeeJoinType.DATA, AttendeeState.IN_CALL);
     
       const joinInfo = {
         id: phoneNumber,

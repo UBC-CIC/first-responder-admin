@@ -30,7 +30,7 @@ export class FirstResponderAdminDynamoStack extends cdk.Stack {
         const serviceDeskProfileTable = new dynamodb.Table(this, FirstResponderAdminDynamoStack.SERVICE_DESK_PROFILE_TABLE_ID, {
             tableName: FirstResponderAdminDynamoStack.SERVICE_DESK_TABLE_NAME,
             partitionKey: {
-                name: 'email',
+                name: 'username',
                 type: dynamodb.AttributeType.STRING
               },
             billingMode: BillingMode.PAY_PER_REQUEST,

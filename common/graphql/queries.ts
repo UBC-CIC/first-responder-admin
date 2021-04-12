@@ -148,6 +148,7 @@ export const getMeetingDetail = /* GraphQL */ `
         attendee_id
         attendee_type
         attendee_join_type
+        attendee_state
         user_role
         organization
         first_name
@@ -176,6 +177,7 @@ export const listMeetingDetails = /* GraphQL */ `
           attendee_id
           attendee_type
           attendee_join_type
+          attendee_state
           user_role
           organization
           first_name
@@ -210,6 +212,7 @@ export const getMeetingDetailsByStatus = /* GraphQL */ `
           attendee_id
           attendee_type
           attendee_join_type
+          attendee_state
           user_role
           organization
           first_name
@@ -248,6 +251,7 @@ export const getMeetingDetailsByStatusAndCreateTime = /* GraphQL */ `
           attendee_id
           attendee_type
           attendee_join_type
+          attendee_state
           user_role
           organization
           first_name

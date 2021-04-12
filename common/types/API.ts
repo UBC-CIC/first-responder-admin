@@ -81,6 +81,7 @@ export type AttendeeInput = {
   attendee_id?: string | null,
   attendee_type?: AttendeeType | null,
   attendee_join_type?: AttendeeJoinType | null,
+  attendee_state?: AttendeeState | null,
   user_role?: string | null,
   organization?: string | null,
   first_name?: string | null,
@@ -99,6 +100,13 @@ export enum AttendeeType {
 export enum AttendeeJoinType {
   PSTN = "PSTN",
   DATA = "DATA",
+}
+
+
+export enum AttendeeState {
+  PAGED = "PAGED",
+  IN_CALL = "IN_CALL",
+  LEFT = "LEFT",
 }
 
 
@@ -144,6 +152,7 @@ export type Attendee = {
   attendee_id?: string | null,
   attendee_type?: AttendeeType | null,
   attendee_join_type?: AttendeeJoinType | null,
+  attendee_state?: AttendeeState | null,
   user_role?: string | null,
   organization?: string | null,
   first_name?: string | null,
@@ -447,6 +456,47 @@ export type ListSpecialistProfilesByStatusQueryVariables = {
 
 export type ListSpecialistProfilesByStatusQuery = {
   listSpecialistProfilesByStatus?:  {
+    __typename: "SpecialistConnection",
+    items?:  Array< {
+      __typename: "SpecialistProfile",
+      email?: string | null,
+      first_name?: string | null,
+      last_name?: string | null,
+      phone_number: string,
+      user_role?: string | null,
+      organization?: string | null,
+      profile_picture?: string | null,
+      notes?: string | null,
+      user_status?: SpecialistStatus | null,
+      is_paged?: boolean | null,
+      availability?:  {
+        __typename: "SpecialistAvailability",
+        overrides?:  Array< {
+          __typename: "SpecialistAvalabilityOverride",
+          start_time?: string | null,
+          end_time?: string | null,
+          override_type?: SpecialistStatus | null,
+        } | null > | null,
+        schedules?:  Array< {
+          __typename: "SpecialistAvalabilityOverride",
+          start_time?: string | null,
+          end_time?: string | null,
+          override_type?: SpecialistStatus | null,
+        } | null > | null,
+      } | null,
+      created_date_time?: string | null,
+      updated_date_time?: string | null,
+    } | null > | null,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GetSpecialistProfilesByStatusQueryVariables = {
+  userStatus?: SpecialistStatus | null,
+};
+
+export type GetSpecialistProfilesByStatusQuery = {
+  getSpecialistProfilesByStatus?:  {
     __typename: "SpecialistConnection",
     items?:  Array< {
       __typename: "SpecialistProfile",

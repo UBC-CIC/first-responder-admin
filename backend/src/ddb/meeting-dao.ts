@@ -1,15 +1,16 @@
-import { Chime } from "aws-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { FirstResponderProfileDao } from "./first-responder-profile-dao";
+import { ServiceDeskProfileDao } from "./service-desk-profile-dao";
 import { SpecialistProfileDao } from "./specialist-profile-dao";
 
-const chime = new Chime({ region: 'us-east-1', endpoint: 'service.chime.aws.amazon.com' });
+const DEFAULT_ORGANIZATION = "STARS";
 
 type Attendee = {
     "phone_number": string;
     "attendee_id": string;
     "attendee_type"?: AttendeeType;
     "attendee_join_type"?: AttendeeJoinType;
+    "attendee_state"?: AttendeeState;
     "user_role"?: string; // If applicable, denotes the specific type of user (e.g. cardiologist, safety supervisor)
     "organization"?: string;
     "first_name"?: string;
@@ -37,6 +38,12 @@ export enum AttendeeJoinType {
     DATA = "DATA",
 }
 
+export enum AttendeeState {
+    PAGED = "PAGED",
+    IN_CALL = "IN_CALL",
+    LEFT = "LEFT",
+}
+
 export enum AttendeeType {
     FIRST_RESPONDER = "FIRST_RESPONDER",
     SPECIALIST = "SPECIALIST",
@@ -60,43 +67,16 @@ export class MeetingDetailsDao {
      * @param attendeeId The attendee ID.
      * @param callId The call ID.
      * @param externalMeetingId The user-friendly meeting ID that users can use to dial in with.
-     * @param attendeeType Is this a first-responder? specialist?
      * @param attendeeJoinType Did the user join by data or PSTN?
+     * @param attendeeState Is the user paged? in the call?
      */
     async createNewMeeting(meetingId: string, phoneNumber: string, attendeeId: string, callId: string, 
-                           externalMeetingId: string, attendeeType: AttendeeType, attendeeJoinType: AttendeeJoinType): Promise<void> {
+                           externalMeetingId: string, attendeeJoinType: AttendeeJoinType, attendeeState: AttendeeState): Promise<void> {
 
-        // Retrieves additional information about the user
-        const specialistDao = new SpecialistProfileDao(this.db);
-        const specialistProfile = await specialistDao.getSpecialistProfile(phoneNumber);
-        let firstName = "";
-        let lastName = "";
-        let userRole = "";
-        let organization = "";
-        let username = "";
-        if (specialistProfile) {
-            console.log(`User with phone number ${phoneNumber} is a specialist`);
-            firstName = specialistProfile.first_name;
-            lastName = specialistProfile.last_name;
-            userRole = specialistProfile.user_role;
-            organization = specialistProfile.organization;
-            attendeeType = AttendeeType.SPECIALIST;
-        }
-        // TODO: Add support for other user types
-
+        const attendee = await this.getAttendeeForMeetingByPhoneNumber(attendeeId, phoneNumber, attendeeJoinType, attendeeState);
         const meetingObj: MeetingDetails = {
             "meeting_id": meetingId,
-            "attendees": [{
-                "attendee_id": attendeeId,
-                "phone_number": phoneNumber,
-                "attendee_type": attendeeType,
-                "attendee_join_type": attendeeJoinType,
-                "first_name": firstName,
-                "last_name": lastName,
-                "user_role": userRole,
-                "organization": organization,
-                "username": username,
-            }],
+            "attendees": [attendee],
             "create_date_time": new Date().toISOString(),
             "call_id": callId,
             "external_meeting_id": externalMeetingId,
@@ -111,23 +91,101 @@ export class MeetingDetailsDao {
     }
 
     /**
-     * Add attendee by updating meeting details attendee list with new attendee.
+     * Add attendee by updating meeting details attendee list with new attendee. If an existing attendee is found with the 
+     * same phone number, we will update the existing attendee.
      * 
      * @param meetingDetails details of the meeting to be added attendee to
      * @param attendeeId     id of the new attendee to be added
      * @param phoneNumber    phone number of the new attendee to be added
-     * @param attendeeType Is this a first-responder? specialist?
      * @param attendeeJoinType Did the user join by data or PSTN?
+     * @param attendeeState Is the user paged? in the call?
      */
-    async addAttendee(meetingDetails: MeetingDetails, attendeeId: string, phoneNumber: string, 
-                      attendeeType: AttendeeType, attendeeJoinType: AttendeeJoinType): Promise<void> {
-        // Retrieves additional information about the user
+    async addAttendeeByPhoneNumber(meetingDetails: MeetingDetails, attendeeId: string, phoneNumber: string, 
+                      attendeeJoinType: AttendeeJoinType, attendeeState: AttendeeState): Promise<void> {
+        let existingAttendee = null;
+        for (let attendee of meetingDetails.attendees) {
+            if (attendee.phone_number === phoneNumber) {
+                existingAttendee = attendee;
+                break;
+            }
+        }
+        if (existingAttendee) {
+            // Updates an existing attendee.
+            existingAttendee.attendee_state = attendeeState;
+            existingAttendee.attendee_join_type = attendeeJoinType;
+            existingAttendee.attendee_id = attendeeId;
+        } else {
+            // Adds a new attendee.
+            const attendee = await this.getAttendeeForMeetingByPhoneNumber(attendeeId, phoneNumber, attendeeJoinType, attendeeState);
+            meetingDetails.attendees.push(attendee);
+        }
+        await this.saveMeetingDetails(meetingDetails);  
+    }
+
+    /**
+     * Add attendee by updating meeting details attendee list with new attendee. If an existing attendee is found with the 
+     * same username, we will update the existing attendee. This is intended to be used when the service desk joins.
+     * 
+     * @param meetingDetails details of the meeting to be added attendee to
+     * @param attendeeId     id of the new attendee to be added
+     * @param username    username of the new attendee to be added
+     * @param attendeeJoinType Did the user join by data or PSTN?
+     * @param attendeeState Is the user paged? in the call?
+     */
+    async addServiceDeskAttendee(meetingDetails: MeetingDetails, attendeeId: string, username: string, 
+                      attendeeJoinType: AttendeeJoinType, attendeeState: AttendeeState): Promise<void> {
+
+        let existingAttendee = null;
+        for (let attendee of meetingDetails.attendees) {
+            if (attendee.username === username) {
+                existingAttendee = attendee;
+                break;
+            }
+        }
+        if (existingAttendee) {
+            // Updates an existing attendee.
+            existingAttendee.attendee_state = attendeeState;
+            existingAttendee.attendee_join_type = attendeeJoinType;
+            existingAttendee.attendee_id = attendeeId;
+        } else {
+            // Adds a new attendee.
+            const serviceDeskDao = new ServiceDeskProfileDao(this.db);
+            const serviceDeskProfile = await serviceDeskDao.getServiceDeskProfile(username);
+            const firstName = serviceDeskProfile.name.split(" ")[0];
+            const lastName = serviceDeskProfile.name.split(" ").length > 1 ? serviceDeskProfile.name.split(" ")[1] : "";
+            const attendee: Attendee = {
+                "attendee_id": attendeeId,
+                "phone_number": serviceDeskProfile.phone_number,
+                "attendee_type": AttendeeType.SERVICE_DESK,
+                "attendee_join_type": attendeeJoinType,
+                "attendee_state": attendeeState,
+                "first_name": firstName,
+                "last_name": lastName,
+                "user_role": "",
+                "organization": DEFAULT_ORGANIZATION,
+                "username": username,
+            }
+            meetingDetails.attendees.push(attendee);
+        }
+        await this.saveMeetingDetails(meetingDetails);  
+    }
+
+    /**
+     * Retrieves the attendee information based on their phone number
+     * @param attendeeId Attendee ID
+     * @param phoneNumber Phone number of the new attendee to be added
+     * @param attendeeJoinType Did the user join by data or PSTN?
+     * @returns the attendee
+     */
+    async getAttendeeForMeetingByPhoneNumber(attendeeId: string, phoneNumber: string, attendeeJoinType: AttendeeJoinType, attendeeState: AttendeeState): Promise<Attendee> {
         const specialistDao = new SpecialistProfileDao(this.db);
         const specialistProfile = await specialistDao.getSpecialistProfile(phoneNumber);
         let firstName = "";
         let lastName = "";
         let userRole = "";
         let organization = "";
+        let username = "";
+        let attendeeType = AttendeeType.NOT_SPECIFIED;
         if (specialistProfile) {
             console.log(`User with phone number ${phoneNumber} is a specialist`);
             firstName = specialistProfile.first_name;
@@ -148,19 +206,37 @@ export class MeetingDetailsDao {
             }
         }
 
-        const attendee = {
+        const attendee: Attendee = {
             "attendee_id": attendeeId,
             "phone_number": phoneNumber,
             "attendee_type": attendeeType,
             "attendee_join_type": attendeeJoinType,
+            "attendee_state": attendeeState,
             "first_name": firstName,
             "last_name": lastName,
             "user_role": userRole,
             "organization": organization,
+            "username": username,
         }
+        return attendee;
+    }
 
-        meetingDetails.attendees.push(attendee);
-        await this.saveMeetingDetails(meetingDetails);  
+    /**
+     * Updates the attendee state to indicate that the user has left the call.
+     * @param meetingId the Chime meeting ID
+     * @param meetingId the Chime attendee ID
+     */
+    async attendeeLeft(meetingId: string, attendeeId: string): Promise<void> {
+        const existingMeeting = await this.getMeetingWithMeetingId(meetingId);
+        if (existingMeeting) {
+            console.log(`Updating existing meeting with meeting ID ${meetingId}`);
+            for (let attendee of existingMeeting.attendees) {
+                if (attendee.attendee_id === attendeeId) {
+                    attendee.attendee_state = AttendeeState.LEFT;
+                }
+                await this.saveMeetingDetails(existingMeeting);
+            }
+        }
     }
 
     /**
@@ -170,7 +246,7 @@ export class MeetingDetailsDao {
     async endMeeting(meetingId: string): Promise<void> {
         const existingMeeting = await this.getMeetingWithMeetingId(meetingId);
         if (existingMeeting) {
-            console.log(`Deleting existing meeting with meeting ID ${meetingId}`);
+            console.log(`Closing existing meeting with meeting ID ${meetingId}`);
             existingMeeting.meeting_status = MeetingStatus.CLOSED.toString();
             existingMeeting.end_date_time = new Date().toISOString();
             await this.saveMeetingDetails(existingMeeting);
