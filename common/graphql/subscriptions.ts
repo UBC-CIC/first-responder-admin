@@ -11,6 +11,7 @@ export const onCreateMeetingDetail = /* GraphQL */ `
         attendee_id
         attendee_type
         attendee_join_type
+        attendee_state
         user_role
         organization
         first_name
@@ -34,6 +35,7 @@ export const onUpdateMeetingDetail = /* GraphQL */ `
         attendee_id
         attendee_type
         attendee_join_type
+        attendee_state
         user_role
         organization
         first_name
@@ -57,6 +59,7 @@ export const onDeleteMeetingDetail = /* GraphQL */ `
         attendee_id
         attendee_type
         attendee_join_type
+        attendee_state
         user_role
         organization
         first_name

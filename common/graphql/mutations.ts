@@ -104,6 +104,7 @@ export const createMeetingDetail = /* GraphQL */ `
         attendee_id
         attendee_type
         attendee_join_type
+        attendee_state
         user_role
         organization
         first_name
@@ -130,6 +131,7 @@ export const updateMeetingDetail = /* GraphQL */ `
         attendee_id
         attendee_type
         attendee_join_type
+        attendee_state
         user_role
         organization
         first_name
@@ -156,6 +158,7 @@ export const deleteMeetingDetail = /* GraphQL */ `
         attendee_id
         attendee_type
         attendee_join_type
+        attendee_state
         user_role
         organization
         first_name
@@ -179,6 +182,7 @@ export const publishMeetingDetailUpdates = /* GraphQL */ `
         attendee_id
         attendee_type
         attendee_join_type
+        attendee_state
         user_role
         organization
         first_name

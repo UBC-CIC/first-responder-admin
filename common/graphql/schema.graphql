@@ -81,6 +81,7 @@ type Attendee @aws_cognito_user_pools @aws_iam {
   attendee_id: String
   attendee_type: AttendeeType
   attendee_join_type: AttendeeJoinType
+  attendee_state: AttendeeState
   user_role: String
   organization: String
   first_name: String
@@ -100,6 +101,12 @@ enum AttendeeType {
     NOT_SPECIFIED,
 }
 
+enum AttendeeState {
+    PAGED,
+    IN_CALL,
+    LEFT,
+}
+
 type MeetingDetailConnection @aws_cognito_user_pools @aws_iam {
   items: [MeetingDetail]
   nextToken: String
@@ -110,6 +117,7 @@ input AttendeeInput {
   attendee_id: String
   attendee_type: AttendeeType
   attendee_join_type: AttendeeJoinType
+  attendee_state: AttendeeState
   user_role: String
   organization: String
   first_name: String

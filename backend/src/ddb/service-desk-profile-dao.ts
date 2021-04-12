@@ -49,16 +49,16 @@ export class ServiceDeskProfileDao {
     }
 
     /**
-     * Retrieves a first responder profile by their email.
+     * Retrieves a first responder profile by their username.
      * 
-     * @param email Gets a user profile by their email.
+     * @param username Gets a user profile by their username.
      * @returns The meeting if it exists.
      */
-    async getServiceDeskProfile(email: string): Promise<ServiceDeskProfile> {
+    async getServiceDeskProfile(username: string): Promise<ServiceDeskProfile> {
         const params: DocumentClient.GetItemInput = {
             TableName: 'service-desk-profile',
             Key: {
-                "email": email
+                "username": username
             }
         };
         const result = await this.db.get(params).promise();

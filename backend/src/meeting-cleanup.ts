@@ -17,5 +17,11 @@ export const handler = async (event: any = {}, context: any, callback: any): Pro
         const dao = new MeetingDetailsDao(db);
         await dao.endMeeting(meetingId);
         console.log(`Meeting ended...`);
+    } else if (eventType === "chime:AttendeeLeft") {
+        console.log(`Found eventType attendee left...`);
+        const attendeeId = event["detail"]["attendeeId"];
+        const dao = new MeetingDetailsDao(db);
+        await dao.attendeeLeft(meetingId, attendeeId);
+        console.log(`Attendee left...`);
     }
 };
