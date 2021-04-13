@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Button, Modal, Table } from 'react-bootstrap';
-import { faUserPlus, faPhoneSquareAlt } from '@fortawesome/free-solid-svg-icons'
+import { Button, Modal } from 'react-bootstrap';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SpecialistProfile } from '../../common/types/API';
 import { getSpecialistProfilesByStatus } from '../../common/graphql/queries';
+import { SpecialistsTable } from '../common/SpecialistsTable';
 import './Specialists.css';
 import { API } from 'aws-amplify';
 
@@ -20,7 +21,7 @@ export const Specialists = (props: { status: String }) => {
 
             const specialists: any = await API.graphql({
                 query: getSpecialistProfilesByStatus,
-                variables: { 
+                variables: {
                     userStatus: userStatus
                 }
             });
@@ -43,8 +44,8 @@ export const Specialists = (props: { status: String }) => {
                 <FontAwesomeIcon icon={faUserPlus} />
             </Button>
 
-            <Modal 
-                show={show} 
+            <Modal
+                show={show}
                 onHide={handleClose}
                 dialogClassName="modal-90w"
             >
@@ -52,52 +53,7 @@ export const Specialists = (props: { status: String }) => {
                     <Modal.Title> {"Specialists - "}{props.status} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>Phone Number</th>
-                                <th>Name</th>
-                                <th>Organization</th>
-                                <th>Role</th>
-                                <th>Email</th>
-                                <th>Notes</th>
-                                <th>Status</th>
-                                <th>Page</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {items && items.map((specialist: SpecialistProfile | null) => (
-                                <tr key={specialist?.email}>
-                                    <td>
-                                        {specialist?.phone_number}
-                                    </td>
-                                    <td>
-                                        {specialist?.first_name}{' '}{specialist?.last_name}
-                                    </td>
-                                    <td>
-                                        {specialist?.organization}
-                                    </td>
-                                    <td>
-                                        {specialist?.user_role}
-                                    </td>
-                                    <td>
-                                        {specialist?.email}
-                                    </td>
-                                    <td>
-                                        {specialist?.notes}
-                                    </td>
-                                    <td>
-                                        {specialist?.is_paged? "Paged" : "Free"}
-                                    </td>
-                                    <td>
-                                        <Button variant="light">
-                                            <FontAwesomeIcon icon={faPhoneSquareAlt} size="2x" color="#28a745" />
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
+                    <SpecialistsTable items={items} />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
