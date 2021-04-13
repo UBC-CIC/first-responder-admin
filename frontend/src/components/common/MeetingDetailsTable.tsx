@@ -47,7 +47,7 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
     const getServiceDeskAttendee = (item: MeetingDetail) => {
         if (item.attendees) {
             for (let attendee of item.attendees) {
-                if (attendee?.attendee_type == AttendeeType.SERVICE_DESK) {
+                if (attendee?.attendee_type === AttendeeType.SERVICE_DESK) {
                     return attendee.username;
                 }
             }
