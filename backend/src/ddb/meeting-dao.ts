@@ -26,6 +26,7 @@ export type MeetingDetails = {
     "call_id": string;
     "external_meeting_id": string;
     "meeting_status": string;
+    "meeting_comments": string;
 };
 
 export enum MeetingStatus {
@@ -81,6 +82,7 @@ export class MeetingDetailsDao {
             "call_id": callId,
             "external_meeting_id": externalMeetingId,
             "meeting_status": MeetingStatus.ACTIVE.toString(),
+            "meeting_comments": "",
         };
         const params = {
             TableName: 'meeting-detail',

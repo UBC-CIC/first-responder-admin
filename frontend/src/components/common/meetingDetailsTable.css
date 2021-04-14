@@ -11,3 +11,7 @@
   background: white;
   z-index: 1;
 }
+
+.meeting-table .faint-text {
+  color: #999;
+}

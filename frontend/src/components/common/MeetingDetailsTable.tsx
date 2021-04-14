@@ -1,48 +1,41 @@
-import { navItem } from '@aws-amplify/ui';
-import { faUser, faPhoneSquareAlt, faPhoneSquare, faUserPlus, faHeadset, faExclamationTriangle, faPhone } from '@fortawesome/free-solid-svg-icons'
+import { useState } from 'react'
+import { faUser, faPhoneSquareAlt, faPhoneSquare, faUserPlus, faHeadset, faExclamationTriangle, faPhone, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react'
-import { Table, Badge, Button, Alert, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Table, Badge, Button, Alert, Tooltip, OverlayTrigger, Popover } from 'react-bootstrap';
 //import BootstrapTable from 'react-bootstrap-table-next';
 //import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import { AttendeeState, AttendeeType, MeetingDetail } from '../../common/types/API';
 import Attendees from './Attendees';
 import Specialists from './Specialists';
 import './meetingDetailsTable.css';
+import { API } from 'aws-amplify';
+import { updateMeetingDetail } from '../../common/graphql/mutations';
 
 export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
 
-    // const columns = [{
-    //     dataField: 'meetingId',
-    //     text: 'Meeting ID',
-    //     sort: true,
-    //     filter: textFilter(),
-    //     headerStyle: { width: '160px' }
-    // }, {
-    //     dataField: 'status',
-    //     text: 'Status',
-    //     sort: true,
-    //     filter: textFilter(),
-    //     headerStyle: { width: '380px' }
-    // }, {
-    //     dataField: 'service_desk_attendee',
-    //     text: 'Admin',
-    //     sort: true,
-    //     filter: textFilter(),
-    //     headerStyle: { width: '140px' }
-    // }, {
-    //     dataField: 'attendeeList',
-    //     text: 'Attendees',
-    //     sort: true,
-    //     filter: textFilter(),
-    //     headerStyle: { width: '140px' }
-    // }, {
-    //     dataField: 'createDateTime',
-    //     text: 'Start Time',
-    //     sort: true,
-    //     filter: textFilter(),
-    //     headerStyle: { width: '140px' }
-    // }];
+    const [currTime, setCurrTime] = useState(new Date());
+
+    setInterval(() => {
+        setCurrTime(new Date());
+    }, 1000);
+
+    const timeSince = (start: string, end: string | null | undefined) => {
+        let actualStart = new Date(start);
+        let actualEnd = currTime;
+        if (end) {
+            actualEnd = new Date(end);
+        }
+
+        let secs = (actualEnd.getTime() - actualStart.getTime()) / 1000;
+        var hours = Math.floor(secs / 3600);
+        var minutes = Math.floor(secs / 60) % 60;
+        var seconds = Math.floor(secs % 60);
+        return [hours, minutes, seconds]
+            .map(v => v < 10 ? "0" + v : v)
+            .filter((v, i) => v !== "00" || i > 0)
+            .join(":")
+    }
 
     const getServiceDeskAttendee = (item: MeetingDetail) => {
         if (item.attendees) {
@@ -55,29 +48,34 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
         return null;
     }
 
+    const onModifyComment = async (meetingDetail: MeetingDetail, event: any) => {
+        event.preventDefault()
+        event.stopPropagation()
+        const updatedComment = event.target.innerText;
+        meetingDetail.meeting_comments = updatedComment;
+
+        try {
+            const data: any = await API.graphql({
+                query: updateMeetingDetail,
+                variables: {input: meetingDetail}
+            })
+        } catch (e) {
+            console.log('Mutation returned error', e)
+        }
+    }
+
     return (
         <div className="meeting-table">
-            {/* <BootstrapTable
-                bootstrap4
-                hover
-                condensed
-                keyField='meetingId'
-                data={items.items}
-                columns={columns}
-                rowStyle={{ height: '60px', verticalAlign: 'center' }}
-                filter={filterFactory()}
-                filterPosition='top'
-                noDataIndication='No Meetings in Progress.'>
-            </BootstrapTable> */}
-
             <Table striped bordered hover size="sm">
                 <thead>
                     <tr>
                         <th>Meeting ID</th>
+                        <th>Title</th>
                         <th>Status</th>
                         <th>Attendees</th>
                         <th>Action</th>
                         <th>Start Time</th>
+                        <th>Duration</th>
                         <th>Service Desk Attendee</th>
                     </tr>
                 </thead>
@@ -87,13 +85,34 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
                             <tr key={item.meeting_id}>
                                 <td>{item.external_meeting_id}</td>
                                 <td>
+                                    <OverlayTrigger
+                                        trigger="hover"
+                                        placement="bottom"
+                                        overlay={
+                                            <Popover id={`meeting-popover-${item.meeting_id}`}>
+                                                <Popover.Content>
+                                                    Click to edit the meeting title
+                                                </Popover.Content>
+                                            </Popover>
+                                        }
+                                    >
+                                        <span contentEditable 
+                                                suppressContentEditableWarning
+                                                className={item.meeting_comments === "" ? "faint-text" : ""}
+                                                onBlur={e => onModifyComment(item, e)}
+                                        >
+                                            {item.meeting_comments === "" ? "Meeting" : item.meeting_comments}
+                                        </span>
+                                    </OverlayTrigger>
+                                </td>
+                                <td>
                                     {
                                         item.meeting_status === "ACTIVE" ? (
-                                            <Badge pill variant="success">
+                                            <Badge variant="success">
                                                 {item.meeting_status}
                                             </Badge>
                                         ) : (
-                                                <Badge pill variant="secondary">
+                                                <Badge variant="secondary">
                                                     {item.meeting_status}
                                                 </Badge>
                                             )
@@ -105,10 +124,10 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
                                             <Attendees attendeeList={item.attendees.filter(a => a?.attendee_state === AttendeeState.IN_CALL)} />
                                         ) : (
                                             <div>
-                                            <FontAwesomeIcon icon={faUser} />{' '}
-                                            <Badge pill variant="dark">
-                                                {0}
-                                            </Badge>
+                                                <FontAwesomeIcon icon={faUser} />{' '}
+                                                <Badge pill variant="dark">
+                                                    {0}
+                                                </Badge>
                                             </div>
                                         )
                                     }
@@ -133,6 +152,13 @@ export const MeetingDetailsTable = (props: {items: Array<MeetingDetail>}) => {
                                         item.create_date_time !== undefined && item.create_date_time !== null ? (
                                             new Date(item.create_date_time).toLocaleTimeString([],{ year: 'numeric', month: 'long', day: 'numeric' })
                                         ) : (item.create_date_time)
+                                    }
+                                </td>
+                                <td>
+                                    {
+                                        item.create_date_time !== undefined && item.create_date_time !== null && (
+                                            <>{timeSince(item.create_date_time, null)}</>
+                                        )
                                     }
                                 </td>
                                 <td>
