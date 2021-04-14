@@ -74,6 +74,7 @@ type MeetingDetail @aws_cognito_user_pools @aws_iam {
   call_id: String
   external_meeting_id: String
   meeting_status: String
+  meeting_comments: String
 }
 
 type Attendee @aws_cognito_user_pools @aws_iam {
@@ -135,6 +136,7 @@ input MeetingDetailInput {
   call_id: String
   external_meeting_id: String
   meeting_status: String
+  meeting_comments: String
 }
 
 input ModelStringInput {
@@ -158,6 +160,7 @@ input ModelMeetingDetailFilterInput {
   call_id: ModelStringInput
   external_meeting_id: ModelStringInput
   meeting_status: ModelStringInput
+  meeting_comments: ModelStringInput
   and: [ModelMeetingDetailFilterInput]
   or: [ModelMeetingDetailFilterInput]
   not: ModelMeetingDetailFilterInput
@@ -170,6 +173,7 @@ input ModelMeetingDetailConditionInput {
   call_id: ModelStringInput
   external_meeting_id: ModelStringInput
   meeting_status: ModelStringInput
+  meeting_comments: ModelStringInput
   and: [ModelMeetingDetailConditionInput]
   or: [ModelMeetingDetailConditionInput]
   not: ModelMeetingDetailConditionInput

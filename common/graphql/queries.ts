@@ -160,6 +160,7 @@ export const getMeetingDetail = /* GraphQL */ `
       call_id
       external_meeting_id
       meeting_status
+      meeting_comments
     }
   }
 `;
@@ -189,6 +190,7 @@ export const listMeetingDetails = /* GraphQL */ `
         call_id
         external_meeting_id
         meeting_status
+        meeting_comments
       }
       nextToken
     }
@@ -224,6 +226,7 @@ export const getMeetingDetailsByStatus = /* GraphQL */ `
         call_id
         external_meeting_id
         meeting_status
+        meeting_comments
       }
       nextToken
     }
@@ -263,6 +266,7 @@ export const getMeetingDetailsByStatusAndCreateTime = /* GraphQL */ `
         call_id
         external_meeting_id
         meeting_status
+        meeting_comments
       }
       nextToken
     }
