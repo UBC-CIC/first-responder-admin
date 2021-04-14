@@ -108,6 +108,7 @@ export enum AttendeeState {
   PAGED = "PAGED",
   IN_CALL = "IN_CALL",
   LEFT = "LEFT",
+  KICKED = "KICKED",
 }
 
 
@@ -327,6 +328,7 @@ export type CreateMeetingDetailMutation = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_comments?: string | null,
   } | null,
 };
 
@@ -357,6 +359,7 @@ export type UpdateMeetingDetailMutation = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_comments?: string | null,
   } | null,
 };
 
@@ -387,6 +390,7 @@ export type DeleteMeetingDetailMutation = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_comments?: string | null,
   } | null,
 };
 
@@ -416,6 +420,7 @@ export type PublishMeetingDetailUpdatesMutation = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_comments?: string | null,
   } | null,
 };
 
@@ -608,6 +613,7 @@ export type GetMeetingDetailQuery = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_comments?: string | null,
   } | null,
 };
 
@@ -641,6 +647,7 @@ export type ListMeetingDetailsQuery = {
       call_id?: string | null,
       external_meeting_id?: string | null,
       meeting_status?: string | null,
+      meeting_comments?: string | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -676,6 +683,7 @@ export type GetMeetingDetailsByStatusQuery = {
       call_id?: string | null,
       external_meeting_id?: string | null,
       meeting_status?: string | null,
+      meeting_comments?: string | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -713,6 +721,7 @@ export type GetMeetingDetailsByStatusAndCreateTimeQuery = {
       call_id?: string | null,
       external_meeting_id?: string | null,
       meeting_status?: string | null,
+      meeting_comments?: string | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -740,6 +749,7 @@ export type OnCreateMeetingDetailSubscription = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_comments?: string | null,
   } | null,
 };
 
@@ -765,6 +775,7 @@ export type OnUpdateMeetingDetailSubscription = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_comments?: string | null,
   } | null,
 };
 
@@ -790,5 +801,6 @@ export type OnDeleteMeetingDetailSubscription = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_comments?: string | null,
   } | null,
 };
