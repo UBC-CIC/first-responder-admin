@@ -27,9 +27,9 @@ type SpecialistAvailability @aws_cognito_user_pools @aws_iam {
 }
 
 enum SpecialistStatus {
-    AVAILABLE,
-    NOT_AVAILABLE,
-    OFFLINE,
+  AVAILABLE
+  NOT_AVAILABLE
+  OFFLINE
 }
 
 type SpecialistConnection @aws_cognito_user_pools @aws_iam {
@@ -91,21 +91,22 @@ type Attendee @aws_cognito_user_pools @aws_iam {
 }
 
 enum AttendeeJoinType {
-    PSTN,
-    DATA,
+  PSTN
+  DATA
 }
 
 enum AttendeeType {
-    FIRST_RESPONDER,
-    SPECIALIST,
-    SERVICE_DESK,
-    NOT_SPECIFIED,
+  FIRST_RESPONDER
+  SPECIALIST
+  SERVICE_DESK
+  NOT_SPECIFIED
 }
 
 enum AttendeeState {
-    PAGED,
-    IN_CALL,
-    LEFT,
+  PAGED
+  IN_CALL
+  LEFT
+  KICKED
 }
 
 type MeetingDetailConnection @aws_cognito_user_pools @aws_iam {
@@ -181,30 +182,66 @@ input ModelMeetingDetailConditionInput {
 
 # [type] Query
 type Query @aws_cognito_user_pools @aws_iam {
-    getSpecialistProfile(phoneNumber: String!): SpecialistProfile
-    listSpecialistProfilesByStatus(userStatus: SpecialistStatus, limit: Int, nextToken: String): SpecialistConnection
-    getSpecialistProfilesByStatus(userStatus: SpecialistStatus): SpecialistConnection
-    listSpecialistProfiles(limit: Int, nextToken: String): SpecialistConnection
-    getMeetingDetail(meetingId: String!): MeetingDetail
-    listMeetingDetails(filter: ModelMeetingDetailFilterInput, limit: Int, nextToken: String): MeetingDetailConnection
-    getMeetingDetailsByStatus(meetingStatus: String!, limit: Int, nextToken: String): MeetingDetailConnection
-    getMeetingDetailsByStatusAndCreateTime(meetingStatus: String!, startTime: String!, endTime: String!, limit: Int, nextToken: String): MeetingDetailConnection
+  getSpecialistProfile(phoneNumber: String!): SpecialistProfile
+  listSpecialistProfilesByStatus(
+    userStatus: SpecialistStatus
+    limit: Int
+    nextToken: String
+  ): SpecialistConnection
+  getSpecialistProfilesByStatus(
+    userStatus: SpecialistStatus
+  ): SpecialistConnection
+  listSpecialistProfiles(limit: Int, nextToken: String): SpecialistConnection
+  getMeetingDetail(meetingId: String!): MeetingDetail
+  listMeetingDetails(
+    filter: ModelMeetingDetailFilterInput
+    limit: Int
+    nextToken: String
+  ): MeetingDetailConnection
+  getMeetingDetailsByStatus(
+    meetingStatus: String!
+    limit: Int
+    nextToken: String
+  ): MeetingDetailConnection
+  getMeetingDetailsByStatusAndCreateTime(
+    meetingStatus: String!
+    startTime: String!
+    endTime: String!
+    limit: Int
+    nextToken: String
+  ): MeetingDetailConnection
 }
 
 # [type] Mutation
 type Mutation @aws_cognito_user_pools @aws_iam {
-    createSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
-    updateSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
-    deleteSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
-    createMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
-    updateMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
-    deleteMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
-    publishMeetingDetailUpdates(input: MeetingDetailInput!): MeetingDetail
+  createSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
+  updateSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
+  deleteSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
+  createMeetingDetail(
+    input: MeetingDetailInput
+    condition: ModelMeetingDetailConditionInput
+  ): MeetingDetail
+  updateMeetingDetail(
+    input: MeetingDetailInput
+    condition: ModelMeetingDetailConditionInput
+  ): MeetingDetail
+  deleteMeetingDetail(
+    input: MeetingDetailInput
+    condition: ModelMeetingDetailConditionInput
+  ): MeetingDetail
+  publishMeetingDetailUpdates(input: MeetingDetailInput!): MeetingDetail
 }
 
 # [type] Subscription
 type Subscription @aws_cognito_user_pools @aws_iam {
-    onCreateMeetingDetail: MeetingDetail @aws_subscribe(mutations: ["createMeetingDetail", "publishMeetingDetailUpdates"])
-    onUpdateMeetingDetail: MeetingDetail @aws_subscribe(mutations: ["updateMeetingDetail", "publishMeetingDetailUpdates"])
-    onDeleteMeetingDetail: MeetingDetail @aws_subscribe(mutations: ["deleteMeetingDetail"])
+  onCreateMeetingDetail: MeetingDetail
+    @aws_subscribe(
+      mutations: ["createMeetingDetail", "publishMeetingDetailUpdates"]
+    )
+  onUpdateMeetingDetail: MeetingDetail
+    @aws_subscribe(
+      mutations: ["updateMeetingDetail", "publishMeetingDetailUpdates"]
+    )
+  onDeleteMeetingDetail: MeetingDetail
+    @aws_subscribe(mutations: ["deleteMeetingDetail"])
 }
