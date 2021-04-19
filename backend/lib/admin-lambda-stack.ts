@@ -77,19 +77,32 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
         },
     });
 
-    const dataCreateFunction = new lambda.Function(this, 'dataCreateFunction', {
-      functionName: "FirstResponder-Data-Create",
+    const notifySpecialistFunction = new lambda.Function(this, 'notifySpecialistFunction', {
+      functionName: "FirstResponder-Notify-Specialist",
       code: new lambda.AssetCode('build/src'),
-      handler: 'data-create.handler',
+      handler: 'notify-specialist.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
       environment: {
-        TABLE_NAME: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
-        PRIMARY_KEY: 'meeting_id',
+        JOIN_PHONE_NUMBER: "+1 (888) 599-8558"
       },
       role: lambdaRole,
       memorySize: 512,
       timeout: cdk.Duration.seconds(30)
     });
+
+    const dataCreateFunction = new lambda.Function(this, 'dataCreateFunction', {
+        functionName: "FirstResponder-Data-Create",
+        code: new lambda.AssetCode('build/src'),
+        handler: 'data-create.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        environment: {
+          TABLE_NAME: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
+          PRIMARY_KEY: 'meeting_id',
+        },
+        role: lambdaRole,
+        memorySize: 512,
+        timeout: cdk.Duration.seconds(30)
+      });
 
     const specialistCreateFunction = new lambda.Function(this, 'specialistCreateFunction', {
         functionName: "FirstResponder-Specialist-Create",

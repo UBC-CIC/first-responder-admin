@@ -1,10 +1,39 @@
 import { Button, Table } from 'react-bootstrap';
 import { faPhoneSquareAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { SpecialistProfile } from '../../common/types/API';
+import { SpecialistProfile, GeolocationCoordinates } from '../../common/types/API';
 import './Specialists.css';
+import { notifySpecialist } from "../../common/graphql/mutations";
+import reverse from "reverse-geocode";
+import API from '@aws-amplify/api';
+export const SpecialistsTable = (props: { items: Array<SpecialistProfile>, external_meeting_id?:string | null }) => {
 
-export const SpecialistsTable = (props: { items: Array<SpecialistProfile> }) => {
+
+    const handlePage = async (specialist?: SpecialistProfile | null, external_meeting_id?:string | null) => {
+        if (!specialist || !external_meeting_id) {
+            console.error("No Phone number or external meeting id");
+            return;
+        }
+        let res = await API.graphql({
+            query: notifySpecialist,
+            variables: {
+              input: {
+                external_meeting_id,
+                specialist,
+              },
+            },
+          });
+        console.log(res);
+        
+        
+    }
+
+    const getLocation = (location?: GeolocationCoordinates) => {
+        if (!location?.latitude || !location?.longitude) return "Unknown Location";
+        const {latitude, longitude} = location;
+        return reverse.lookup(latitude, longitude, "ca").region;
+    }
+
     return (
         <div>
             <Table striped bordered hover>
@@ -14,7 +43,8 @@ export const SpecialistsTable = (props: { items: Array<SpecialistProfile> }) => 
                         <th>Name</th>
                         <th>Organization</th>
                         <th>Role</th>
-                        <th>Email</th>
+                        <th className="email">Email</th>
+                        <th>Location</th>
                         <th>Notes</th>
                         <th>Status</th>
                         <th>Page</th>
@@ -35,8 +65,11 @@ export const SpecialistsTable = (props: { items: Array<SpecialistProfile> }) => 
                             <td>
                                 {specialist?.user_role}
                             </td>
-                            <td>
+                            <td className="email">
                                 {specialist?.email}
+                            </td>
+                            <td className="email">
+                                {getLocation(specialist?.location)}
                             </td>
                             <td>
                                 {specialist?.notes}
@@ -45,7 +78,7 @@ export const SpecialistsTable = (props: { items: Array<SpecialistProfile> }) => 
                                 {specialist?.is_paged ? "Paged" : "Free"}
                             </td>
                             <td>
-                                <Button variant="light">
+                                <Button variant="light" onClick={() => handlePage(specialist, props.external_meeting_id)}>
                                     <FontAwesomeIcon icon={faPhoneSquareAlt} size="2x" color="#28a745" />
                                 </Button>
                             </td>

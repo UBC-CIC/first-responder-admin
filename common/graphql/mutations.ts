@@ -29,6 +29,10 @@ export const createSpecialistProfile = /* GraphQL */ `
       }
       created_date_time
       updated_date_time
+      location {
+        latitude
+        longitude
+      }
     }
   }
 `;
@@ -59,6 +63,10 @@ export const updateSpecialistProfile = /* GraphQL */ `
       }
       created_date_time
       updated_date_time
+      location {
+        latitude
+        longitude
+      }
     }
   }
 `;
@@ -89,6 +97,10 @@ export const deleteSpecialistProfile = /* GraphQL */ `
       }
       created_date_time
       updated_date_time
+      location {
+        latitude
+        longitude
+      }
     }
   }
 `;
@@ -199,5 +211,10 @@ export const publishMeetingDetailUpdates = /* GraphQL */ `
       meeting_status
       meeting_comments
     }
+  }
+`;
+export const notifySpecialist = /* GraphQL */ `
+  mutation NotifySpecialist($input: NotifySpecialistInput) {
+    notifySpecialist(input: $input)
   }
 `;

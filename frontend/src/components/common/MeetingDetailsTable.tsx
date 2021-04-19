@@ -182,7 +182,8 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                 item.attendees.filter(
                   (a) =>
                     a?.attendee_state === AttendeeState.IN_CALL ||
-                    a?.attendee_state === AttendeeState.KICKED
+                    a?.attendee_state === AttendeeState.KICKED ||
+                    a?.attendee_state === AttendeeState.PAGED 
                 ).length > 0 ? (
                   <Attendees
                     handleKick={async (attendeeId) => {
@@ -191,7 +192,8 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                     attendeeList={item.attendees.filter(
                       (a) =>
                         a?.attendee_state === AttendeeState.IN_CALL ||
-                        a?.attendee_state === AttendeeState.KICKED
+                        a?.attendee_state === AttendeeState.KICKED ||
+                        a?.attendee_state === AttendeeState.PAGED 
                     )}
                   />
                 ) : (
@@ -205,7 +207,7 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
               </td>
               {item.meeting_status === "ACTIVE" ? (
                 <td>
-                  <Specialists status="AVAILABLE" />{" "}
+                  <Specialists status="AVAILABLE" external_meeting_id={item.external_meeting_id} />{" "}
                   <Button variant="danger" title="End Meeting">
                     <FontAwesomeIcon icon={faPhone} />
                     {"  "}
