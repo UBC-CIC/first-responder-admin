@@ -8,7 +8,7 @@ import { SpecialistsTable } from '../common/SpecialistsTable';
 import './Specialists.css';
 import { API } from 'aws-amplify';
 
-export const Specialists = (props: { status: String }) => {
+export const Specialists = (props: { status: String, external_meeting_id?: string | null }) => {
     const [items, updateItems] = useState<Array<SpecialistProfile>>(new Array<SpecialistProfile>())
 
     const [show, setShow] = useState(false);
@@ -53,7 +53,7 @@ export const Specialists = (props: { status: String }) => {
                     <Modal.Title> {"Specialists - "}{props.status} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <SpecialistsTable items={items} />
+                    <SpecialistsTable items={items} external_meeting_id={props.external_meeting_id} />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>

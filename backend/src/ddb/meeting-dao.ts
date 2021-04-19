@@ -43,6 +43,7 @@ export enum AttendeeState {
     PAGED = "PAGED",
     IN_CALL = "IN_CALL",
     LEFT = "LEFT",
+    KICKED = "KICKED",
 }
 
 export enum AttendeeType {

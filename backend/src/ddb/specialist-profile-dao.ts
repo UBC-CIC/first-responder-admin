@@ -14,7 +14,13 @@ export type SpecialistProfile = {
     "availability": SpecialistAvailability; // Stores their availability schedule and overrides. 
     "created_date_time": string; // When this user was created (ISO8601 format)
     "updated_date_time": string; // When this user was updated (ISO8601 format)
+    "location": GeolocationCoordinates;
 };
+
+export type GeolocationCoordinates = {
+    "latitude": number;
+    "longitude": number;
+}
 
 export type SpecialistAvalabilityOverride = {
     "start_time": string; // ISO8601 formatted time (e.g. "2020-01-04T00:23:00Z")

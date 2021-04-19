@@ -29,6 +29,10 @@ export const getSpecialistProfile = /* GraphQL */ `
       }
       created_date_time
       updated_date_time
+      location {
+        latitude
+        longitude
+      }
     }
   }
 `;
@@ -68,6 +72,10 @@ export const listSpecialistProfilesByStatus = /* GraphQL */ `
         }
         created_date_time
         updated_date_time
+        location {
+          latitude
+          longitude
+        }
       }
       nextToken
     }
@@ -101,6 +109,10 @@ export const getSpecialistProfilesByStatus = /* GraphQL */ `
         }
         created_date_time
         updated_date_time
+        location {
+          latitude
+          longitude
+        }
       }
       nextToken
     }
@@ -134,6 +146,10 @@ export const listSpecialistProfiles = /* GraphQL */ `
         }
         created_date_time
         updated_date_time
+        location {
+          latitude
+          longitude
+        }
       }
       nextToken
     }

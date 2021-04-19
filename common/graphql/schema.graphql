@@ -1,247 +1,248 @@
+type Attendee @aws_cognito_user_pools
+@aws_iam {
+	phone_number: String
+	attendee_id: String
+	attendee_type: AttendeeType
+	attendee_join_type: AttendeeJoinType
+	attendee_state: AttendeeState
+	user_role: String
+	organization: String
+	first_name: String
+	last_name: String
+	username: String
+}
+
+input AttendeeInput {
+	phone_number: String
+	attendee_id: String
+	attendee_type: AttendeeType
+	attendee_join_type: AttendeeJoinType
+	attendee_state: AttendeeState
+	user_role: String
+	organization: String
+	first_name: String
+	last_name: String
+	username: String
+}
+
+enum AttendeeJoinType {
+	PSTN
+	DATA
+}
+
+enum AttendeeState {
+	PAGED
+	IN_CALL
+	LEFT
+	KICKED
+}
+
+enum AttendeeType {
+	FIRST_RESPONDER
+	SPECIALIST
+	SERVICE_DESK
+	NOT_SPECIFIED
+}
+
+type GeolocationCoordinates {
+	latitude: Float
+	longitude: Float
+}
+
+input GeolocationCoordinatesInput {
+	latitude: Float
+	longitude: Float
+}
+
+# Schema for meeting-detail DDB Table
+type MeetingDetail @aws_cognito_user_pools
+@aws_iam {
+	meeting_id: String!
+	attendees: [Attendee]
+	create_date_time: String
+	end_date_time: String
+	call_id: String
+	external_meeting_id: String
+	meeting_status: String
+	meeting_comments: String
+}
+
+type MeetingDetailConnection @aws_cognito_user_pools
+@aws_iam {
+	items: [MeetingDetail]
+	nextToken: String
+}
+
+# [input] MeetingDetailInput
+### CreateMeetingDetail, DeleteMeetingDetail and UpdateMeetingDetail use this input type
+input MeetingDetailInput {
+	meeting_id: String!
+	attendees: [AttendeeInput]
+	create_date_time: String
+	end_date_time: String
+	call_id: String
+	external_meeting_id: String
+	meeting_status: String
+	meeting_comments: String
+}
+
+input ModelMeetingDetailConditionInput {
+	attendees: ModelStringInput
+	create_date_time: ModelStringInput
+	end_date_time: AWSDateTime
+	call_id: ModelStringInput
+	external_meeting_id: ModelStringInput
+	meeting_status: ModelStringInput
+	meeting_comments: ModelStringInput
+	and: [ModelMeetingDetailConditionInput]
+	or: [ModelMeetingDetailConditionInput]
+	not: ModelMeetingDetailConditionInput
+}
+
+input ModelMeetingDetailFilterInput {
+	meeting_id: ModelStringInput
+	attendees: ModelStringInput
+	create_date_time: ModelStringInput
+	end_date_time: AWSDateTime
+	call_id: ModelStringInput
+	external_meeting_id: ModelStringInput
+	meeting_status: ModelStringInput
+	meeting_comments: ModelStringInput
+	and: [ModelMeetingDetailFilterInput]
+	or: [ModelMeetingDetailFilterInput]
+	not: ModelMeetingDetailFilterInput
+}
+
+input ModelStringInput {
+	ne: String
+	eq: String
+	le: String
+	lt: String
+	ge: String
+	gt: String
+	contains: String
+	notContains: String
+	between: [String]
+	beginsWith: String
+}
+
+# [type] Mutation
+type Mutation @aws_cognito_user_pools
+@aws_iam {
+	createSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
+	updateSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
+	deleteSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
+	createMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
+	updateMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
+	deleteMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
+	publishMeetingDetailUpdates(input: MeetingDetailInput!): MeetingDetail
+	notifySpecialist(input: NotifySpecialistInput): Boolean
+}
+
+input NotifySpecialistInput {
+	specialist: SpecialistProfileInput
+	external_meeting_id: String
+}
+
+# [type] Query
+type Query @aws_cognito_user_pools
+@aws_iam {
+	getSpecialistProfile(phoneNumber: String!): SpecialistProfile
+	listSpecialistProfilesByStatus(userStatus: SpecialistStatus, limit: Int, nextToken: String): SpecialistConnection
+	getSpecialistProfilesByStatus(userStatus: SpecialistStatus): SpecialistConnection
+	listSpecialistProfiles(limit: Int, nextToken: String): SpecialistConnection
+	getMeetingDetail(meetingId: String!): MeetingDetail
+	listMeetingDetails(filter: ModelMeetingDetailFilterInput, limit: Int, nextToken: String): MeetingDetailConnection
+	getMeetingDetailsByStatus(meetingStatus: String!, limit: Int, nextToken: String): MeetingDetailConnection
+	getMeetingDetailsByStatusAndCreateTime(
+		meetingStatus: String!,
+		startTime: String!,
+		endTime: String!,
+		limit: Int,
+		nextToken: String
+	): MeetingDetailConnection
+}
+
+type SpecialistAvailability @aws_cognito_user_pools
+@aws_iam {
+	overrides: [SpecialistAvalabilityOverride]
+	schedules: [SpecialistAvalabilityOverride]
+}
+
+input SpecialistAvailabilityInput {
+	overrides: [SpecialistAvalabilityOverrideInput]
+	schedules: [SpecialistAvalabilityOverrideInput]
+}
+
+type SpecialistAvalabilityOverride @aws_cognito_user_pools
+@aws_iam {
+	start_time: String
+	end_time: String
+	override_type: SpecialistStatus
+}
+
+input SpecialistAvalabilityOverrideInput {
+	start_time: String
+	end_time: String
+	override_type: SpecialistStatus
+}
+
+type SpecialistConnection @aws_cognito_user_pools
+@aws_iam {
+	items: [SpecialistProfile]
+	nextToken: String
+}
+
 # Schema for specialist-profile DDB Table
-type SpecialistProfile @aws_cognito_user_pools @aws_iam {
-  email: String
-  first_name: String
-  last_name: String
-  phone_number: String!
-  user_role: String
-  organization: String
-  profile_picture: String
-  notes: String
-  user_status: SpecialistStatus
-  is_paged: Boolean
-  availability: SpecialistAvailability
-  created_date_time: AWSDateTime
-  updated_date_time: AWSDateTime
-}
-
-type SpecialistAvalabilityOverride @aws_cognito_user_pools @aws_iam {
-  start_time: String
-  end_time: String
-  override_type: SpecialistStatus
-}
-
-type SpecialistAvailability @aws_cognito_user_pools @aws_iam {
-  overrides: [SpecialistAvalabilityOverride]
-  schedules: [SpecialistAvalabilityOverride]
-}
-
-enum SpecialistStatus {
-  AVAILABLE
-  NOT_AVAILABLE
-  OFFLINE
-}
-
-type SpecialistConnection @aws_cognito_user_pools @aws_iam {
-  items: [SpecialistProfile]
-  nextToken: String
+type SpecialistProfile @aws_cognito_user_pools
+@aws_iam {
+	email: String
+	first_name: String
+	last_name: String
+	phone_number: String!
+	user_role: String
+	organization: String
+	profile_picture: String
+	notes: String
+	user_status: SpecialistStatus
+	is_paged: Boolean
+	availability: SpecialistAvailability
+	created_date_time: AWSDateTime
+	updated_date_time: AWSDateTime
+	location: GeolocationCoordinates
 }
 
 # [input] SpecialistProfileInput
 input SpecialistProfileInput {
-  email: String
-  first_name: String
-  last_name: String
-  phone_number: String!
-  user_role: String
-  organization: String
-  profile_picture: String
-  notes: String
-  user_status: SpecialistStatus
-  is_paged: Boolean
-  availability: SpecialistAvailabilityInput
-  created_date_time: AWSDateTime
-  updated_date_time: AWSDateTime
+	email: String
+	first_name: String
+	last_name: String
+	phone_number: String!
+	user_role: String
+	organization: String
+	profile_picture: String
+	notes: String
+	user_status: SpecialistStatus
+	is_paged: Boolean
+	location: GeolocationCoordinatesInput
+	availability: SpecialistAvailabilityInput
+	created_date_time: AWSDateTime
+	updated_date_time: AWSDateTime
 }
 
-input SpecialistAvalabilityOverrideInput {
-  start_time: String
-  end_time: String
-  override_type: SpecialistStatus
-}
-
-input SpecialistAvailabilityInput {
-  overrides: [SpecialistAvalabilityOverrideInput]
-  schedules: [SpecialistAvalabilityOverrideInput]
-}
-
-# Schema for meeting-detail DDB Table
-type MeetingDetail @aws_cognito_user_pools @aws_iam {
-  meeting_id: String!
-  attendees: [Attendee]
-  create_date_time: String
-  end_date_time: String
-  call_id: String
-  external_meeting_id: String
-  meeting_status: String
-  meeting_comments: String
-}
-
-type Attendee @aws_cognito_user_pools @aws_iam {
-  phone_number: String
-  attendee_id: String
-  attendee_type: AttendeeType
-  attendee_join_type: AttendeeJoinType
-  attendee_state: AttendeeState
-  user_role: String
-  organization: String
-  first_name: String
-  last_name: String
-  username: String
-}
-
-enum AttendeeJoinType {
-  PSTN
-  DATA
-}
-
-enum AttendeeType {
-  FIRST_RESPONDER
-  SPECIALIST
-  SERVICE_DESK
-  NOT_SPECIFIED
-}
-
-enum AttendeeState {
-  PAGED
-  IN_CALL
-  LEFT
-  KICKED
-}
-
-type MeetingDetailConnection @aws_cognito_user_pools @aws_iam {
-  items: [MeetingDetail]
-  nextToken: String
-}
-
-input AttendeeInput {
-  phone_number: String
-  attendee_id: String
-  attendee_type: AttendeeType
-  attendee_join_type: AttendeeJoinType
-  attendee_state: AttendeeState
-  user_role: String
-  organization: String
-  first_name: String
-  last_name: String
-  username: String
-}
-
-# [input] MeetingDetailInput
-# CreateMeetingDetail, DeleteMeetingDetail and UpdateMeetingDetail use this input type
-input MeetingDetailInput {
-  meeting_id: String!
-  attendees: [AttendeeInput]
-  create_date_time: String
-  end_date_time: String
-  call_id: String
-  external_meeting_id: String
-  meeting_status: String
-  meeting_comments: String
-}
-
-input ModelStringInput {
-  ne: String
-  eq: String
-  le: String
-  lt: String
-  ge: String
-  gt: String
-  contains: String
-  notContains: String
-  between: [String]
-  beginsWith: String
-}
-
-input ModelMeetingDetailFilterInput {
-  meeting_id: ModelStringInput
-  attendees: ModelStringInput
-  create_date_time: ModelStringInput
-  end_date_time: AWSDateTime
-  call_id: ModelStringInput
-  external_meeting_id: ModelStringInput
-  meeting_status: ModelStringInput
-  meeting_comments: ModelStringInput
-  and: [ModelMeetingDetailFilterInput]
-  or: [ModelMeetingDetailFilterInput]
-  not: ModelMeetingDetailFilterInput
-}
-
-input ModelMeetingDetailConditionInput {
-  attendees: ModelStringInput
-  create_date_time: ModelStringInput
-  end_date_time: AWSDateTime
-  call_id: ModelStringInput
-  external_meeting_id: ModelStringInput
-  meeting_status: ModelStringInput
-  meeting_comments: ModelStringInput
-  and: [ModelMeetingDetailConditionInput]
-  or: [ModelMeetingDetailConditionInput]
-  not: ModelMeetingDetailConditionInput
-}
-
-# [type] Query
-type Query @aws_cognito_user_pools @aws_iam {
-  getSpecialistProfile(phoneNumber: String!): SpecialistProfile
-  listSpecialistProfilesByStatus(
-    userStatus: SpecialistStatus
-    limit: Int
-    nextToken: String
-  ): SpecialistConnection
-  getSpecialistProfilesByStatus(
-    userStatus: SpecialistStatus
-  ): SpecialistConnection
-  listSpecialistProfiles(limit: Int, nextToken: String): SpecialistConnection
-  getMeetingDetail(meetingId: String!): MeetingDetail
-  listMeetingDetails(
-    filter: ModelMeetingDetailFilterInput
-    limit: Int
-    nextToken: String
-  ): MeetingDetailConnection
-  getMeetingDetailsByStatus(
-    meetingStatus: String!
-    limit: Int
-    nextToken: String
-  ): MeetingDetailConnection
-  getMeetingDetailsByStatusAndCreateTime(
-    meetingStatus: String!
-    startTime: String!
-    endTime: String!
-    limit: Int
-    nextToken: String
-  ): MeetingDetailConnection
-}
-
-# [type] Mutation
-type Mutation @aws_cognito_user_pools @aws_iam {
-  createSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
-  updateSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
-  deleteSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
-  createMeetingDetail(
-    input: MeetingDetailInput
-    condition: ModelMeetingDetailConditionInput
-  ): MeetingDetail
-  updateMeetingDetail(
-    input: MeetingDetailInput
-    condition: ModelMeetingDetailConditionInput
-  ): MeetingDetail
-  deleteMeetingDetail(
-    input: MeetingDetailInput
-    condition: ModelMeetingDetailConditionInput
-  ): MeetingDetail
-  publishMeetingDetailUpdates(input: MeetingDetailInput!): MeetingDetail
+enum SpecialistStatus {
+	AVAILABLE
+	NOT_AVAILABLE
+	OFFLINE
 }
 
 # [type] Subscription
-type Subscription @aws_cognito_user_pools @aws_iam {
-  onCreateMeetingDetail: MeetingDetail
-    @aws_subscribe(
-      mutations: ["createMeetingDetail", "publishMeetingDetailUpdates"]
-    )
-  onUpdateMeetingDetail: MeetingDetail
-    @aws_subscribe(
-      mutations: ["updateMeetingDetail", "publishMeetingDetailUpdates"]
-    )
-  onDeleteMeetingDetail: MeetingDetail
-    @aws_subscribe(mutations: ["deleteMeetingDetail"])
+type Subscription @aws_cognito_user_pools
+@aws_iam {
+	onCreateMeetingDetail: MeetingDetail
+		@aws_subscribe(mutations: ["createMeetingDetail","publishMeetingDetailUpdates"])
+	onUpdateMeetingDetail: MeetingDetail
+		@aws_subscribe(mutations: ["updateMeetingDetail","publishMeetingDetailUpdates"])
+	onDeleteMeetingDetail: MeetingDetail
+		@aws_subscribe(mutations: ["deleteMeetingDetail"])
 }

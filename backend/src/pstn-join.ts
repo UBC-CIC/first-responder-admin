@@ -77,16 +77,48 @@ async function newCall(event: any) {
             MeetingId: existingMeeting.meeting_id,
             ExternalUserId: uuidv4(),
         };
-        const attendeeResponse = await chime.createAttendee(request).promise();
-        console.log("attendee details:" + JSON.stringify(attendeeResponse, null, 2));
 
-        // Update the meeting in DDB
-        existingMeeting.attendees.push({
-            "attendee_id": attendeeResponse.Attendee!.AttendeeId!,
-            "phone_number": fromNumber,
-            "attendee_type": AttendeeType.FIRST_RESPONDER,
-            "attendee_join_type": AttendeeJoinType.PSTN,
-        });
+        // this acts weirdly in the case where a phone number is attached to multiple attendees, 
+        // i.e. a user is an attendee as at least two of (FR, Service Desk, Specialist) 
+        // should never happen in practice.
+        const existingAttendee = existingMeeting.attendees.find((attendee) => attendee.phone_number === fromNumber);
+        const existingAttendeeIndex = existingMeeting.attendees.findIndex((attendee) => attendee.phone_number === fromNumber);
+        let attendeeResponse;
+        if (existingAttendee) {
+            // If possible use the paged user's existing attendee id.
+            console.log(`Found an existing attendee with ID: ${existingAttendee.attendee_id}, updating their state in DynamoDB`);
+
+            const findAttendeeRequest: AWS.Chime.GetAttendeeRequest  = {
+                MeetingId: existingMeeting.meeting_id,
+                AttendeeId: existingAttendee.attendee_id,
+            }
+            
+            try {
+                attendeeResponse = await chime.getAttendee(findAttendeeRequest).promise();
+            } catch (e) {
+                attendeeResponse = await chime.createAttendee(request).promise();
+            }
+
+        }
+        else {
+            attendeeResponse = await chime.createAttendee(request).promise();
+        }
+        console.log("found attendee details:" + JSON.stringify(attendeeResponse, null, 2));
+
+        if(existingAttendeeIndex >= 0 && existingAttendee){
+            // update the paged attendee to be in call
+            existingMeeting.attendees[existingAttendeeIndex].attendee_join_type = AttendeeJoinType.PSTN;
+            existingMeeting.attendees[existingAttendeeIndex].attendee_state = AttendeeState.IN_CALL;
+        } 
+        else {
+            // Create a new attendee for the DB
+            existingMeeting.attendees.push({
+                "attendee_id": attendeeResponse.Attendee!.AttendeeId!,
+                "phone_number": fromNumber,
+                "attendee_type": AttendeeType.FIRST_RESPONDER,
+                "attendee_join_type": AttendeeJoinType.PSTN,
+            });
+        }
         await dao.saveMeetingDetails(existingMeeting);
 
         // Return join meeting action to bridge user to meeting
