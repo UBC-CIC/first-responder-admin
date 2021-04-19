@@ -51,6 +51,7 @@ export type SpecialistProfile = {
   availability?: SpecialistAvailability,
   created_date_time?: string | null,
   updated_date_time?: string | null,
+  location?: GeolocationCoordinates,
 };
 
 export type SpecialistAvailability = {
@@ -64,6 +65,12 @@ export type SpecialistAvalabilityOverride = {
   start_time?: string | null,
   end_time?: string | null,
   override_type?: SpecialistStatus | null,
+};
+
+export type GeolocationCoordinates = {
+  __typename: "GeolocationCoordinates",
+  latitude?: number | null,
+  longitude?: number | null,
 };
 
 export type MeetingDetailInput = {
@@ -224,6 +231,11 @@ export type CreateSpecialistProfileMutation = {
     } | null,
     created_date_time?: string | null,
     updated_date_time?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
   } | null,
 };
 
@@ -261,6 +273,11 @@ export type UpdateSpecialistProfileMutation = {
     } | null,
     created_date_time?: string | null,
     updated_date_time?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
   } | null,
 };
 
@@ -298,6 +315,11 @@ export type DeleteSpecialistProfileMutation = {
     } | null,
     created_date_time?: string | null,
     updated_date_time?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
   } | null,
 };
 
@@ -458,6 +480,11 @@ export type GetSpecialistProfileQuery = {
     } | null,
     created_date_time?: string | null,
     updated_date_time?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
   } | null,
 };
 
@@ -499,6 +526,11 @@ export type ListSpecialistProfilesByStatusQuery = {
       } | null,
       created_date_time?: string | null,
       updated_date_time?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -540,6 +572,11 @@ export type GetSpecialistProfilesByStatusQuery = {
       } | null,
       created_date_time?: string | null,
       updated_date_time?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -582,6 +619,11 @@ export type ListSpecialistProfilesQuery = {
       } | null,
       created_date_time?: string | null,
       updated_date_time?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,
