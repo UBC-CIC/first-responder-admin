@@ -64,6 +64,7 @@ type MeetingDetail @aws_cognito_user_pools
 	call_id: String
 	external_meeting_id: String
 	meeting_status: String
+    meeting_title: String
 	meeting_comments: String
 }
 
@@ -83,6 +84,7 @@ input MeetingDetailInput {
 	call_id: String
 	external_meeting_id: String
 	meeting_status: String
+    meeting_title: String
 	meeting_comments: String
 }
 
@@ -93,6 +95,7 @@ input ModelMeetingDetailConditionInput {
 	call_id: ModelStringInput
 	external_meeting_id: ModelStringInput
 	meeting_status: ModelStringInput
+    meeting_title: ModelStringInput
 	meeting_comments: ModelStringInput
 	and: [ModelMeetingDetailConditionInput]
 	or: [ModelMeetingDetailConditionInput]
@@ -107,6 +110,7 @@ input ModelMeetingDetailFilterInput {
 	call_id: ModelStringInput
 	external_meeting_id: ModelStringInput
 	meeting_status: ModelStringInput
+    meeting_title: ModelStringInput
 	meeting_comments: ModelStringInput
 	and: [ModelMeetingDetailFilterInput]
 	or: [ModelMeetingDetailFilterInput]

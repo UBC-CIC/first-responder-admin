@@ -13,6 +13,7 @@ export type SpecialistProfileInput = {
   notes?: string | null,
   user_status?: SpecialistStatus | null,
   is_paged?: boolean | null,
+  location?: GeolocationCoordinatesInput | null,
   availability?: SpecialistAvailabilityInput | null,
   created_date_time?: string | null,
   updated_date_time?: string | null,
@@ -24,6 +25,11 @@ export enum SpecialistStatus {
   OFFLINE = "OFFLINE",
 }
 
+
+export type GeolocationCoordinatesInput = {
+  latitude?: number | null,
+  longitude?: number | null,
+};
 
 export type SpecialistAvailabilityInput = {
   overrides?: Array< SpecialistAvalabilityOverrideInput | null > | null,
@@ -81,6 +87,7 @@ export type MeetingDetailInput = {
   call_id?: string | null,
   external_meeting_id?: string | null,
   meeting_status?: string | null,
+  meeting_title?: string | null,
   meeting_comments?: string | null,
 };
 
@@ -126,6 +133,7 @@ export type ModelMeetingDetailConditionInput = {
   call_id?: ModelStringInput | null,
   external_meeting_id?: ModelStringInput | null,
   meeting_status?: ModelStringInput | null,
+  meeting_title?: ModelStringInput | null,
   meeting_comments?: ModelStringInput | null,
   and?: Array< ModelMeetingDetailConditionInput | null > | null,
   or?: Array< ModelMeetingDetailConditionInput | null > | null,
@@ -154,6 +162,7 @@ export type MeetingDetail = {
   call_id?: string | null,
   external_meeting_id?: string | null,
   meeting_status?: string | null,
+  meeting_title?: string | null,
   meeting_comments?: string | null,
 };
 
@@ -171,6 +180,11 @@ export type Attendee = {
   username?: string | null,
 };
 
+export type NotifySpecialistInput = {
+  specialist?: SpecialistProfileInput | null,
+  external_meeting_id?: string | null,
+};
+
 export type SpecialistConnection = {
   __typename: "SpecialistConnection",
   items?:  Array<SpecialistProfile | null > | null,
@@ -185,6 +199,7 @@ export type ModelMeetingDetailFilterInput = {
   call_id?: ModelStringInput | null,
   external_meeting_id?: ModelStringInput | null,
   meeting_status?: ModelStringInput | null,
+  meeting_title?: ModelStringInput | null,
   meeting_comments?: ModelStringInput | null,
   and?: Array< ModelMeetingDetailFilterInput | null > | null,
   or?: Array< ModelMeetingDetailFilterInput | null > | null,
@@ -444,6 +459,14 @@ export type PublishMeetingDetailUpdatesMutation = {
     meeting_status?: string | null,
     meeting_comments?: string | null,
   } | null,
+};
+
+export type NotifySpecialistMutationVariables = {
+  input?: NotifySpecialistInput | null,
+};
+
+export type NotifySpecialistMutation = {
+  notifySpecialist?: boolean | null,
 };
 
 export type GetSpecialistProfileQueryVariables = {
