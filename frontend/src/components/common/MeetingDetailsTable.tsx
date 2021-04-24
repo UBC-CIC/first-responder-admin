@@ -6,6 +6,7 @@ import {
   faUserPlus,
   faHeadset,
   faPhone,
+  faClipboard,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
@@ -28,6 +29,7 @@ import Specialists from "./Specialists";
 import "./meetingDetailsTable.css";
 import { API } from "aws-amplify";
 import { updateMeetingDetail } from "../../common/graphql/mutations";
+import MeetingNotes from "./MeetingNotes";
 
 export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
   const [currTime, setCurrTime] = useState(new Date());
@@ -64,11 +66,11 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
     return null;
   };
 
-  const onModifyComment = async (meetingDetail: MeetingDetail, event: any) => {
+  const onModifyTitle = async (meetingDetail: MeetingDetail, event: any) => {
     event.preventDefault();
     event.stopPropagation();
-    const updatedComment = event.target.innerText;
-    meetingDetail.meeting_comments = updatedComment;
+    const updatedTitle = event.target.innerText;
+    meetingDetail.meeting_title = updatedTitle;
 
     try {
       const data: any = await API.graphql({
@@ -158,11 +160,11 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                     contentEditable
                     suppressContentEditableWarning
                     className={item.meeting_comments === "" ? "faint-text" : ""}
-                    onBlur={(e) => onModifyComment(item, e)}
+                    onBlur={(e) => onModifyTitle(item, e)}
                   >
-                    {item.meeting_comments === ""
+                    {(!item.meeting_title || item.meeting_title === "")
                       ? "Meeting"
-                      : item.meeting_comments}
+                      : item.meeting_title}
                   </span>
                 </OverlayTrigger>
               </td>
@@ -207,24 +209,15 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                   <Button variant="danger" title="End Meeting">
                     <FontAwesomeIcon icon={faPhone} />
                     {"  "}
-                  </Button>
+                  </Button>{" "}
+                  <MeetingNotes meetingDetail={item} />{" "}
                 </td>
               ) : (
                 <td>
-                  <FontAwesomeIcon
-                    icon={faPhoneSquareAlt}
-                    size="2x"
-                    color="grey"
-                  />
-                  {" | "}
-                  <FontAwesomeIcon icon={faUserPlus} size="2x" color="grey" />
-                  {" | "}
-                  <FontAwesomeIcon
-                    icon={faPhoneSquare}
-                    size="2x"
-                    color="grey"
-                  />
-                  {"  "}
+                  <Button variant="light" title="Meeting Notes">
+                    <FontAwesomeIcon icon={faClipboard} />
+                    {"  "}
+                  </Button>
                 </td>
               )}
               <td>
@@ -237,10 +230,10 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                     })
                   : item.create_date_time}
               </td>
-              <td>
+              <td style={{width: "64px"}}>
                 {item.create_date_time !== undefined &&
                   item.create_date_time !== null && (
-                    <>{timeSince(item.create_date_time, null)}</>
+                    <div style={{width: "100px"}}>{timeSince(item.create_date_time, null)}</div>
                   )}
               </td>
               <td>

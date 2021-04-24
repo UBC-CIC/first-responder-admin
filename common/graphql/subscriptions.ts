@@ -23,6 +23,7 @@ export const onCreateMeetingDetail = /* GraphQL */ `
       call_id
       external_meeting_id
       meeting_status
+      meeting_title
       meeting_comments
     }
   }
@@ -48,6 +49,7 @@ export const onUpdateMeetingDetail = /* GraphQL */ `
       call_id
       external_meeting_id
       meeting_status
+      meeting_title
       meeting_comments
     }
   }
@@ -73,6 +75,7 @@ export const onDeleteMeetingDetail = /* GraphQL */ `
       call_id
       external_meeting_id
       meeting_status
+      meeting_title
       meeting_comments
     }
   }
