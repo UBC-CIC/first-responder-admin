@@ -140,9 +140,26 @@ type Mutation @aws_cognito_user_pools
 	updateMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
 	deleteMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
 	publishMeetingDetailUpdates(input: MeetingDetailInput!): MeetingDetail
-	notifySpecialist(input: NotifySpecialistInput): Boolean
+    notifySpecialist(input: NotifySpecialistInput): Boolean
+    joinMeeting(input: JoinMeetingInput): JoinMeetingInfo
 }
 
+# [input] JoinMeetingInput
+input JoinMeetingInput {
+    meeting_id: String
+	phone_number: String!
+}
+
+# [output] JoinMeetingInfo
+type JoinMeetingInfo @aws_cognito_user_pools
+@aws_iam {
+    meeting_id: String
+    attendee_id: String
+    external_user_id: String
+    join_token: String
+}
+
+# [input] NotifySpecialistInput
 input NotifySpecialistInput {
 	specialist: SpecialistProfileInput
 	external_meeting_id: String

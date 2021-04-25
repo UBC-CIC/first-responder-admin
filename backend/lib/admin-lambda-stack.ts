@@ -1,6 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
-import { App, Duration, Fn } from '@aws-cdk/core';
+import { App, CfnOutput, Duration, Fn } from '@aws-cdk/core';
 import { Role, ServicePrincipal, PolicyDocument, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
 import { Schedule, Rule } from '@aws-cdk/aws-events';
 import { FirstResponderAdminDynamoStack } from './admin-dynamodb-stack';
@@ -90,19 +90,6 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(30)
     });
 
-    const dataCreateFunction = new lambda.Function(this, 'dataCreateFunction', {
-        functionName: "FirstResponder-Data-Create",
-        code: new lambda.AssetCode('build/src'),
-        handler: 'data-create.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
-        environment: {
-          TABLE_NAME: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
-          PRIMARY_KEY: 'meeting_id',
-        },
-        role: lambdaRole,
-        memorySize: 512,
-        timeout: cdk.Duration.seconds(30)
-      });
 
     const specialistCreateFunction = new lambda.Function(this, 'specialistCreateFunction', {
         functionName: "FirstResponder-Specialist-Create",

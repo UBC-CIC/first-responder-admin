@@ -107,10 +107,13 @@ export class MeetingDetailsDao {
      */
     async addAttendeeByPhoneNumber(meetingDetails: MeetingDetails, attendeeId: string, phoneNumber: string, 
                       attendeeJoinType: AttendeeJoinType, attendeeState: AttendeeState): Promise<void> {
+        
+        console.log("addAttendeeByPhoneNumber for attendeeId: %s, phoneNumber: %s", attendeeId, phoneNumber)
         let existingAttendee = null;
         for (let attendee of meetingDetails.attendees) {
             if (attendee.phone_number === phoneNumber) {
                 existingAttendee = attendee;
+                console.log("attendee already exists in the meeting")
                 break;
             }
         }
@@ -183,6 +186,8 @@ export class MeetingDetailsDao {
      * @returns the attendee
      */
     async getAttendeeForMeetingByPhoneNumber(attendeeId: string, phoneNumber: string, attendeeJoinType: AttendeeJoinType, attendeeState: AttendeeState): Promise<Attendee> {
+        console.log("getAttendeeForMeetingByPhoneNumber for attendeeId: %s, phoneNumber: %s, attendeeJoinType: %s, attendeeState: %s", attendeeId, phoneNumber, attendeeJoinType, attendeeState);
+
         const specialistDao = new SpecialistProfileDao(this.db);
         const specialistProfile = await specialistDao.getSpecialistProfile(phoneNumber);
         let firstName = "";
