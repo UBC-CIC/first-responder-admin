@@ -28,8 +28,11 @@ import Attendees from "./Attendees";
 import Specialists from "./Specialists";
 import "./meetingDetailsTable.css";
 import { API } from "aws-amplify";
-import { updateMeetingDetail } from "../../common/graphql/mutations";
 import MeetingNotes from "./MeetingNotes";
+import { 
+  updateMeetingDetail,
+  joinMeeting,
+ } from "../../common/graphql/mutations";
 
 export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
   const [currTime, setCurrTime] = useState(new Date());
@@ -125,6 +128,26 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
     return false;
   };
 
+  // TODO - Testing code to be cleaned up
+  const onJoinMeeting = async (meetingId?: string|null) => {
+    try {
+      console.log("Joining meeting " + meetingId);
+
+      let res = await API.graphql({
+        query: joinMeeting,
+        variables: {
+          input: {
+            phone_number: "+phone_number", // required
+            meeting_id: meetingId  // required for joining existing meeting
+          },
+        },
+      });
+
+    } catch (e) {
+        console.log('joinMeeting errors:', e.errors);
+    }
+};
+
   return (
     <div className="meeting-table">
       <Table striped bordered hover size="sm">
@@ -206,7 +229,9 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
               {item.meeting_status === "ACTIVE" ? (
                 <td>
                   <Specialists status="AVAILABLE" external_meeting_id={item.external_meeting_id} />{" "}
-                  <Button variant="danger" title="End Meeting">
+                  <Button variant="danger" title="End Meeting" onClick={async (attendeeId) => {
+                      await onJoinMeeting(item.meeting_id);
+                    }}>
                     <FontAwesomeIcon icon={faPhone} />
                     {"  "}
                   </Button>{" "}

@@ -185,6 +185,19 @@ export type NotifySpecialistInput = {
   external_meeting_id?: string | null,
 };
 
+export type JoinMeetingInput = {
+  meeting_id?: string | null,
+  phone_number: string,
+};
+
+export type JoinMeetingInfo = {
+  __typename: "JoinMeetingInfo",
+  meeting_id?: string | null,
+  attendee_id?: string | null,
+  external_user_id?: string | null,
+  join_token?: string | null,
+};
+
 export type SpecialistConnection = {
   __typename: "SpecialistConnection",
   items?:  Array<SpecialistProfile | null > | null,
@@ -365,6 +378,7 @@ export type CreateMeetingDetailMutation = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_title?: string | null,
     meeting_comments?: string | null,
   } | null,
 };
@@ -396,6 +410,7 @@ export type UpdateMeetingDetailMutation = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_title?: string | null,
     meeting_comments?: string | null,
   } | null,
 };
@@ -427,6 +442,7 @@ export type DeleteMeetingDetailMutation = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_title?: string | null,
     meeting_comments?: string | null,
   } | null,
 };
@@ -457,6 +473,7 @@ export type PublishMeetingDetailUpdatesMutation = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_title?: string | null,
     meeting_comments?: string | null,
   } | null,
 };
@@ -467,6 +484,20 @@ export type NotifySpecialistMutationVariables = {
 
 export type NotifySpecialistMutation = {
   notifySpecialist?: boolean | null,
+};
+
+export type JoinMeetingMutationVariables = {
+  input?: JoinMeetingInput | null,
+};
+
+export type JoinMeetingMutation = {
+  joinMeeting?:  {
+    __typename: "JoinMeetingInfo",
+    meeting_id?: string | null,
+    attendee_id?: string | null,
+    external_user_id?: string | null,
+    join_token?: string | null,
+  } | null,
 };
 
 export type GetSpecialistProfileQueryVariables = {
@@ -678,6 +709,7 @@ export type GetMeetingDetailQuery = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_title?: string | null,
     meeting_comments?: string | null,
   } | null,
 };
@@ -712,6 +744,7 @@ export type ListMeetingDetailsQuery = {
       call_id?: string | null,
       external_meeting_id?: string | null,
       meeting_status?: string | null,
+      meeting_title?: string | null,
       meeting_comments?: string | null,
     } | null > | null,
     nextToken?: string | null,
@@ -748,6 +781,7 @@ export type GetMeetingDetailsByStatusQuery = {
       call_id?: string | null,
       external_meeting_id?: string | null,
       meeting_status?: string | null,
+      meeting_title?: string | null,
       meeting_comments?: string | null,
     } | null > | null,
     nextToken?: string | null,
@@ -786,6 +820,7 @@ export type GetMeetingDetailsByStatusAndCreateTimeQuery = {
       call_id?: string | null,
       external_meeting_id?: string | null,
       meeting_status?: string | null,
+      meeting_title?: string | null,
       meeting_comments?: string | null,
     } | null > | null,
     nextToken?: string | null,
@@ -814,6 +849,7 @@ export type OnCreateMeetingDetailSubscription = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_title?: string | null,
     meeting_comments?: string | null,
   } | null,
 };
@@ -840,6 +876,7 @@ export type OnUpdateMeetingDetailSubscription = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_title?: string | null,
     meeting_comments?: string | null,
   } | null,
 };
@@ -866,6 +903,7 @@ export type OnDeleteMeetingDetailSubscription = {
     call_id?: string | null,
     external_meeting_id?: string | null,
     meeting_status?: string | null,
+    meeting_title?: string | null,
     meeting_comments?: string | null,
   } | null,
 };
