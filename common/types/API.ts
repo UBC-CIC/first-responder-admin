@@ -13,6 +13,7 @@ export type SpecialistProfileInput = {
   notes?: string | null,
   user_status?: SpecialistStatus | null,
   is_paged?: boolean | null,
+  location?: GeolocationCoordinatesInput | null,
   availability?: SpecialistAvailabilityInput | null,
   created_date_time?: string | null,
   updated_date_time?: string | null,
@@ -24,6 +25,11 @@ export enum SpecialistStatus {
   OFFLINE = "OFFLINE",
 }
 
+
+export type GeolocationCoordinatesInput = {
+  latitude?: number | null,
+  longitude?: number | null,
+};
 
 export type SpecialistAvailabilityInput = {
   overrides?: Array< SpecialistAvalabilityOverrideInput | null > | null,
@@ -169,6 +175,24 @@ export type Attendee = {
   first_name?: string | null,
   last_name?: string | null,
   username?: string | null,
+};
+
+export type NotifySpecialistInput = {
+  specialist?: SpecialistProfileInput | null,
+  external_meeting_id?: string | null,
+};
+
+export type JoinMeetingInput = {
+  meeting_id?: string | null,
+  phone_number: string,
+};
+
+export type JoinMeetingInfo = {
+  __typename: "JoinMeetingInfo",
+  meeting_id?: string | null,
+  attendee_id?: string | null,
+  external_user_id?: string | null,
+  join_token?: string | null,
 };
 
 export type SpecialistConnection = {
@@ -443,6 +467,27 @@ export type PublishMeetingDetailUpdatesMutation = {
     external_meeting_id?: string | null,
     meeting_status?: string | null,
     meeting_comments?: string | null,
+  } | null,
+};
+
+export type NotifySpecialistMutationVariables = {
+  input?: NotifySpecialistInput | null,
+};
+
+export type NotifySpecialistMutation = {
+  notifySpecialist?: boolean | null,
+};
+
+export type JoinMeetingMutationVariables = {
+  input?: JoinMeetingInput | null,
+};
+
+export type JoinMeetingMutation = {
+  joinMeeting?:  {
+    __typename: "JoinMeetingInfo",
+    attendee_id?: string | null,
+    external_user_id?: string | null,
+    join_token?: string | null,
   } | null,
 };
 

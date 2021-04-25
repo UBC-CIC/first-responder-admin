@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Construct, Duration, Fn, Stack } from '@aws-cdk/core';
 import {
     AuthorizationType,
     FieldLogLevel,
@@ -9,8 +9,10 @@ import {
 } from '@aws-cdk/aws-appsync';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { Table } from '@aws-cdk/aws-dynamodb';
-import { CompositePrincipal, ManagedPolicy, Role, ServicePrincipal, Effect, PolicyStatement } from '@aws-cdk/aws-iam'
+import { CompositePrincipal, ManagedPolicy, Role, PolicyDocument, ServicePrincipal, Effect, PolicyStatement } from '@aws-cdk/aws-iam'
 import { FirstResponderAdminDynamoStack } from './admin-dynamodb-stack';
+import lambda = require('@aws-cdk/aws-lambda');
+import cdk = require('@aws-cdk/core');
 
 /**
  * FirstResponderAdminAppSyncStack defines a GraphQL API for accessing meeting-detail table.
@@ -92,6 +94,76 @@ export class FirstResponderAdminAppSyncStack extends Stack {
 
         // Define Request DDB DataSource
         const meetingDetailTableDataSource = api.addDynamoDbDataSource('meetingDetailTableDataSource', meetingDetailTable);
+        
+        const lambdaRole = new Role(this, 'FirstResponderAppSyncLambdaRole', {
+            roleName: 'FirstResponderAppSyncLambdaRole',
+            assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+            inlinePolicies: {
+                additional: new PolicyDocument({
+                        statements: [
+                        new PolicyStatement({
+                            effect: Effect.ALLOW,
+                            actions: [
+                                // Chime
+                                'chime:CreateMeeting',
+                                'chime:DeleteMeeting',
+                                'chime:CreateAttendee',
+                                'chime:DeleteAttendee',
+                                'chime:ListAttendees',
+                                // DynamoDB
+                                'dynamodb:Scan',
+                                'dynamodb:GetItem',
+                                'dynamodb:PutItem',
+                                'dynamodb:Query',
+                                'dynamodb:UpdateItem',
+                                'dynamodb:DeleteItem',
+                                'dynamodb:BatchWriteItem',
+                                'dynamodb:BatchGetItem',
+                                // IAM
+                                'iam:GetRole',
+                                'iam:PassRole',
+                                // Lambda
+                                'lambda:InvokeFunction',
+                                // S3
+                                's3:GetObject',
+                                's3:PutObject',
+                                's3:ListBucket',
+                                'kms:Decrypt',
+                                'kms:Encrypt',
+                                'kms:GenerateDataKey',
+                                // SNS
+                                'sns:*',
+                                // STS
+                                'sts:AssumeRole',
+                                // CloudWatch
+                                'cloudwatch:*',
+                                'logs:*',
+                                // AppSync
+                                "appsync:GraphQL",
+                                "appsync:GetGraphqlApi",
+                                "appsync:ListGraphqlApis",
+                                "appsync:ListApiKeys"
+                            ],
+                            resources: ['*']
+                        })
+                    ]
+                }),
+            },
+        });
+    
+        const joinMeetingFunction = new lambda.Function(this, 'joinMeetingFunction', {
+            functionName: "FirstResponder-Data-ChimeMeeting",
+            code: new lambda.AssetCode('build/src'),
+            handler: 'data-create.handler',
+            runtime: lambda.Runtime.NODEJS_10_X,
+            environment: {
+              TABLE_NAME: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
+              PRIMARY_KEY: 'meeting_id',
+            },
+            role: lambdaRole,
+            memorySize: 512,
+            timeout: cdk.Duration.seconds(30)
+          });
 
         meetingDetailTableDataSource.createResolver({
             typeName: 'Query',
@@ -189,6 +261,15 @@ export class FirstResponderAdminAppSyncStack extends Stack {
             requestMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Query.getSpecialistProfilesByStatus.req.vtl`),
             responseMappingTemplate: MappingTemplate.fromFile(`${specialistProfileResolverPath}/Query.getSpecialistProfilesByStatus.res.vtl`),
         });
+
+        // Define Lambda DataSource and Resolver - make sure mutations are defined in schema.graphql
+        //
+        // Resolver to for Chime meeting operations
+        api.addLambdaDataSource('JoinMeetingDataSource', joinMeetingFunction)
+            .createResolver({
+                typeName: 'Mutation',
+                fieldName: 'joinMeeting'
+            });
 
         new CfnOutput(this, "GraphQLEndpoint", {
             value: api.graphqlUrl

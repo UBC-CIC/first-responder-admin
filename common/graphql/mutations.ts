@@ -218,3 +218,13 @@ export const notifySpecialist = /* GraphQL */ `
     notifySpecialist(input: $input)
   }
 `;
+export const joinMeeting = /* GraphQL */ `
+  mutation JoinMeeting($input: JoinMeetingInput) {
+    joinMeeting(input: $input) {
+      meeting_id
+      attendee_id
+      external_user_id
+      join_token
+    }
+  }
+`;
