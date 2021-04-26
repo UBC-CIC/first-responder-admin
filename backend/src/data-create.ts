@@ -3,6 +3,7 @@ import {
   Attendee,
   AttendeeJoinType,
   AttendeeState,
+  AttendeeType,
   JoinDataType,
   LatLong,
   MeetingDetails,
@@ -16,7 +17,6 @@ const chime = new AWS.Chime({
   endpoint: "service.chime.aws.amazon.com",
 });
 const db = new AWS.DynamoDB.DocumentClient({ region: "ca-central-1" });
-
 
 // Handler for data initiated calls to create and join Chime meeting
 //
@@ -34,13 +34,17 @@ export const handler = async (
     meeting_id,
     external_meeting_id,
     external_attendee_id,
-    location
+    location,
+    user_name,
+    attendee_type,
   }: {
     phone_number: string;
     meeting_id: string;
     external_meeting_id?: string;
     external_attendee_id?: string;
-    location?: LatLong
+    location?: LatLong;
+    user_name?: string;
+    attendee_type?: AttendeeType;
   } = event.arguments.input;
 
   const dao = new MeetingDetailsDao(db);
@@ -98,7 +102,9 @@ export const handler = async (
         meetingDetails,
         phone_number,
         dao,
-        external_attendee_id
+        external_attendee_id,
+        user_name,
+        attendee_type
       );
     }
   }
@@ -121,7 +127,7 @@ async function newCall(
 
   const externalMeetingId =
     preferredExternalMeetingId || (await dao.generateExternalMeetingId());
-  const externalAttendeeId = preferredExternalUserId || uuidv4(); 
+  const externalAttendeeId = preferredExternalUserId || uuidv4();
   const meetingResponse = await chime
     .createMeeting({
       ExternalMeetingId: externalMeetingId,
@@ -139,29 +145,37 @@ async function newCall(
   const attendeeResponse = await chime.createAttendee(request).promise();
   console.log("attendee details:" + JSON.stringify(attendeeResponse));
 
-  // Registers the meeting in DDB
-  //
-  await dao.createNewMeeting(
-    meeting.MeetingId!,
-    phone_number,
-    externalAttendeeId,
-    callId,
-    externalMeetingId,
-    AttendeeJoinType.DATA,
-    AttendeeState.IN_CALL,
-    location,
+  if (attendeeResponse && attendeeResponse.Attendee?.AttendeeId) {
+    // Registers the meeting in DDB
+    //
+    await dao.createNewMeeting(
+      meeting.MeetingId!,
+      phone_number,
+      attendeeResponse.Attendee.AttendeeId,
+      callId,
+      externalMeetingId,
+      AttendeeJoinType.DATA,
+      AttendeeState.IN_CALL,
+      location
     );
 
-  const JoinMeetingInfo = {
-    meeting_id: meetingResponse.Meeting?.MeetingId,
-    attendee_id: attendeeResponse.Attendee?.AttendeeId,
-    external_user_id: attendeeResponse.Attendee?.ExternalUserId,
-    join_token: attendeeResponse.Attendee?.JoinToken,
-    media_placement: meetingResponse?.Meeting?.MediaPlacement,
-    media_region: meetingResponse?.Meeting?.MediaRegion,
-  };
+    const JoinMeetingInfo = {
+      meeting_id: meetingResponse.Meeting?.MeetingId,
+      attendee_id: attendeeResponse.Attendee?.AttendeeId,
+      external_user_id: attendeeResponse.Attendee?.ExternalUserId,
+      join_token: attendeeResponse.Attendee?.JoinToken,
+      media_placement: meetingResponse?.Meeting?.MediaPlacement,
+      media_region: meetingResponse?.Meeting?.MediaRegion,
+    };
 
-  return JoinMeetingInfo;
+    return JoinMeetingInfo;
+  } else {
+    console.error(
+      "Incorrect attendeeResponse for newCall : ",
+      attendeeResponse
+    );
+  }
+  return;
 }
 
 // Handles a new attendee joins an existing call by creating an attendee with Chime and add the attendee to the meeting in DynamoDB.
@@ -170,10 +184,12 @@ async function joinExistingCall(
   meetingDetails: MeetingDetails,
   phoneNumber: string,
   dao: MeetingDetailsDao,
-  preferredExternalUserId?: string
+  preferredExternalUserId?: string,
+  userName?: string,
+  attendeeType?: AttendeeType
 ) {
-    console.log("Preferred External User id: ", preferredExternalUserId);
-    
+  console.log("Preferred External User id: ", preferredExternalUserId);
+
   const externalUserId = preferredExternalUserId || uuidv4();
 
   console.info("Adding new attendee %s to existing meeting", externalUserId);
@@ -195,31 +211,62 @@ async function joinExistingCall(
         })
         .promise();
       console.log("Attendee details:" + JSON.stringify(attendeeResponse));
+
+      // Registers the new attendee in DDB
+      //
+      if (attendeeResponse && attendeeResponse.Attendee?.AttendeeId) {
+        if (attendeeType === AttendeeType.SERVICE_DESK) {
+          if (userName) {
+            console.log(
+              "Joining SERVICE_DESK attendeed %s to meeting",
+              userName
+            );
+            await dao.addServiceDeskAttendee(
+              meetingDetails,
+              attendeeResponse.Attendee.AttendeeId,
+              userName,
+              AttendeeJoinType.DATA,
+              AttendeeState.IN_CALL
+            );
+          } else {
+            console.log(
+              "Error : Attendee type is SERVICE_DESK but no username is provided."
+            );
+          }
+        } else {
+          await dao.addAttendeeByPhoneNumber(
+            meetingDetails,
+            attendeeResponse.Attendee.AttendeeId,
+            phoneNumber,
+            AttendeeJoinType.DATA,
+            AttendeeState.IN_CALL
+          );
+        }
+
+        const JoinMeetingInfo = {
+          meeting_id: meetingDetails.meeting_id,
+          attendee_id: attendeeResponse?.Attendee?.AttendeeId,
+          external_user_id: attendeeResponse?.Attendee?.ExternalUserId,
+          join_token: attendeeResponse?.Attendee?.JoinToken,
+          media_placement: meetingInfo?.Meeting?.MediaPlacement,
+          media_region: meetingInfo?.Meeting?.MediaRegion,
+        };
+
+        console.log(
+          "JoinMeetingInfo details:" + JSON.stringify(JoinMeetingInfo)
+        );
+        return JoinMeetingInfo;
+      } else {
+        console.error(
+          "Incorrect attendeeResponse for joinExistingCall : ",
+          attendeeResponse
+        );
+      }
     } catch (e) {
       console.log("Found meeting, but chime has expired it", e);
     }
   }
-  // Registers the new attendee in DDB
-  //
-  await dao.addAttendeeByPhoneNumber(
-    meetingDetails,
-    externalUserId,
-    phoneNumber,
-    AttendeeJoinType.DATA,
-    AttendeeState.IN_CALL
-  );
-
-  const JoinMeetingInfo = {
-    meeting_id: meetingDetails.meeting_id,
-    attendee_id: attendeeResponse?.Attendee?.AttendeeId,
-    external_user_id: attendeeResponse?.Attendee?.ExternalUserId,
-    join_token: attendeeResponse?.Attendee?.JoinToken,
-    media_placement: meetingInfo?.Meeting?.MediaPlacement,
-    media_region: meetingInfo?.Meeting?.MediaRegion,
-  };
-
-  console.log("JoinMeetingInfo details:" + JSON.stringify(JoinMeetingInfo));
-  return JoinMeetingInfo;
+  return;
 }
 
 export async function generateExternalMeetingId(

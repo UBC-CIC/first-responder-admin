@@ -1,20 +1,11 @@
 import { useEffect, useState } from "react";
 import {
   faUser,
-  faPhoneSquareAlt,
-  faPhoneSquare,
-  faUserPlus,
   faHeadset,
-  faPhone,
-  faClipboard,
-  faMap,
-  faMarker,
   faMapMarkerAlt,
-  faTimes,
   faRocket,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
 import {
   Table,
   Badge,
@@ -26,8 +17,6 @@ import {
   Col,
   Tooltip,
 } from "react-bootstrap";
-//import BootstrapTable from 'react-bootstrap-table-next';
-//import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import {
   AttendeeState,
   AttendeeType,
@@ -36,6 +25,7 @@ import {
 } from "../../common/types/API";
 import Attendees from "./Attendees";
 import Specialists from "./Specialists";
+import JoinMeeting from "../meeting/JoinMeeting";
 import "./meetingDetailsTable.css";
 import { API } from "aws-amplify";
 import MeetingNotes from "./MeetingNotes";
@@ -251,16 +241,10 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                     status="AVAILABLE"
                     external_meeting_id={item.external_meeting_id}
                   />{" "}
-                  <Button
-                    variant="danger"
-                    title="End Meeting"
-                    onClick={async (attendeeId) => {
-                      await onJoinMeeting(item.meeting_id);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faPhone} />
-                    {"  "}
-                  </Button>{" "}
+                  <JoinMeeting 
+                    meetingId={item.meeting_id} 
+                    externalMeetingId={item.external_meeting_id}
+                  />{" "}
                   {item.location ? <OverlayTrigger
                     overlay={
                       <Tooltip id={`tooltip-${item.meeting_id}`}>
@@ -282,22 +266,6 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                 </td>
               ) : (
                 <td>
-                  <Specialists
-                    status="AVAILABLE"
-                    external_meeting_id={item.external_meeting_id}
-                    disabled
-                  />{" "}
-                  <Button
-                    variant="secondary"
-                    title="End Meeting"
-                    disabled
-                    onClick={async (attendeeId) => {
-                      await onJoinMeeting(item.meeting_id);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faPhone} />
-                    {"  "}
-                  </Button>{" "}
                   <MeetingNotes meetingDetail={item} />{" "}
                 </td>
               )}

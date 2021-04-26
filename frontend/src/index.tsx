@@ -8,6 +8,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Amplify from "aws-amplify";
 import stack from './aws-exports.json';
+import { UserProvider } from './context/UserContext';
 
 const Cognito = stack['FirstResponderAdminCognito']
 const AppSync = stack['FirstResponderAdminAppSync']
@@ -31,7 +32,9 @@ Amplify.configure(config)
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <UserProvider>
+      <App />
+    </UserProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

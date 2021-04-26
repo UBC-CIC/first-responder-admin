@@ -41,11 +41,11 @@ export const Specialists = (props: { status: String, external_meeting_id?: strin
     return (
         <>
             {props.disabled ? (
-                <Button variant="light" onClick={onGetAvailableSpecialists} title="Add Specialists" disabled>
+                <Button variant="info" onClick={onGetAvailableSpecialists} title="Add Specialists" disabled>
                     <FontAwesomeIcon icon={faUserPlus} />
                 </Button>
             ) : (
-                <Button variant="light" onClick={onGetAvailableSpecialists} title="Add Specialists">
+                <Button variant="info" onClick={onGetAvailableSpecialists} title="Add Specialists">
                     <FontAwesomeIcon icon={faUserPlus} />
                 </Button>
             )}

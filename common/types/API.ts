@@ -192,6 +192,8 @@ export type NotifySpecialistInput = {
 export type JoinMeetingInput = {
   meeting_id?: string | null,
   phone_number: string,
+  user_name?: string | null,
+  attendee_type?: AttendeeType | null,
 };
 
 export type JoinMeetingInfo = {

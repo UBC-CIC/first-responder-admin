@@ -16,8 +16,17 @@ export const handler = async (event: DynamoDBStreamEvent) => {
     }
 
     const record = event.Records[0];
+    const oldImage = record.dynamodb?.OldImage;
     const newImage = record.dynamodb?.NewImage;
     const eventSourceARN = record.eventSourceARN;
+
+    // Only creation events are needed for subscrition for now, so update events/delete events are ignored.
+    if (newImage && oldImage && eventSourceARN) {
+        return {
+            statusCode: 200, 
+            body: 'DynamoDBStreamEvent is for record being updated'
+        };
+    }
 
     if (newImage && eventSourceARN) {
         if (eventSourceARN.includes('meeting-detail')) {
@@ -31,7 +40,7 @@ export const handler = async (event: DynamoDBStreamEvent) => {
     } else { 
         return {
             statusCode: 200, 
-            ody: 'record deleted'
+            body: 'DynamoDBStreamEvent was for a deleted record'
         };
     }
 };

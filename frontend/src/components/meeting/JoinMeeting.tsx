@@ -1,26 +1,36 @@
-import { useMeetingManager } from 'amazon-chime-sdk-component-library-react';
+import { useState } from "react";
+import { Button } from "react-bootstrap";
+import { MeetingView } from "./MeetingView";
+import {
+  faPhone,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const JoinMeeting = () => {
-  const meetingManager = useMeetingManager();
+const JoinMeeting = (props: {
+  meetingId?: string;
+  externalMeetingId?: string|null;
+}) => {
+  const [show, setShow] = useState(false);
+  const {meetingId, externalMeetingId} = props;
 
-  const joinMeeting = async () => {
-    // Fetch the meeting and attendee data from your server
-    const response = await fetch('/my-server');
-    const data = await response.json();
-
-    const joinData = {
-      meetingInfo: data.Meeting,
-      attendeeInfo: data.Attendee
-    };
-
-    // Use the join API to create a meeting session
-    await meetingManager.join(joinData);
-
-    // At this point you can let users setup their devices, or start the session immediately
-    await meetingManager.start();
+  const onCheckIn = () => {
+    setShow(true);
   };
 
-  return <button onClick={joinMeeting}>Join</button>;
+  const handleMeetingEnd = () => {
+    setShow(false);
+  }
+
+  return (
+    <>
+      <Button variant="warning" title="Check In" onClick={() => onCheckIn()}>
+        <FontAwesomeIcon icon={faPhone} />{"  "}
+      </Button>
+
+      {show && meetingId && externalMeetingId && <MeetingView meetingId={meetingId} externalMeetingId={externalMeetingId} handleMeetingEnd={handleMeetingEnd}/>}
+
+    </>
+  );
 };
 
 export default JoinMeeting;

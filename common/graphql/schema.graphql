@@ -139,6 +139,8 @@ input ModelStringInput {
 input JoinMeetingInput {
     meeting_id: String
 	phone_number: String!
+	user_name: String
+	attendee_type: AttendeeType
 }
 
 type MediaPlacement {

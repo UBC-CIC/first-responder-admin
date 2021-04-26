@@ -9,12 +9,13 @@ import {
 import './App.css';
 import { Alert } from 'react-bootstrap';
 import { ThemeProvider } from 'styled-components';
-import { lightTheme, MeetingProvider } from 'amazon-chime-sdk-component-library-react';
+import { lightTheme, darkTheme, MeetingProvider } from 'amazon-chime-sdk-component-library-react';
+import UserContext from './context/UserContext';
 
 function App() {
 
     const [authState, setAuthState] = React.useState<AuthState>();
-    const [user, setUser] = React.useState<any>();
+    const {user, setUser} = React.useContext(UserContext);
     const [alertMessage, setAlertMessage] = React.useState('');
 
     React.useEffect(() => {

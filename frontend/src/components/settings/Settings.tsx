@@ -44,10 +44,10 @@ export const Settings = () => {
 
   const handleSubmit = () => {
     const cookies = new Cookies();
-    cookies.set(COOKIE_SOUND_STATUS, soundStatus, { path: "/" });
-    cookies.set(COOKIE_VOLUME, volume, { path: "/" });
+    cookies.set(COOKIE_SOUND_STATUS, soundStatus, { path: "/", maxAge: 31536000 });
+    cookies.set(COOKIE_VOLUME, volume, { path: "/", maxAge: 31536000 });
     const alertSound = statusRef.current ? statusRef.current.value : "beep";
-    cookies.set(COOKIE_ALERT_SOUND, alertSound, { path: "/" });
+    cookies.set(COOKIE_ALERT_SOUND, alertSound, { path: "/", maxAge: 31536000 });
   };
 
   return (
