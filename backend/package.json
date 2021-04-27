@@ -27,6 +27,6 @@
     "@aws-cdk/aws-lambda-event-sources": "^1.94.1",
     "@aws-cdk/aws-s3": "^1.94.1",
     "@aws-cdk/core": "^1.94.1",
-    "aws-sdk": "^2.867.0"
+    "aws-sdk": "^2.893.0"
   }
 }

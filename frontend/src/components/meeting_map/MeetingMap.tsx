@@ -1,141 +1,136 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
-import { API } from "aws-amplify";
-import { getMeetingDetailsByStatus } from "../../common/graphql/queries";
-import MeetingDetailsTable from "../common/MeetingDetailsTable";
-import { AttendeeType, MeetingDetail } from "../../common/types/API";
-import {
-  onCreateMeetingDetail,
-  onUpdateMeetingDetail,
-} from "../../common/graphql/subscriptions";
+import { Auth } from "aws-amplify";
+import mapboxgl from "mapbox-gl";
+import React, { Component } from "react";
+import LocationServiceHelper from "./LocationHelper";
+import "./MeetingMap.css";
+import Location from "aws-sdk/clients/location";
+import { Button } from "react-bootstrap";
+import { String } from "aws-sdk/clients/cloudtrail";
+let map: mapboxgl.Map;
+let marker: mapboxgl.Marker;
+let credentials;
+let locationService: Location;
 
-export const MeetingMap = () => {
-  const [items, updateItems] = useState<Array<MeetingDetail>>(
-    new Array<MeetingDetail>()
+const placeIndex = "UBC";
+const locationHelper = new LocationServiceHelper();
+
+//Getting current user credentials
+async function getLocationService() {
+  credentials = await Auth.currentCredentials();
+  locationService = new Location({
+    credentials,
+    region: "us-east-1",
+  });
+}
+
+// Construct a container to render a map, add navigation (zoom in and out button),
+// geolocate(top right button to locate user location)
+async function constructMap(container: HTMLDivElement) {
+  let center = new mapboxgl.LngLat(-123.14229959999999, 49.2194576);
+  map = await locationHelper.constructMapWithCenter(container, center);
+  map.addControl(
+    new mapboxgl.NavigationControl({ showCompass: false }),
+    "top-left"
   );
-  const stateRef = useRef<Array<MeetingDetail>>();
-  stateRef.current = items;
+  map.addControl(
+    new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      fitBoundsOptions: {
+        animate: false,
+        screenSpeed: 1000,
+        zoom: 15
+      },
+      trackUserLocation: true,
+      showUserLocation: true
+    })
+  );
 
+  marker = new mapboxgl.Marker();
+}
 
-  const filterMeetingsForLocation = (meetings: MeetingDetail[]) => {
-    const filteredItems = meetings.filter((meeting) => !!getFirstResponderLocation(meeting) as boolean);
-    return filteredItems;
+//Triggers when search button is pressed
+//reads the content from the search bar, makes an API request to location services
+//flies to the location found on the map view.
+function searchAndUpdateMapview(map: mapboxgl.Map, text: String) {
+  let longitude = -123.11335999999994;
+  let latitude = 49.260380000000055;
+  if (text === "") {
+    console.log("No input text");
+    return;
   }
-  /**
-   *
-   * @param meeting a MeetingDetail which you want to find the location of.
-   * @returns the location if there exists a first responder with a location,
-   */
-  const getFirstResponderLocation = (meeting: MeetingDetail) => {
-    if (!meeting?.attendees) return null;
-    let { attendees } = meeting;
-    if (!attendees?.length) {
-      return null;
-    }
-    let firstResponder = attendees.find(
-      (attendee) => attendee?.attendee_type === AttendeeType.FIRST_RESPONDER
-    );
-    return firstResponder?.location || null;
-  };
-
-  useEffect(() => {
-    async function subscribeCreateMeetings() {
-      const subscription: any = API.graphql({
-        query: onCreateMeetingDetail,
-      });
-
-      subscription.subscribe({
-        next: (data: any) => {
-          const newItems = [];
-          let found = false;
-          if (data.value.data) {
-            for (let item of stateRef.current!) {
-              if (
-                data.value.data.onCreateMeetingDetail.meeting_id ===
-                item.meeting_id
-              ) {
-                // Found existing item so we will update this item
-                newItems.push(data.value.data.onCreateMeetingDetail);
-                found = true;
-              } else {
-                // Keep existing item
-                newItems.push(item);
-              }
-            }
-            if (!found) {
-              newItems.push(data.value.data.onCreateMeetingDetail);
-            }
-            const filteredItems = filterMeetingsForLocation(newItems);
-            updateItems(filteredItems);
-          }
-        },
-        error: (error: any) => console.warn(error),
-      });
-    }
-
-    async function subscribeUpdateMeetings() {
-      const subscription: any = API.graphql({
-        query: onUpdateMeetingDetail,
-      });
-
-      subscription.subscribe({
-        next: (data: any) => {
-          const newItems = [];
-          if (data.value.data.onUpdateMeetingDetail) {
-            for (let item of stateRef.current!) {
-              if (
-                data.value.data.onUpdateMeetingDetail.meeting_id ===
-                item.meeting_id
-              ) {
-                // Found existing item so we will update this item
-                newItems.push(data.value.data.onUpdateMeetingDetail);
-              } else {
-                // Keep existing item
-                newItems.push(item);
-              }
-            }
-            const filteredItems = filterMeetingsForLocation(newItems);
-
-            updateItems(filteredItems);
-          }
-        },
-        error: (error: any) => console.warn(error),
-      });
-    }
-
-    async function callListAllMeetings() {
-      try {
-        const meetings: any = await API.graphql({
-          query: getMeetingDetailsByStatus,
-          variables: {
-            meetingStatus: "ACTIVE",
-            limit: 25,
-          },
+  locationService.searchPlaceIndexForText(
+    {
+      IndexName: placeIndex,
+      Text: text,
+      MaxResults: 1,
+      BiasPosition: [longitude, latitude],
+    },
+    (err, response) => {
+      if (err) {
+        console.error(err);
+      } else if (response && response.Results.length > 0) {
+        if (response.Summary.ResultBBox) {
+          longitude = response.Summary.ResultBBox[0];
+          latitude = response.Summary.ResultBBox[1];
+        } else {
+          console.error("Error on latitude");
+          return;
+        }
+        marker.setLngLat([longitude, latitude]);
+        marker.addTo(map);
+        map.flyTo({
+          center: [longitude, latitude],
+          essential: true,
+          zoom: 12,
         });
-        const itemsReturned: Array<MeetingDetail> =
-          meetings["data"]["getMeetingDetailsByStatus"]["items"];
-        console.log("getMeetingDetailsByStatus meetings:", itemsReturned);
-        
-        const filteredItems = filterMeetingsForLocation(itemsReturned);
-        console.log(filteredItems);
-        
-        updateItems(filteredItems);
-      } catch (e) {
-        console.log("getMeetingDetailsByStatus errors:", e.errors);
       }
     }
-
-    callListAllMeetings();
-    subscribeCreateMeetings();
-    subscribeUpdateMeetings();
-  }, []);
-  console.log(items);
-
-  return (
-    <Container fluid>
-      <Row />
-    </Container>
   );
-};
+}
 
-export default MeetingMap;
+class MapPage extends Component<{}, { searchBarText: string }> {
+  container: HTMLDivElement | null | undefined;
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      searchBarText: "UBC",
+    };
+  }
+
+  async componentDidMount() {
+    //get current user credentials
+    await getLocationService();
+    //make map
+    await constructMap(this.container as HTMLDivElement);
+  }
+
+  handleSearch = () => {
+    searchAndUpdateMapview(map, this.state.searchBarText);
+  };
+
+  render() {
+    return (
+      <div id={"mapPage"}>
+        <div id={"sbContainer"}>
+          <Button
+            id={"navBtn"}
+            variant="outlined"
+            color="secondary"
+            onClick={this.handleSearch}
+          >
+            Search
+          </Button>
+        </div>
+        <div
+          className="Map"
+          ref={(x) => {
+            this.container = x;
+          }}
+        />
+      </div>
+    );
+  }
+}
+export default MapPage;
