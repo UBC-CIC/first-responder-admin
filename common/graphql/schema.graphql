@@ -131,24 +131,20 @@ input ModelStringInput {
 	beginsWith: String
 }
 
-# [type] Mutation
-type Mutation @aws_cognito_user_pools
-@aws_iam {
-	createSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
-	updateSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
-	deleteSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
-	createMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
-	updateMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
-	deleteMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
-	publishMeetingDetailUpdates(input: MeetingDetailInput!): MeetingDetail
-    notifySpecialist(input: NotifySpecialistInput): Boolean
-    joinMeeting(input: JoinMeetingInput): JoinMeetingInfo
-}
-
 # [input] JoinMeetingInput
 input JoinMeetingInput {
     meeting_id: String
 	phone_number: String!
+}
+
+type MediaPlacement {
+	AudioFallbackUrl: String
+    AudioHostUrl: String
+    ScreenDataUrl: String
+    ScreenSharingUrl: String
+    ScreenViewingUrl: String
+    SignalingUrl: String
+    TurnControlUrl: String
 }
 
 # [output] JoinMeetingInfo
@@ -158,31 +154,14 @@ type JoinMeetingInfo @aws_cognito_user_pools
     attendee_id: String
     external_user_id: String
     join_token: String
+	media_placement: MediaPlacement
+	media_region: String
 }
 
 # [input] NotifySpecialistInput
 input NotifySpecialistInput {
 	specialist: SpecialistProfileInput
 	external_meeting_id: String
-}
-
-# [type] Query
-type Query @aws_cognito_user_pools
-@aws_iam {
-	getSpecialistProfile(phoneNumber: String!): SpecialistProfile
-	listSpecialistProfilesByStatus(userStatus: SpecialistStatus, limit: Int, nextToken: String): SpecialistConnection
-	getSpecialistProfilesByStatus(userStatus: SpecialistStatus): SpecialistConnection
-	listSpecialistProfiles(limit: Int, nextToken: String): SpecialistConnection
-	getMeetingDetail(meetingId: String!): MeetingDetail
-	listMeetingDetails(filter: ModelMeetingDetailFilterInput, limit: Int, nextToken: String): MeetingDetailConnection
-	getMeetingDetailsByStatus(meetingStatus: String!, limit: Int, nextToken: String): MeetingDetailConnection
-	getMeetingDetailsByStatusAndCreateTime(
-		meetingStatus: String!,
-		startTime: String!,
-		endTime: String!,
-		limit: Int,
-		nextToken: String
-	): MeetingDetailConnection
 }
 
 type SpecialistAvailability @aws_cognito_user_pools
@@ -256,6 +235,48 @@ enum SpecialistStatus {
 	AVAILABLE
 	NOT_AVAILABLE
 	OFFLINE
+}
+
+type ServiceDeskProfile @aws_cognito_user_pools
+@aws_iam{
+	name: String
+	phone_number: String
+	email: String
+	username: String
+}
+
+# [type] Mutation
+type Mutation @aws_cognito_user_pools
+@aws_iam {
+	createSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
+	updateSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
+	deleteSpecialistProfile(input: SpecialistProfileInput!): SpecialistProfile
+	createMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
+	updateMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
+	deleteMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
+	publishMeetingDetailUpdates(input: MeetingDetailInput!): MeetingDetail
+    notifySpecialist(input: NotifySpecialistInput): Boolean
+    joinMeeting(input: JoinMeetingInput): JoinMeetingInfo
+}
+
+# [type] Query
+type Query @aws_cognito_user_pools
+@aws_iam {
+	getSpecialistProfile(phoneNumber: String!): SpecialistProfile
+	listSpecialistProfilesByStatus(userStatus: SpecialistStatus, limit: Int, nextToken: String): SpecialistConnection
+	getSpecialistProfilesByStatus(userStatus: SpecialistStatus): SpecialistConnection
+	listSpecialistProfiles(limit: Int, nextToken: String): SpecialistConnection
+	getMeetingDetail(meetingId: String!): MeetingDetail
+	listMeetingDetails(filter: ModelMeetingDetailFilterInput, limit: Int, nextToken: String): MeetingDetailConnection
+	getMeetingDetailsByStatus(meetingStatus: String!, limit: Int, nextToken: String): MeetingDetailConnection
+	getMeetingDetailsByStatusAndCreateTime(
+		meetingStatus: String!,
+		startTime: String!,
+		endTime: String!,
+		limit: Int,
+		nextToken: String
+	): MeetingDetailConnection
+	getServiceDeskProfile(username: String!): ServiceDeskProfile
 }
 
 # [type] Subscription
