@@ -292,3 +292,13 @@ export const getMeetingDetailsByStatusAndCreateTime = /* GraphQL */ `
     }
   }
 `;
+export const getServiceDeskProfile = /* GraphQL */ `
+  query GetServiceDeskProfile($username: String!) {
+    getServiceDeskProfile(username: $username) {
+      name
+      phone_number
+      email
+      username
+    }
+  }
+`;

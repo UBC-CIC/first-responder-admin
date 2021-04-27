@@ -1,5 +1,5 @@
 import AWS = require('aws-sdk');
-import { AttendeeJoinType, AttendeeState, AttendeeType, MeetingDetails, MeetingDetailsDao } from './ddb/meeting-dao';
+import { AttendeeJoinType, AttendeeState, MeetingDetails, MeetingDetailsDao } from './ddb/meeting-dao';
 const { v4: uuidv4 } = require('uuid');
 
 // The AWS Chime client is only available in select regions
@@ -71,10 +71,12 @@ async function newCall(callId: string, phone_number: string, dao: MeetingDetails
     await dao.createNewMeeting(meeting.MeetingId!, phone_number, attendeeResponse.Attendee!.AttendeeId!, callId, externalMeetingId, AttendeeJoinType.DATA, AttendeeState.IN_CALL);
 
     const JoinMeetingInfo = {
-        meeint_id: meetingResponse.Meeting?.MeetingId,
+        meeting_id: meetingResponse.Meeting?.MeetingId,
         attendee_id: attendeeResponse.Attendee?.AttendeeId,
         external_user_id: attendeeResponse.Attendee?.ExternalUserId,
-        join_token: attendeeResponse.Attendee?.JoinToken
+        join_token: attendeeResponse.Attendee?.JoinToken,
+        media_placement: meetingResponse?.Meeting?.MediaPlacement,
+        media_region: meetingResponse?.Meeting?.MediaRegion,
       };
     
       return JoinMeetingInfo;
@@ -86,22 +88,35 @@ async function joinExistingCall(meetingDetails: MeetingDetails , phoneNumber: st
     const externalUserId = uuidv4()
     
     console.info("Adding new attendee %s to existing meeting", externalUserId);
-    const attendeeResponse = await chime.createAttendee({
-        MeetingId: meetingDetails.meeting_id,
-        ExternalUserId: externalUserId,
-    }).promise();
 
-    console.log("Attendee details:" + JSON.stringify(attendeeResponse));
+    let meetingInfo, attendeeResponse;
+    if (meetingDetails) {
+    try {
+        meetingInfo = await chime.getMeeting({
+            MeetingId: meetingDetails.meeting_id 
+        }).promise();
+        console.log("Joining existing, valid chime meeting.");
 
+        attendeeResponse = await chime.createAttendee({
+            MeetingId: meetingDetails.meeting_id,
+            ExternalUserId: externalUserId,
+        }).promise();
+      console.log("Attendee details:" + JSON.stringify(attendeeResponse));
+    } catch (e) {
+      console.log("Found meeting, but chime has expired it", e);
+    }
+  }
     // Registers the new attendee in DDB
     //
     await dao.addAttendeeByPhoneNumber(meetingDetails, externalUserId, phoneNumber, AttendeeJoinType.DATA, AttendeeState.IN_CALL);
     
     const JoinMeetingInfo = {
         meeting_id: meetingDetails.meeting_id,
-        attendee_id: attendeeResponse.Attendee?.AttendeeId,
-        external_user_id: attendeeResponse.Attendee?.ExternalUserId,
-        join_token: attendeeResponse.Attendee?.JoinToken
+        attendee_id: attendeeResponse?.Attendee?.AttendeeId,
+        external_user_id: attendeeResponse?.Attendee?.ExternalUserId,
+        join_token: attendeeResponse?.Attendee?.JoinToken,
+        media_placement: meetingInfo?.Meeting?.MediaPlacement,
+        media_region: meetingInfo?.Meeting?.MediaRegion,
     };
 
     console.log("JoinMeetingInfo details:" + JSON.stringify(JoinMeetingInfo));
