@@ -196,6 +196,19 @@ export type JoinMeetingInfo = {
   attendee_id?: string | null,
   external_user_id?: string | null,
   join_token?: string | null,
+  media_placement?: MediaPlacement,
+  media_region?: string | null,
+};
+
+export type MediaPlacement = {
+  __typename: "MediaPlacement",
+  AudioFallbackUrl?: string | null,
+  AudioHostUrl?: string | null,
+  ScreenDataUrl?: string | null,
+  ScreenSharingUrl?: string | null,
+  ScreenViewingUrl?: string | null,
+  SignalingUrl?: string | null,
+  TurnControlUrl?: string | null,
 };
 
 export type SpecialistConnection = {
@@ -223,6 +236,14 @@ export type MeetingDetailConnection = {
   __typename: "MeetingDetailConnection",
   items?:  Array<MeetingDetail | null > | null,
   nextToken?: string | null,
+};
+
+export type ServiceDeskProfile = {
+  __typename: "ServiceDeskProfile",
+  name?: string | null,
+  phone_number?: string | null,
+  email?: string | null,
+  username?: string | null,
 };
 
 export type CreateSpecialistProfileMutationVariables = {
@@ -497,6 +518,17 @@ export type JoinMeetingMutation = {
     attendee_id?: string | null,
     external_user_id?: string | null,
     join_token?: string | null,
+    media_placement?:  {
+      __typename: "MediaPlacement",
+      AudioFallbackUrl?: string | null,
+      AudioHostUrl?: string | null,
+      ScreenDataUrl?: string | null,
+      ScreenSharingUrl?: string | null,
+      ScreenViewingUrl?: string | null,
+      SignalingUrl?: string | null,
+      TurnControlUrl?: string | null,
+    } | null,
+    media_region?: string | null,
   } | null,
 };
 
@@ -824,6 +856,20 @@ export type GetMeetingDetailsByStatusAndCreateTimeQuery = {
       meeting_comments?: string | null,
     } | null > | null,
     nextToken?: string | null,
+  } | null,
+};
+
+export type GetServiceDeskProfileQueryVariables = {
+  username?: string,
+};
+
+export type GetServiceDeskProfileQuery = {
+  getServiceDeskProfile?:  {
+    __typename: "ServiceDeskProfile",
+    name?: string | null,
+    phone_number?: string | null,
+    email?: string | null,
+    username?: string | null,
   } | null,
 };
 

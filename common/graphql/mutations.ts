@@ -229,6 +229,16 @@ export const joinMeeting = /* GraphQL */ `
       attendee_id
       external_user_id
       join_token
+      media_placement {
+        AudioFallbackUrl
+        AudioHostUrl
+        ScreenDataUrl
+        ScreenSharingUrl
+        ScreenViewingUrl
+        SignalingUrl
+        TurnControlUrl
+      }
+      media_region
     }
   }
 `;
