@@ -31,8 +31,10 @@ class LocationServiceHelper {
         let map = new mapboxgl.Map({
             container: container,
             center: center,
-            zoom: 10,
+            zoom: 3,
             style: mapName,
+            pitch: 0,
+            maxPitch: 0,
             transformRequest,
         });
 
