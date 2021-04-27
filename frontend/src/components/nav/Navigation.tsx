@@ -7,6 +7,7 @@ import { Search } from "../search/Search";
 import { CallHistory } from "../history/CallHistory";
 import { AppAuthStateProps } from "../../types/propTypes";
 import { CallNotification } from '../notifications/Notification';
+import MeetingMap from "../meeting_map/MeetingMap";
 
 export const Navigation = (props: AppAuthStateProps) => {
   return (
@@ -17,6 +18,7 @@ export const Navigation = (props: AppAuthStateProps) => {
         <Switch>
           <Route path="/" exact component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
+          <Route path="/map" component={MeetingMap} />
           <Route path="/history" component={CallHistory} />
           <Route path="/search" component={Search} />
           <Route path="/settings" component={Settings} />

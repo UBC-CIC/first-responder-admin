@@ -122,6 +122,10 @@ query GetMeetingDetail($meetingId: String!) {
       first_name
       last_name
       username
+      location {
+        latitude
+        longitude
+      }
     }
     create_date_time
     end_date_time

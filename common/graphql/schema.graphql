@@ -10,6 +10,7 @@ type Attendee @aws_cognito_user_pools
 	first_name: String
 	last_name: String
 	username: String
+	location: GeolocationCoordinates
 }
 
 input AttendeeInput {

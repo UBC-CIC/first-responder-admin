@@ -178,6 +178,7 @@ export type Attendee = {
   first_name?: string | null,
   last_name?: string | null,
   username?: string | null,
+  location?: GeolocationCoordinates,
 };
 
 export type NotifySpecialistInput = {
