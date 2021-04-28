@@ -122,6 +122,10 @@ export const createMeetingDetail = /* GraphQL */ `
         first_name
         last_name
         username
+        location {
+          latitude
+          longitude
+        }
       }
       create_date_time
       end_date_time
@@ -151,6 +155,10 @@ export const updateMeetingDetail = /* GraphQL */ `
         first_name
         last_name
         username
+        location {
+          latitude
+          longitude
+        }
       }
       create_date_time
       end_date_time
@@ -180,6 +188,10 @@ export const deleteMeetingDetail = /* GraphQL */ `
         first_name
         last_name
         username
+        location {
+          latitude
+          longitude
+        }
       }
       create_date_time
       end_date_time
@@ -206,6 +218,10 @@ export const publishMeetingDetailUpdates = /* GraphQL */ `
         first_name
         last_name
         username
+        location {
+          latitude
+          longitude
+        }
       }
       create_date_time
       end_date_time

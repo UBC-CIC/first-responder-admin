@@ -28,6 +28,11 @@ export const Header = (props: AppAuthStateProps) => {
                         </NavLink>
                     </Nav.Item>
                     <Nav.Item as='li' className='p-1'>
+                        <NavLink className='nav-link' activeClassName='activeRoute' to='/map'>
+                            Map
+                        </NavLink>
+                    </Nav.Item>
+                    <Nav.Item as='li' className='p-1'>
                         <NavLink className='nav-link' activeClassName='activeRoute' to='/history'>
                             History
                         </NavLink>

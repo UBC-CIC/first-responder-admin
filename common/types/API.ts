@@ -102,6 +102,7 @@ export type AttendeeInput = {
   first_name?: string | null,
   last_name?: string | null,
   username?: string | null,
+  location?: GeolocationCoordinatesInput | null,
 };
 
 export enum AttendeeType {
@@ -178,6 +179,7 @@ export type Attendee = {
   first_name?: string | null,
   last_name?: string | null,
   username?: string | null,
+  location?: GeolocationCoordinates,
 };
 
 export type NotifySpecialistInput = {
@@ -393,6 +395,11 @@ export type CreateMeetingDetailMutation = {
       first_name?: string | null,
       last_name?: string | null,
       username?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -425,6 +432,11 @@ export type UpdateMeetingDetailMutation = {
       first_name?: string | null,
       last_name?: string | null,
       username?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -457,6 +469,11 @@ export type DeleteMeetingDetailMutation = {
       first_name?: string | null,
       last_name?: string | null,
       username?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -488,6 +505,11 @@ export type PublishMeetingDetailUpdatesMutation = {
       first_name?: string | null,
       last_name?: string | null,
       username?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -735,6 +757,11 @@ export type GetMeetingDetailQuery = {
       first_name?: string | null,
       last_name?: string | null,
       username?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -770,6 +797,11 @@ export type ListMeetingDetailsQuery = {
         first_name?: string | null,
         last_name?: string | null,
         username?: string | null,
+        location?:  {
+          __typename: "GeolocationCoordinates",
+          latitude?: number | null,
+          longitude?: number | null,
+        } | null,
       } | null > | null,
       create_date_time?: string | null,
       end_date_time?: string | null,
@@ -807,6 +839,11 @@ export type GetMeetingDetailsByStatusQuery = {
         first_name?: string | null,
         last_name?: string | null,
         username?: string | null,
+        location?:  {
+          __typename: "GeolocationCoordinates",
+          latitude?: number | null,
+          longitude?: number | null,
+        } | null,
       } | null > | null,
       create_date_time?: string | null,
       end_date_time?: string | null,
@@ -846,6 +883,11 @@ export type GetMeetingDetailsByStatusAndCreateTimeQuery = {
         first_name?: string | null,
         last_name?: string | null,
         username?: string | null,
+        location?:  {
+          __typename: "GeolocationCoordinates",
+          latitude?: number | null,
+          longitude?: number | null,
+        } | null,
       } | null > | null,
       create_date_time?: string | null,
       end_date_time?: string | null,
@@ -889,6 +931,11 @@ export type OnCreateMeetingDetailSubscription = {
       first_name?: string | null,
       last_name?: string | null,
       username?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -916,6 +963,11 @@ export type OnUpdateMeetingDetailSubscription = {
       first_name?: string | null,
       last_name?: string | null,
       username?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,
@@ -943,6 +995,11 @@ export type OnDeleteMeetingDetailSubscription = {
       first_name?: string | null,
       last_name?: string | null,
       username?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     create_date_time?: string | null,
     end_date_time?: string | null,

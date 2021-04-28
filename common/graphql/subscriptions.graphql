@@ -13,6 +13,10 @@ subscription OnCreateMeetingDetail {
       first_name
       last_name
       username
+      location {
+        latitude
+        longitude
+      }
     }
     create_date_time
     end_date_time
@@ -37,6 +41,10 @@ subscription OnUpdateMeetingDetail {
       first_name
       last_name
       username
+      location {
+        latitude
+        longitude
+      }
     }
     create_date_time
     end_date_time
@@ -61,6 +69,10 @@ subscription OnDeleteMeetingDetail {
       first_name
       last_name
       username
+      location {
+        latitude
+        longitude
+      }
     }
     create_date_time
     end_date_time
