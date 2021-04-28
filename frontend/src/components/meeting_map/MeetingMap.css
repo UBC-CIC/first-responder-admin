@@ -56,3 +56,36 @@ font-family: 'Open Sans', sans-serif;
 .subtitle {
     color: darkgrey
 }
+
+.meeting-list-button {
+    position: absolute;
+    background-color: white;
+    top: 175px;
+    left: 8px;
+    transform: translateX(2%);
+    height: 32px;
+    border-radius: 4px;
+    width: 32px;
+    border: 2px solid lightgrey;
+}
+
+.meeting-list-button:hover {
+    background-color: lightgrey;
+    cursor: pointer;
+}
+
+.meeting-list-button:active {
+    background-color: darkgrey;
+    border: 2px solid darkgrey;
+}
+
+.meeting-list {
+    position: absolute;
+    top: 215px;
+    left: 8px;
+    transform: translateX(2%);
+    max-width: 300px;
+    background-color: white;
+    padding: .5rem;
+    border-radius: 4px;
+}

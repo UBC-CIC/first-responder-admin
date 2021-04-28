@@ -1,7 +1,9 @@
+import { Hamburger } from "amazon-chime-sdk-component-library-react";
 import { API, Auth } from "aws-amplify";
 import Location from "aws-sdk/clients/location";
 import mapboxgl from "mapbox-gl";
 import React, { useEffect, useRef, useState } from "react";
+import { Accordion, Collapse } from "react-bootstrap";
 import ReactDOM from "react-dom";
 import { getMeetingDetailsByStatus } from "../../common/graphql/queries";
 import {
@@ -15,6 +17,7 @@ import {
 } from "../../common/types/API";
 import LocationServiceHelper from "./LocationHelper";
 import MeetingBubble from "./MeetingBubble";
+import MeetingList from "./MeetingList";
 import "./MeetingMap.css";
 
 let credentials;
@@ -61,9 +64,7 @@ const constructMap = async (
     })
   );
 
-  map.addControl(
-    new mapboxgl.FullscreenControl()
-  );
+  map.addControl(new mapboxgl.FullscreenControl());
 
   callback(map);
 };
@@ -102,6 +103,18 @@ const MapPage = () => {
   const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
   const stateRef = useRef<Array<MeetingDetail>>();
   stateRef.current = items;
+  const [listOpen, setListOpen] = useState(true);
+
+  const handleZoom = (location: GeolocationCoordinates) => {
+    if (location.latitude && location.longitude)
+      map?.flyTo({
+        center: [location.longitude, location.latitude],
+        essential: false,
+        animate: true,
+        duration: 1000,
+        zoom: 15,
+      });
+  };
 
   /** Graphql Subscription Setup */
   useEffect(() => {
@@ -114,8 +127,7 @@ const MapPage = () => {
         next: (data: any) => {
           console.log("OnCreate");
           console.log(data);
-          
-          
+
           const newItems = [];
           let found = false;
           if (data.value.data) {
@@ -138,10 +150,10 @@ const MapPage = () => {
             console.log("Got new items: ", newItems);
             const filteredMeetings = filterMeetingsByLocation(newItems);
             console.log("Got new meetings: ", filteredMeetings);
-            
+
             setMeetingsWithLocation(() => filteredMeetings);
             console.log("Set meetings: ", filteredMeetings);
-            
+
             updateItems(newItems);
           }
         },
@@ -174,11 +186,11 @@ const MapPage = () => {
             }
             const filteredMeetings = filterMeetingsByLocation(newItems);
             // console.log("Got new meetings: ", filteredMeetings);
-            
+
             // setMeetingsWithLocation(() => filteredMeetings);
             // console.log("Set meetings: ", filteredMeetings);
 
-            // updateItems(newItems);
+            updateItems(newItems);
           }
         },
         error: (error: any) => console.warn(error),
@@ -209,7 +221,6 @@ const MapPage = () => {
     subscribeUpdateMeetings();
 
     console.log("Subscriptions ready");
-    
   }, []);
 
   /** Set up mapbox ui, center on user's position or Canada on map*/
@@ -240,8 +251,8 @@ const MapPage = () => {
   useEffect(() => {
     console.log("Re-rendering markers");
 
-    console.table(meetingsWithLocation)
-    
+    console.table(meetingsWithLocation);
+
     if (!map || !meetingsWithLocation) return;
     /** Get only meetings with a location attached */
 
@@ -249,9 +260,12 @@ const MapPage = () => {
     const newMarkers = meetingsWithLocation
       .map((meeting) => {
         if (!meeting.location?.longitude || !meeting.location.latitude) {
-          console.warn("No location found for meeting, id: ", meeting.external_meeting_id);
+          console.warn(
+            "No location found for meeting, id: ",
+            meeting.external_meeting_id
+          );
           return;
-        };
+        }
 
         const { longitude, latitude } = meeting.location;
         let currMarker = new mapboxgl.Marker()
@@ -259,10 +273,12 @@ const MapPage = () => {
           .addTo(map);
         let markerElement = currMarker.getElement();
 
-        const placeholder = document.createElement('div');
-        const meetingBubble = <MeetingBubble {...meeting}/>;
+        const placeholder = document.createElement("div");
+        const meetingBubble = <MeetingBubble {...meeting} />;
         ReactDOM.render(meetingBubble, placeholder);
-        currMarker.setPopup(new mapboxgl.Popup({ offset: 18 }).setDOMContent(placeholder))
+        currMarker.setPopup(
+          new mapboxgl.Popup({ offset: 18 }).setDOMContent(placeholder)
+        );
 
         markerElement.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -275,7 +291,7 @@ const MapPage = () => {
 
     /** Redraw all the markers */
     clearMarkersFromMap(markers);
-    console.table(newMarkers)
+    console.table(newMarkers);
 
     setMarkers(() => newMarkers as mapboxgl.Marker[]);
   }, [meetingsWithLocation, map]);
@@ -288,6 +304,21 @@ const MapPage = () => {
           setContainer(() => x);
         }}
       />
+      <div
+        className="meeting-list-button"
+        onClick={() => {
+          console.log("Click");
+          setListOpen(() => !listOpen);
+          console.log(listOpen);
+        }}
+      >
+        <Hamburger />
+      </div>
+      <Collapse in={listOpen}>
+        <div className="meeting-list">
+          <MeetingList zoom={handleZoom} meetings={items} />
+        </div>
+      </Collapse>
     </div>
   );
 };
