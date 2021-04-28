@@ -32,6 +32,7 @@ class LocationServiceHelper {
             container: container,
             center: center,
             zoom: 3,
+            minZoom: 3,
             style: mapName,
             pitch: 0,
             maxPitch: 0,

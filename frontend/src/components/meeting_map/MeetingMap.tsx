@@ -1,9 +1,7 @@
 import { API, Auth } from "aws-amplify";
-import { String } from "aws-sdk/clients/cloudtrail";
 import Location from "aws-sdk/clients/location";
 import mapboxgl from "mapbox-gl";
 import React, { useEffect, useRef, useState } from "react";
-import { Button } from "react-bootstrap";
 import ReactDOM from "react-dom";
 import { getMeetingDetailsByStatus } from "../../common/graphql/queries";
 import {
@@ -12,19 +10,19 @@ import {
 } from "../../common/graphql/subscriptions";
 import {
   AttendeeType,
-  MeetingDetail,
   GeolocationCoordinates,
+  MeetingDetail,
 } from "../../common/types/API";
 import LocationServiceHelper from "./LocationHelper";
+import MeetingBubble from "./MeetingBubble";
 import "./MeetingMap.css";
 
 let credentials;
 let locationService: Location;
 
-const placeIndex = "UBC";
 const locationHelper = new LocationServiceHelper();
 
-type MeetingDetailWithLocation = MeetingDetail & {
+export type MeetingDetailWithLocation = MeetingDetail & {
   location?: GeolocationCoordinates;
 };
 
@@ -58,13 +56,15 @@ const constructMap = async (
         zoom: 15,
       },
       trackUserLocation: true,
+      showAccuracyCircle: false,
       showUserLocation: true,
     })
   );
 
-  map.on("load", () => {
-    map.addLayer({id: "markers", type: "symbol"})
-  })
+  map.addControl(
+    new mapboxgl.FullscreenControl()
+  );
+
   callback(map);
 };
 
@@ -112,6 +112,10 @@ const MapPage = () => {
 
       subscription.subscribe({
         next: (data: any) => {
+          console.log("OnCreate");
+          console.log(data);
+          
+          
           const newItems = [];
           let found = false;
           if (data.value.data) {
@@ -131,6 +135,13 @@ const MapPage = () => {
             if (!found) {
               newItems.push(data.value.data.onCreateMeetingDetail);
             }
+            console.log("Got new items: ", newItems);
+            const filteredMeetings = filterMeetingsByLocation(newItems);
+            console.log("Got new meetings: ", filteredMeetings);
+            
+            setMeetingsWithLocation(() => filteredMeetings);
+            console.log("Set meetings: ", filteredMeetings);
+            
             updateItems(newItems);
           }
         },
@@ -145,6 +156,8 @@ const MapPage = () => {
 
       subscription.subscribe({
         next: (data: any) => {
+          console.log("onUpdate");
+
           const newItems = [];
           if (data.value.data.onUpdateMeetingDetail) {
             for (let item of stateRef.current!) {
@@ -159,7 +172,13 @@ const MapPage = () => {
                 newItems.push(item);
               }
             }
-            updateItems(newItems);
+            const filteredMeetings = filterMeetingsByLocation(newItems);
+            // console.log("Got new meetings: ", filteredMeetings);
+            
+            // setMeetingsWithLocation(() => filteredMeetings);
+            // console.log("Set meetings: ", filteredMeetings);
+
+            // updateItems(newItems);
           }
         },
         error: (error: any) => console.warn(error),
@@ -177,7 +196,8 @@ const MapPage = () => {
         });
         const itemsReturned: Array<MeetingDetail> =
           meetings["data"]["getMeetingDetailsByStatus"]["items"];
-        console.log("getMeetingDetailsByStatus meetings:", itemsReturned);
+        const filteredMeetings = filterMeetingsByLocation(itemsReturned);
+        setMeetingsWithLocation(() => filteredMeetings);
         updateItems(itemsReturned);
       } catch (e) {
         console.log("getMeetingDetailsByStatus errors:", e.errors);
@@ -187,6 +207,9 @@ const MapPage = () => {
     callListAllMeetings();
     subscribeCreateMeetings();
     subscribeUpdateMeetings();
+
+    console.log("Subscriptions ready");
+    
   }, []);
 
   /** Set up mapbox ui, center on user's position or Canada on map*/
@@ -215,15 +238,20 @@ const MapPage = () => {
   }, [container, map]);
 
   useEffect(() => {
-    if (!map || !items) return;
+    console.log("Re-rendering markers");
+
+    console.table(meetingsWithLocation)
+    
+    if (!map || !meetingsWithLocation) return;
     /** Get only meetings with a location attached */
-    const filteredMeetings = filterMeetingsByLocation(items);
-    setMeetingsWithLocation(() => filteredMeetings);
 
     /** Make markers with meeting locations */
-    const newMarkers = filteredMeetings
+    const newMarkers = meetingsWithLocation
       .map((meeting) => {
-        if (!meeting.location?.longitude || !meeting.location.latitude) return;
+        if (!meeting.location?.longitude || !meeting.location.latitude) {
+          console.warn("No location found for meeting, id: ", meeting.external_meeting_id);
+          return;
+        };
 
         const { longitude, latitude } = meeting.location;
         let currMarker = new mapboxgl.Marker()
@@ -231,27 +259,14 @@ const MapPage = () => {
           .addTo(map);
         let markerElement = currMarker.getElement();
 
-        // markerElement.onclick = (ev) => {
-        //   currMarker.togglePopup();
-        //   console.log("marker");
-        // };
-        // console.log(markerElement);
-
-        currMarker.setPopup(new mapboxgl.Popup({ offset: 18 }).setHTML(''));
+        const placeholder = document.createElement('div');
+        const meetingBubble = <MeetingBubble {...meeting}/>;
+        ReactDOM.render(meetingBubble, placeholder);
+        currMarker.setPopup(new mapboxgl.Popup({ offset: 18 }).setDOMContent(placeholder))
 
         markerElement.addEventListener("click", (e) => {
           e.stopPropagation();
-          e.preventDefault();
-          markerElement.classList.add('enlarge');
-  
-          if (!currMarker.getPopup().isOpen()) {
-            currMarker.getPopup().addTo(map);
-  
-            ReactDOM.render(
-              <p>{meeting.meeting_id}</p>,
-              document.querySelector('.mapboxgl-popup-content')
-            );
-          }
+          currMarker.togglePopup();
         });
 
         return currMarker;
@@ -260,10 +275,10 @@ const MapPage = () => {
 
     /** Redraw all the markers */
     clearMarkersFromMap(markers);
-    console.log(newMarkers);
+    console.table(newMarkers)
 
     setMarkers(() => newMarkers as mapboxgl.Marker[]);
-  }, [items, map]);
+  }, [meetingsWithLocation, map]);
 
   return (
     <div id={"mapPage"}>

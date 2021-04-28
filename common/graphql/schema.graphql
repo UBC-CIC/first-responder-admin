@@ -24,6 +24,7 @@ input AttendeeInput {
 	first_name: String
 	last_name: String
 	username: String
+	location: GeolocationCoordinatesInput
 }
 
 enum AttendeeJoinType {
@@ -45,7 +46,8 @@ enum AttendeeType {
 	NOT_SPECIFIED
 }
 
-type GeolocationCoordinates {
+type GeolocationCoordinates @aws_cognito_user_pools
+@aws_iam {
 	latitude: Float
 	longitude: Float
 }

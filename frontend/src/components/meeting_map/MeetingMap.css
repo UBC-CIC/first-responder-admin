@@ -26,3 +26,33 @@
 text-align: center;
 font-family: 'Open Sans', sans-serif;
 }
+
+
+.meeting-bubble {
+    padding: .25rem;
+    flex-direction: column;
+    justify-content: center;
+    display: flex;
+}
+
+.actions {
+    display: flex;
+    flex-direction: row;
+    margin-top: .25rem;
+    margin-bottom: .25rem;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;    
+    flex: 1;
+}
+
+.title {
+    font-size: large;
+}
+
+.subtitle {
+    color: darkgrey
+}
