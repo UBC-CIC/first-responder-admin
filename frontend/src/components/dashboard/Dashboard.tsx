@@ -20,6 +20,7 @@ export const Dashboard = () => {
 
             subscription.subscribe({
                 next: (data:any) => {
+                    console.log("data received from create subscription:", data);
                     const newItems = [];
                     let found = false;
                     if (data.value.data) {

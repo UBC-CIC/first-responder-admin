@@ -8,7 +8,7 @@ import { SpecialistsTable } from '../common/SpecialistsTable';
 import './Specialists.css';
 import { API } from 'aws-amplify';
 
-export const Specialists = (props: { status: String, external_meeting_id?: string | null }) => {
+export const Specialists = (props: { status: String, external_meeting_id?: string | null, disabled?: boolean | null }) => {
     const [items, updateItems] = useState<Array<SpecialistProfile>>(new Array<SpecialistProfile>())
 
     const [show, setShow] = useState(false);
@@ -40,9 +40,15 @@ export const Specialists = (props: { status: String, external_meeting_id?: strin
 
     return (
         <>
-            <Button variant="light" onClick={onGetAvailableSpecialists} title="Add Specialists">
-                <FontAwesomeIcon icon={faUserPlus} />
-            </Button>
+            {props.disabled ? (
+                <Button variant="light" onClick={onGetAvailableSpecialists} title="Add Specialists" disabled>
+                    <FontAwesomeIcon icon={faUserPlus} />
+                </Button>
+            ) : (
+                <Button variant="light" onClick={onGetAvailableSpecialists} title="Add Specialists">
+                    <FontAwesomeIcon icon={faUserPlus} />
+                </Button>
+            )}
 
             <Modal
                 show={show}

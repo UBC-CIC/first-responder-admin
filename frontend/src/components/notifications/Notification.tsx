@@ -41,16 +41,15 @@ export const CallNotification = () => {
 
       subscription.subscribe({
         next: (data: any) => {
-          console.log(
-            "data received from create subscription:",
-            data.value.data.onCreateMeetingDetail.status
-          );
+          console.log("data received from create subscription:", data);
           if (
             data.value.data !== undefined &&
             data.value.data.onCreateMeetingDetail.meeting_status === "ACTIVE"
           ) {
+            console.log("active call");
             const currentNotifications = notificationSystemRef.current;
             if (currentNotifications) {
+              console.log("currentNotifications");
               currentNotifications.addNotification({
                 message:
                   "New call in progress with meeting id : " +

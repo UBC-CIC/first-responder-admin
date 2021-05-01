@@ -241,3 +241,11 @@ query GetMeetingDetailsByStatusAndCreateTime(
     nextToken
   }
 }
+query GetServiceDeskProfile($username: String!) {
+  getServiceDeskProfile(username: $username) {
+    name
+    phone_number
+    email
+    username
+  }
+}

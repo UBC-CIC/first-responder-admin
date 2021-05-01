@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   faUser,
   faPhoneSquareAlt,
@@ -7,6 +7,10 @@ import {
   faHeadset,
   faPhone,
   faClipboard,
+  faMap,
+  faMarker,
+  faMapMarkerAlt,
+  faRocket,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
@@ -16,6 +20,9 @@ import {
   Button,
   OverlayTrigger,
   Popover,
+  Container,
+  Row,
+  Col,
 } from "react-bootstrap";
 //import BootstrapTable from 'react-bootstrap-table-next';
 //import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
@@ -37,9 +44,9 @@ import {
 export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
   const [currTime, setCurrTime] = useState(new Date());
 
-  setInterval(() => {
-    setCurrTime(new Date());
-  }, 1000);
+  useEffect(() => {
+    setTimeout(() => setCurrTime(new Date()), 1000);
+  });
 
   const timeSince = (start: string, end: string | null | undefined) => {
     let actualStart = new Date(start);
@@ -159,6 +166,7 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
             <th>Attendees</th>
             <th>Action</th>
             <th>Start Time</th>
+            <th>Source</th>
             <th>Duration</th>
             <th>Service Desk Attendee</th>
           </tr>
@@ -182,7 +190,7 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                   <span
                     contentEditable
                     suppressContentEditableWarning
-                    className={item.meeting_comments === "" ? "faint-text" : ""}
+                    className={item.meeting_title === "" ? "faint-text" : ""}
                     onBlur={(e) => onModifyTitle(item, e)}
                   >
                     {(!item.meeting_title || item.meeting_title === "")
@@ -219,30 +227,34 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                   />
                 ) : (
                   <div>
-                    <FontAwesomeIcon icon={faUser} />{" "}
-                    <Badge pill variant="dark">
-                      {0}
-                    </Badge>
+                    <Button variant="light" disabled>
+                        <FontAwesomeIcon icon={faUser} />{" "}
+                        <Badge pill variant="dark">
+                        {0}
+                        </Badge>
+                    </Button>
                   </div>
                 )}
               </td>
               {item.meeting_status === "ACTIVE" ? (
                 <td>
-                  <Specialists status="AVAILABLE" external_meeting_id={item.external_meeting_id} />{" "}
-                  <Button variant="danger" title="End Meeting" onClick={async (attendeeId) => {
-                      await onJoinMeeting(item.meeting_id);
+                    <Specialists status="AVAILABLE" external_meeting_id={item.external_meeting_id} />{" "}
+                    <Button variant="danger" title="End Meeting" onClick={async (attendeeId) => {
+                        await onJoinMeeting(item.meeting_id);
                     }}>
-                    <FontAwesomeIcon icon={faPhone} />
-                    {"  "}
-                  </Button>{" "}
-                  <MeetingNotes meetingDetail={item} />{" "}
+                        <FontAwesomeIcon icon={faPhone} />{"  "}
+                    </Button>{" "}
+                    <MeetingNotes meetingDetail={item} />{" "}
                 </td>
               ) : (
                 <td>
-                  <Button variant="light" title="Meeting Notes">
-                    <FontAwesomeIcon icon={faClipboard} />
-                    {"  "}
-                  </Button>
+                    <Specialists status="AVAILABLE" external_meeting_id={item.external_meeting_id} disabled />{" "}
+                    <Button variant="secondary" title="End Meeting" disabled onClick={async (attendeeId) => {
+                        await onJoinMeeting(item.meeting_id);
+                    }}>
+                        <FontAwesomeIcon icon={faPhone} />{"  "}
+                    </Button>{" "}
+                    <MeetingNotes meetingDetail={item} />{" "}
                 </td>
               )}
               <td>
@@ -255,11 +267,20 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                     })
                   : item.create_date_time}
               </td>
+              <td>
+                {item.attendees && item.attendees.length > 0 ? (
+                    <>{item.attendees[0]?.phone_number ? item.attendees[0]?.phone_number : "App"}</>
+                ) : (
+                    <>Unknown</>
+                )}
+              </td>
               <td style={{width: "64px"}}>
-                {item.create_date_time !== undefined &&
-                  item.create_date_time !== null && (
+                {item.meeting_status === "ACTIVE" && item.create_date_time !== undefined && item.create_date_time !== null && (
                     <div style={{width: "100px"}}>{timeSince(item.create_date_time, null)}</div>
-                  )}
+                )}
+                {item.meeting_status !== "ACTIVE" && item.create_date_time !== undefined && item.create_date_time !== null && item.end_date_time !== undefined && item.end_date_time !== null && (
+                    <div style={{width: "100px"}}>{timeSince(item.create_date_time, item.end_date_time)}</div>
+                )}
               </td>
               <td>
                 {getServiceDeskAttendee(item) ? (
@@ -275,6 +296,21 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
           ))}
         </tbody>
       </Table>
+
+      {props.items.length == 0 && 
+        <Container className="no-calls-found">
+            <Row className="justify-content-md-center no-calls-icon">
+                <Col>
+                    <FontAwesomeIcon icon={faRocket} size="4x" color="#999999" />
+                </Col>
+            </Row>
+            <Row className="justify-content-md-center">
+                <Col>
+                    <span className="faint-text">No Calls Found</span>
+                </Col>
+            </Row>
+        </Container>
+      }
     </div>
   );
 };

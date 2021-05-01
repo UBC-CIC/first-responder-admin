@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Button,
   Col,
@@ -47,7 +47,9 @@ const statusPopover = (
 
 export const CallHistory = () => {
   const [items, updateItems] = useState([]);
-  const [startDate, setStartDate] = useState(new Date());
+  const defaultStartDate = new Date();
+  defaultStartDate.setDate(defaultStartDate.getDate() - 30);
+  const [startDate, setStartDate] = useState(defaultStartDate);
   const [endDate, setEndDate] = useState(new Date());
   const statusRef = useRef<HTMLSelectElement>(null);
   const [prevTokens, updatePrevTokens] = useState<Array<String>>([]);
@@ -55,6 +57,10 @@ export const CallHistory = () => {
   const [nextToken, updateNextToken] = useState<String>("");
   const [pageNumber, setPageNumber] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    onSearch();
+  }, []);
 
   const onNextPage = async () => {
     const nextTonkenValue = nextToken;
@@ -176,8 +182,8 @@ export const CallHistory = () => {
                   placeholder="Call Status"
                   ref={statusRef}
                 >
-                  <option>ACTIVE</option>
-                  <option>CLOSED</option>
+                    <option>CLOSED</option>
+                    <option>ACTIVE</option>
                 </Form.Control>
               </Col>
               <Col className="form-search-col">
