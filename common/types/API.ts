@@ -89,6 +89,7 @@ export type MeetingDetailInput = {
   meeting_status?: string | null,
   meeting_title?: string | null,
   meeting_comments?: string | null,
+  location?: GeolocationCoordinatesInput | null,
 };
 
 export type AttendeeInput = {
@@ -165,6 +166,7 @@ export type MeetingDetail = {
   meeting_status?: string | null,
   meeting_title?: string | null,
   meeting_comments?: string | null,
+  location?: GeolocationCoordinates,
 };
 
 export type Attendee = {
@@ -408,6 +410,11 @@ export type CreateMeetingDetailMutation = {
     meeting_status?: string | null,
     meeting_title?: string | null,
     meeting_comments?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
   } | null,
 };
 
@@ -445,6 +452,11 @@ export type UpdateMeetingDetailMutation = {
     meeting_status?: string | null,
     meeting_title?: string | null,
     meeting_comments?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
   } | null,
 };
 
@@ -482,6 +494,11 @@ export type DeleteMeetingDetailMutation = {
     meeting_status?: string | null,
     meeting_title?: string | null,
     meeting_comments?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
   } | null,
 };
 
@@ -518,6 +535,11 @@ export type PublishMeetingDetailUpdatesMutation = {
     meeting_status?: string | null,
     meeting_title?: string | null,
     meeting_comments?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
   } | null,
 };
 
@@ -770,6 +792,11 @@ export type GetMeetingDetailQuery = {
     meeting_status?: string | null,
     meeting_title?: string | null,
     meeting_comments?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
   } | null,
 };
 
@@ -810,6 +837,11 @@ export type ListMeetingDetailsQuery = {
       meeting_status?: string | null,
       meeting_title?: string | null,
       meeting_comments?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -852,6 +884,11 @@ export type GetMeetingDetailsByStatusQuery = {
       meeting_status?: string | null,
       meeting_title?: string | null,
       meeting_comments?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -896,6 +933,11 @@ export type GetMeetingDetailsByStatusAndCreateTimeQuery = {
       meeting_status?: string | null,
       meeting_title?: string | null,
       meeting_comments?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -944,6 +986,11 @@ export type OnCreateMeetingDetailSubscription = {
     meeting_status?: string | null,
     meeting_title?: string | null,
     meeting_comments?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
   } | null,
 };
 
@@ -976,6 +1023,11 @@ export type OnUpdateMeetingDetailSubscription = {
     meeting_status?: string | null,
     meeting_title?: string | null,
     meeting_comments?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
   } | null,
 };
 
@@ -1008,5 +1060,10 @@ export type OnDeleteMeetingDetailSubscription = {
     meeting_status?: string | null,
     meeting_title?: string | null,
     meeting_comments?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
   } | null,
 };

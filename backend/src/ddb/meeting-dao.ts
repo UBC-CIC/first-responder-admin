@@ -5,7 +5,7 @@ import { SpecialistProfileDao } from "./specialist-profile-dao";
 
 const DEFAULT_ORGANIZATION = "STARS";
 
-type Attendee = {
+export type Attendee = {
     "phone_number": string;
     "attendee_id": string;
     "attendee_type"?: AttendeeType;
@@ -28,7 +28,13 @@ export type MeetingDetails = {
     "meeting_status": string;
     "meeting_title": string;
     "meeting_comments": string;
+    "location"?: LatLong
 };
+
+export type LatLong = {
+    latitude: number,
+    longitude: number
+  }
 
 export enum MeetingStatus {
     ACTIVE = "ACTIVE",
@@ -54,6 +60,15 @@ export enum AttendeeType {
     NOT_SPECIFIED = "NOT_SPECIFIED",
 }
 
+export type JoinDataType = {
+    meeting_id?: string;
+    attendee_id?: string;
+    external_user_id?: string;
+    join_token?: string;
+    media_placement?: AWS.Chime.MediaPlacement;
+    media_region?: string;
+}
+
 export class MeetingDetailsDao {
     db: DocumentClient
 
@@ -74,7 +89,7 @@ export class MeetingDetailsDao {
      * @param attendeeState Is the user paged? in the call?
      */
     async createNewMeeting(meetingId: string, phoneNumber: string, attendeeId: string, callId: string, 
-                           externalMeetingId: string, attendeeJoinType: AttendeeJoinType, attendeeState: AttendeeState): Promise<void> {
+                           externalMeetingId: string, attendeeJoinType: AttendeeJoinType, attendeeState: AttendeeState, location?: LatLong): Promise<void> {
 
         const attendee = await this.getAttendeeForMeetingByPhoneNumber(attendeeId, phoneNumber, attendeeJoinType, attendeeState);
         const meetingObj: MeetingDetails = {
@@ -86,6 +101,7 @@ export class MeetingDetailsDao {
             "meeting_status": MeetingStatus.ACTIVE.toString(),
             "meeting_title": "",
             "meeting_comments": "",
+            "location": location,
         };
         const params = {
             TableName: 'meeting-detail',

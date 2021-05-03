@@ -10,6 +10,7 @@ import {
   faMap,
   faMarker,
   faMapMarkerAlt,
+  faTimes,
   faRocket,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,6 +24,7 @@ import {
   Container,
   Row,
   Col,
+  Tooltip,
 } from "react-bootstrap";
 //import BootstrapTable from 'react-bootstrap-table-next';
 //import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
@@ -30,16 +32,18 @@ import {
   AttendeeState,
   AttendeeType,
   MeetingDetail,
+  GeolocationCoordinates
 } from "../../common/types/API";
 import Attendees from "./Attendees";
 import Specialists from "./Specialists";
 import "./meetingDetailsTable.css";
 import { API } from "aws-amplify";
 import MeetingNotes from "./MeetingNotes";
-import { 
+import {
   updateMeetingDetail,
   joinMeeting,
- } from "../../common/graphql/mutations";
+} from "../../common/graphql/mutations";
+import reverse from "reverse-geocode";
 
 export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
   const [currTime, setCurrTime] = useState(new Date());
@@ -136,7 +140,7 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
   };
 
   // TODO - Testing code to be cleaned up
-  const onJoinMeeting = async (meetingId?: string|null) => {
+  const onJoinMeeting = async (meetingId?: string | null) => {
     try {
       console.log("Joining meeting " + meetingId);
 
@@ -145,15 +149,20 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
         variables: {
           input: {
             phone_number: "+phone_number", // required
-            meeting_id: meetingId  // required for joining existing meeting
+            meeting_id: meetingId, // required for joining existing meeting
           },
         },
       });
-
     } catch (e) {
-        console.log('joinMeeting errors:', e.errors);
+      console.log("joinMeeting errors:", e.errors);
     }
-};
+  };
+
+  const getLocation = (location?: GeolocationCoordinates) => {
+    if (!location?.latitude || !location?.longitude) return "Unknown Location";
+    const { latitude, longitude } = location;
+    return reverse.lookup(latitude, longitude, "ca").region;
+  };
 
   return (
     <div className="meeting-table">
@@ -193,7 +202,7 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                     className={item.meeting_title === "" ? "faint-text" : ""}
                     onBlur={(e) => onModifyTitle(item, e)}
                   >
-                    {(!item.meeting_title || item.meeting_title === "")
+                    {!item.meeting_title || item.meeting_title === ""
                       ? "Meeting"
                       : item.meeting_title}
                   </span>
@@ -212,7 +221,7 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                   (a) =>
                     a?.attendee_state === AttendeeState.IN_CALL ||
                     a?.attendee_state === AttendeeState.KICKED ||
-                    a?.attendee_state === AttendeeState.PAGED 
+                    a?.attendee_state === AttendeeState.PAGED
                 ).length > 0 ? (
                   <Attendees
                     handleKick={async (attendeeId) => {
@@ -222,39 +231,74 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                       (a) =>
                         a?.attendee_state === AttendeeState.IN_CALL ||
                         a?.attendee_state === AttendeeState.KICKED ||
-                        a?.attendee_state === AttendeeState.PAGED 
+                        a?.attendee_state === AttendeeState.PAGED
                     )}
                   />
                 ) : (
                   <div>
                     <Button variant="light" disabled>
-                        <FontAwesomeIcon icon={faUser} />{" "}
-                        <Badge pill variant="dark">
+                      <FontAwesomeIcon icon={faUser} />{" "}
+                      <Badge pill variant="dark">
                         {0}
-                        </Badge>
+                      </Badge>
                     </Button>
                   </div>
                 )}
               </td>
               {item.meeting_status === "ACTIVE" ? (
                 <td>
-                    <Specialists status="AVAILABLE" external_meeting_id={item.external_meeting_id} />{" "}
-                    <Button variant="danger" title="End Meeting" onClick={async (attendeeId) => {
-                        await onJoinMeeting(item.meeting_id);
-                    }}>
-                        <FontAwesomeIcon icon={faPhone} />{"  "}
-                    </Button>{" "}
-                    <MeetingNotes meetingDetail={item} />{" "}
+                  <Specialists
+                    status="AVAILABLE"
+                    external_meeting_id={item.external_meeting_id}
+                  />{" "}
+                  <Button
+                    variant="danger"
+                    title="End Meeting"
+                    onClick={async (attendeeId) => {
+                      await onJoinMeeting(item.meeting_id);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faPhone} />
+                    {"  "}
+                  </Button>{" "}
+                  {item.location ? <OverlayTrigger
+                    overlay={
+                      <Tooltip id={`tooltip-${item.meeting_id}`}>
+                        {getLocation(item.location)}
+                      </Tooltip>
+                    }
+                  >
+                    <Button
+                      style={{ marginRight: ".3em" }}
+                      variant={item.location ? "primary" : "secondary"}
+                      title="End Meeting"
+                      as="a"
+                      href={`/map?lat=${item.location.latitude}&long=${item.location.longitude}`}
+                    >
+                        <FontAwesomeIcon icon={faMapMarkerAlt} />
+                    </Button>
+                  </OverlayTrigger> : null}
+                  <MeetingNotes meetingDetail={item} />{" "}
                 </td>
               ) : (
                 <td>
-                    <Specialists status="AVAILABLE" external_meeting_id={item.external_meeting_id} disabled />{" "}
-                    <Button variant="secondary" title="End Meeting" disabled onClick={async (attendeeId) => {
-                        await onJoinMeeting(item.meeting_id);
-                    }}>
-                        <FontAwesomeIcon icon={faPhone} />{"  "}
-                    </Button>{" "}
-                    <MeetingNotes meetingDetail={item} />{" "}
+                  <Specialists
+                    status="AVAILABLE"
+                    external_meeting_id={item.external_meeting_id}
+                    disabled
+                  />{" "}
+                  <Button
+                    variant="secondary"
+                    title="End Meeting"
+                    disabled
+                    onClick={async (attendeeId) => {
+                      await onJoinMeeting(item.meeting_id);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faPhone} />
+                    {"  "}
+                  </Button>{" "}
+                  <MeetingNotes meetingDetail={item} />{" "}
                 </td>
               )}
               <td>
@@ -269,18 +313,32 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
               </td>
               <td>
                 {item.attendees && item.attendees.length > 0 ? (
-                    <>{item.attendees[0]?.phone_number ? item.attendees[0]?.phone_number : "App"}</>
+                  <>
+                    {item.attendees[0]?.phone_number
+                      ? item.attendees[0]?.phone_number
+                      : "App"}
+                  </>
                 ) : (
-                    <>Unknown</>
+                  <>Unknown</>
                 )}
               </td>
-              <td style={{width: "64px"}}>
-                {item.meeting_status === "ACTIVE" && item.create_date_time !== undefined && item.create_date_time !== null && (
-                    <div style={{width: "100px"}}>{timeSince(item.create_date_time, null)}</div>
-                )}
-                {item.meeting_status !== "ACTIVE" && item.create_date_time !== undefined && item.create_date_time !== null && item.end_date_time !== undefined && item.end_date_time !== null && (
-                    <div style={{width: "100px"}}>{timeSince(item.create_date_time, item.end_date_time)}</div>
-                )}
+              <td style={{ width: "64px" }}>
+                {item.meeting_status === "ACTIVE" &&
+                  item.create_date_time !== undefined &&
+                  item.create_date_time !== null && (
+                    <div style={{ width: "100px" }}>
+                      {timeSince(item.create_date_time, null)}
+                    </div>
+                  )}
+                {item.meeting_status !== "ACTIVE" &&
+                  item.create_date_time !== undefined &&
+                  item.create_date_time !== null &&
+                  item.end_date_time !== undefined &&
+                  item.end_date_time !== null && (
+                    <div style={{ width: "100px" }}>
+                      {timeSince(item.create_date_time, item.end_date_time)}
+                    </div>
+                  )}
               </td>
               <td>
                 {getServiceDeskAttendee(item) ? (
@@ -297,20 +355,20 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
         </tbody>
       </Table>
 
-      {props.items.length == 0 && 
+      {props.items.length == 0 && (
         <Container className="no-calls-found">
-            <Row className="justify-content-md-center no-calls-icon">
-                <Col>
-                    <FontAwesomeIcon icon={faRocket} size="4x" color="#999999" />
-                </Col>
-            </Row>
-            <Row className="justify-content-md-center">
-                <Col>
-                    <span className="faint-text">No Calls Found</span>
-                </Col>
-            </Row>
+          <Row className="justify-content-md-center no-calls-icon">
+            <Col>
+              <FontAwesomeIcon icon={faRocket} size="4x" color="#999999" />
+            </Col>
+          </Row>
+          <Row className="justify-content-md-center">
+            <Col>
+              <span className="faint-text">No Calls Found</span>
+            </Col>
+          </Row>
         </Container>
-      }
+      )}
     </div>
   );
 };

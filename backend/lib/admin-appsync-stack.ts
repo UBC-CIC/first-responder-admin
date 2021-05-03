@@ -225,6 +225,7 @@ export class FirstResponderAdminAppSyncStack extends Stack {
                             actions: [
                                 // Chime
                                 'chime:CreateMeeting',
+                                'chime:GetMeeting',
                                 'chime:DeleteMeeting',
                                 'chime:CreateAttendee',
                                 'chime:DeleteAttendee',

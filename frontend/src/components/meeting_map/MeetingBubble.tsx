@@ -4,13 +4,12 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Button } from "react-bootstrap";
+import { MeetingDetail } from "../../common/types/API";
 import MeetingNotes from "../common/MeetingNotes";
 import Specialists from "../common/Specialists";
-// import "./meetingDetailsTable.css";
-import { MeetingDetailWithLocation } from "./MeetingMap";
 import "./MeetingMap.css";
 
-type MeetingBubbleProps = MeetingDetailWithLocation;
+type MeetingBubbleProps = MeetingDetail;
 
 const MeetingBubble = (meeting: MeetingBubbleProps) => {
   const {

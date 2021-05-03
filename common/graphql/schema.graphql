@@ -69,6 +69,7 @@ type MeetingDetail @aws_cognito_user_pools
 	meeting_status: String
     meeting_title: String
 	meeting_comments: String
+	location: GeolocationCoordinates
 }
 
 type MeetingDetailConnection @aws_cognito_user_pools
@@ -89,6 +90,7 @@ input MeetingDetailInput {
 	meeting_status: String
     meeting_title: String
 	meeting_comments: String
+	location: GeolocationCoordinatesInput
 }
 
 input ModelMeetingDetailConditionInput {

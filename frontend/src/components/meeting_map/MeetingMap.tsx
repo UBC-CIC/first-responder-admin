@@ -5,6 +5,7 @@ import mapboxgl from "mapbox-gl";
 import React, { useEffect, useRef, useState } from "react";
 import { Accordion, Collapse } from "react-bootstrap";
 import ReactDOM from "react-dom";
+import { useParams } from "react-router";
 import { getMeetingDetailsByStatus } from "../../common/graphql/queries";
 import {
   onCreateMeetingDetail,
@@ -24,10 +25,6 @@ let credentials;
 let locationService: Location;
 
 const locationHelper = new LocationServiceHelper();
-
-export type MeetingDetailWithLocation = MeetingDetail & {
-  location?: GeolocationCoordinates;
-};
 
 const getLocationService = async () => {
   credentials = await Auth.currentCredentials();
@@ -70,17 +67,7 @@ const constructMap = async (
 };
 
 const filterMeetingsByLocation = (meetings: MeetingDetail[]) => {
-  return (meetings as MeetingDetailWithLocation[]).filter((meeting) => {
-    const attendees = meeting.attendees;
-    let foundAttendee = attendees?.find(
-      (attendee) =>
-        attendee?.attendee_type === AttendeeType.FIRST_RESPONDER &&
-        attendee.location !== undefined
-    );
-    if (!foundAttendee) return false;
-    meeting.location = foundAttendee.location;
-    return true;
-  });
+  return (meetings as MeetingDetail[]).filter((meeting) => !!meeting.location);
 };
 
 const clearMarkersFromMap = (markers: mapboxgl.Marker[]) => {
@@ -88,6 +75,9 @@ const clearMarkersFromMap = (markers: mapboxgl.Marker[]) => {
 };
 
 const MapPage = () => {
+  const { lat, long } = useParams<{ lat: string; long: string }>();
+  const initLat = parseFloat(lat);
+  const initLong = parseFloat(long);
   const [container, setContainer] = useState<
     HTMLDivElement | null | undefined
   >();
@@ -98,7 +88,7 @@ const MapPage = () => {
 
   /** Invariant: meetingsWithLocation.length == markers.length */
   const [meetingsWithLocation, setMeetingsWithLocation] = useState<
-    MeetingDetailWithLocation[]
+    MeetingDetail[]
   >([]);
   const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]);
   const stateRef = useRef<Array<MeetingDetail>>();
@@ -108,7 +98,10 @@ const MapPage = () => {
   const handleZoom = (location: GeolocationCoordinates) => {
     if (location.latitude && location.longitude)
       map?.flyTo({
-        center: [location.longitude, location.latitude],
+        center:
+          initLat && initLong
+            ? [initLong, initLat]
+            : [location.longitude, location.latitude],
         essential: false,
         animate: true,
         duration: 1000,

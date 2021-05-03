@@ -29,6 +29,10 @@ export const onCreateMeetingDetail = /* GraphQL */ `
       meeting_status
       meeting_title
       meeting_comments
+      location {
+        latitude
+        longitude
+      }
     }
   }
 `;
@@ -59,6 +63,10 @@ export const onUpdateMeetingDetail = /* GraphQL */ `
       meeting_status
       meeting_title
       meeting_comments
+      location {
+        latitude
+        longitude
+      }
     }
   }
 `;
@@ -89,6 +97,10 @@ export const onDeleteMeetingDetail = /* GraphQL */ `
       meeting_status
       meeting_title
       meeting_comments
+      location {
+        latitude
+        longitude
+      }
     }
   }
 `;

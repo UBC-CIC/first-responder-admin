@@ -1,4 +1,3 @@
-import { MeetingDetailWithLocation } from "./MeetingMap";
 import "./MeetingList.css";
 import { ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,16 +5,16 @@ import {
     faTimes,
     faMapMarkerAlt
   } from "@fortawesome/free-solid-svg-icons"
-import { GeolocationCoordinates } from "../../common/types/API";
+import { GeolocationCoordinates, MeetingDetail } from "../../common/types/API";
 type MeetingListProps = {
-  meetings: MeetingDetailWithLocation[];
+  meetings: MeetingDetail[];
   zoom: (location: GeolocationCoordinates) => void
 };
 
 const MeetingList = ({ meetings, zoom}: MeetingListProps) => {
 
 
-    const handleClick = (detail: MeetingDetailWithLocation) => {
+    const handleClick = (detail: MeetingDetail) => {
         if (detail.location) {
             zoom(detail.location)
         }

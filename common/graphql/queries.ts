@@ -182,6 +182,10 @@ export const getMeetingDetail = /* GraphQL */ `
       meeting_status
       meeting_title
       meeting_comments
+      location {
+        latitude
+        longitude
+      }
     }
   }
 `;
@@ -217,6 +221,10 @@ export const listMeetingDetails = /* GraphQL */ `
         meeting_status
         meeting_title
         meeting_comments
+        location {
+          latitude
+          longitude
+        }
       }
       nextToken
     }
@@ -258,6 +266,10 @@ export const getMeetingDetailsByStatus = /* GraphQL */ `
         meeting_status
         meeting_title
         meeting_comments
+        location {
+          latitude
+          longitude
+        }
       }
       nextToken
     }
@@ -303,6 +315,10 @@ export const getMeetingDetailsByStatusAndCreateTime = /* GraphQL */ `
         meeting_status
         meeting_title
         meeting_comments
+        location {
+          latitude
+          longitude
+        }
       }
       nextToken
     }

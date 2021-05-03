@@ -90,6 +90,16 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(30)
     });
 
+    const generateExternalMeetingId = new lambda.Function(this, 'generateExternalMeetingId', {
+        functionName: "FirstResponder-Generate-Meeting-Id",
+        code: new lambda.AssetCode('build/src'),
+        handler: 'data-create.generateExternalMeetingId',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        role: lambdaRole,
+        memorySize: 512,
+        timeout: cdk.Duration.seconds(30)
+      });
+
 
     const specialistCreateFunction = new lambda.Function(this, 'specialistCreateFunction', {
         functionName: "FirstResponder-Specialist-Create",

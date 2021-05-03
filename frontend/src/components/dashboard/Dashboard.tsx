@@ -78,11 +78,13 @@ export const Dashboard = () => {
                         limit: 25
                     }
                 });
+                console.log(meetings);
+                
                 const itemsReturned: Array<MeetingDetail> = meetings['data']['getMeetingDetailsByStatus']['items'];
                 console.log('getMeetingDetailsByStatus meetings:', itemsReturned);
                 updateItems(itemsReturned);
             } catch (e) {
-                console.log('getMeetingDetailsByStatus errors:', e.errors);
+                console.log('getMeetingDetailsByStatus errors:', e  );
             }
         }
 
