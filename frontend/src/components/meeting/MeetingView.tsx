@@ -63,7 +63,7 @@ export const MeetingView = (props: {
   const { user } = useContext(UserContext);
   const [show, setShow] = useState(false);
   const [callStarted, setCallStarted] = useState(false);
-  const {handleMeetingEnd} = props;
+  const { handleMeetingEnd } = props;
 
   const handleJoinMeeting = async () => {
     try {
@@ -74,6 +74,8 @@ export const MeetingView = (props: {
           username: user.username,
         },
       });
+
+      const fullName = userResponse.data?.getServiceDeskProfile.name;
 
       /** Join Chime Meeting through API call to Lambda function */
       const response: any = await API.graphql({
@@ -88,43 +90,47 @@ export const MeetingView = (props: {
         },
       });
 
-      const fullName = userResponse.data?.getServiceDeskProfile.name;
-
       const meetingInfoResponse: JoinMeetingInfo = response.data?.joinMeeting;
-      const meetingInfo = {
-        MeetingId: props.meetingId,
-        ExternalMeetingId: props.externalMeetingId,
-        MediaRegion: meetingInfoResponse.media_region,
-        MediaPlacement: meetingInfoResponse.media_placement,
-      };
-      const attendeeInfo = {
-        AttendeeId: meetingInfoResponse.attendee_id,
-        ExternalUserId: meetingInfoResponse.external_user_id,
-        JoinToken: meetingInfoResponse.join_token,
-        name: fullName,
-      };
 
-      meetingInfoResponse.attendee_id &&
-        setAttendeeId(meetingInfoResponse.attendee_id);
+      if (meetingInfoResponse) {
+        const meetingInfo = {
+          MeetingId: props.meetingId,
+          ExternalMeetingId: props.externalMeetingId,
+          MediaRegion: meetingInfoResponse.media_region,
+          MediaPlacement: meetingInfoResponse.media_placement,
+        };
+        const attendeeInfo = {
+          AttendeeId: meetingInfoResponse.attendee_id,
+          ExternalUserId: meetingInfoResponse.external_user_id,
+          JoinToken: meetingInfoResponse.join_token,
+          name: fullName,
+        };
 
-      await meetingManager
-        .join({ meetingInfo, attendeeInfo })
-        .then(() => {
-          if (response.data) {
-            setCallStarted(true);
-            console.log("success", response);
-          } else {
-            console.error("error joining the meeting: ", response.errors);
-            setShow(false);
-            setCallStarted(false);
-          }
-        })
-        .catch((e) => {
-          console.log("Error in meeting manager : ", e);
-          handleClose();
-        });
+        meetingInfoResponse.attendee_id &&
+          setAttendeeId(meetingInfoResponse.attendee_id);
+
+        await meetingManager
+          .join({ meetingInfo, attendeeInfo })
+          .then(() => {
+            if (response.data) {
+              setCallStarted(true);
+              console.log("success", response);
+            } else {
+              console.error("error joining the meeting: ", response.errors);
+              handleClose();
+            }
+          })
+          .catch((e) => {
+            console.log("Error in meeting manager : ", e);
+            handleClose();
+          });
+      } else {
+        console.log("Could not join chime meeting");
+        handleClose();
+      }
     } catch (e) {
       console.error(e);
+      handleClose();
     }
   };
 
@@ -266,7 +272,10 @@ export const MeetingView = (props: {
           <Container fluid className="video-container">
             <Row className="justify-content-md-center">
               <Col>
-                <MeetingControls meetingId={props.meetingId} handleEndMeeting={handleClose} />
+                <MeetingControls
+                  meetingId={props.meetingId}
+                  handleEndMeeting={handleClose}
+                />
               </Col>
             </Row>
             <Row>
@@ -291,7 +300,11 @@ export const MeetingView = (props: {
                 </Row>
                 <Row>
                   <Col>
-                    <Chat attendeeId={attendeeId} attendees={roster} meetingId={props.meetingId}/>
+                    <Chat
+                      attendeeId={attendeeId}
+                      attendees={roster}
+                      meetingId={props.meetingId}
+                    />
                   </Col>
                 </Row>
               </Col>

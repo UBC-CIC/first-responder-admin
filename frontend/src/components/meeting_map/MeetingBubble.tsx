@@ -7,6 +7,7 @@ import { Button } from "react-bootstrap";
 import { MeetingDetail } from "../../common/types/API";
 import MeetingNotes from "../common/MeetingNotes";
 import Specialists from "../common/Specialists";
+import JoinMeeting from "../meeting/JoinMeeting";
 import "./MeetingMap.css";
 
 type MeetingBubbleProps = MeetingDetail;
@@ -38,6 +39,10 @@ const MeetingBubble = (meeting: MeetingBubbleProps) => {
             <Specialists
               status="AVAILABLE"
               external_meeting_id={external_meeting_id}
+            />{" "}
+            <JoinMeeting 
+              meetingId={meeting_id} 
+              externalMeetingId={external_meeting_id}
             />{" "}
             <Button
               variant="danger"

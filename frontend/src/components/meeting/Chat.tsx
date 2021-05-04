@@ -54,6 +54,7 @@ function useMessageSubscription(audioVideo: AudioVideoFacade) {
     if (audioVideo) {
       audioVideo?.realtimeSubscribeToReceiveDataMessage("chat", (message) => {
         const createdTimestamp = new Date().toString();
+        console.log(message.data);
         const messageData = JSON.parse(
           Buffer.from(message.data).toString()
         ) as Message;
@@ -90,7 +91,7 @@ const Chat = ({
       meetingId,
       createdTimestamp: new Date().toString(),
     };
-    audioVideo?.realtimeSendDataMessage("chat", body);
+    audioVideo?.realtimeSendDataMessage("chat", message);
     dispatch({ type: "add", payload: message });
     setCurrMessage("");
   };

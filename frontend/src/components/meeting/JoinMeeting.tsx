@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { MeetingView } from "./MeetingView";
 import {
-  faPhone,
+  faPhoneAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -24,7 +24,7 @@ const JoinMeeting = (props: {
   return (
     <>
       <Button variant="warning" title="Check In" onClick={() => onCheckIn()}>
-        <FontAwesomeIcon icon={faPhone} />{"  "}
+        <FontAwesomeIcon icon={faPhoneAlt} />{"  "}
       </Button>
 
       {show && meetingId && externalMeetingId && <MeetingView meetingId={meetingId} externalMeetingId={externalMeetingId} handleMeetingEnd={handleMeetingEnd}/>}
