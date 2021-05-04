@@ -1,14 +1,16 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "react-bootstrap";
-import { MeetingView } from "./MeetingView";
 import {
   faPhoneAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import MapMeetingView from "./MapMeetingView";
+import { UserContextType } from "../../context/UserContext";
 
-const JoinMeeting = (props: {
-  meetingId?: string;
-  externalMeetingId?: string|null;
+const MapJoinMeetingButton = (props: {
+    meetingId?: string;
+    externalMeetingId?: string|null;
+    user: UserContextType;
 }) => {
   const [show, setShow] = useState(false);
   const {meetingId, externalMeetingId} = props;
@@ -29,10 +31,10 @@ const JoinMeeting = (props: {
         <FontAwesomeIcon icon={faPhoneAlt} />{"  "}
       </Button>
 
-      {show && meetingId && externalMeetingId && <MeetingView meetingId={meetingId} externalMeetingId={externalMeetingId} handleMeetingEnd={handleMeetingEnd}/>}
+      {show && meetingId && externalMeetingId && <MapMeetingView user={props.user} meetingId={meetingId} externalMeetingId={externalMeetingId} handleMeetingEnd={handleMeetingEnd}/>}
 
     </>
   );
 };
 
-export default JoinMeeting;
+export default MapJoinMeetingButton;

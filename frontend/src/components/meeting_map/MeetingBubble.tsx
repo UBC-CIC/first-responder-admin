@@ -1,25 +1,32 @@
-import {
-    faClipboard, faPhone
-} from "@fortawesome/free-solid-svg-icons";
+import { faClipboard, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { userInfo } from "node:os";
 import React from "react";
 import { Button } from "react-bootstrap";
+import ReactDOM from "react-dom";
 import { MeetingDetail } from "../../common/types/API";
+import { UserContextType } from "../../context/UserContext";
 import MeetingNotes from "../common/MeetingNotes";
 import Specialists from "../common/Specialists";
 import JoinMeeting from "../meeting/JoinMeeting";
+import MapJoinMeetingButton from "./MapJoinMeetingButton";
 import "./MeetingMap.css";
 
-type MeetingBubbleProps = MeetingDetail;
+type MeetingBubbleProps = {
+  meeting: MeetingDetail;
+  user: UserContextType;
+};
 
-const MeetingBubble = (meeting: MeetingBubbleProps) => {
+const MeetingBubble = (props: MeetingBubbleProps) => {
+  const { meeting, user } = props;
   const {
     meeting_title,
     external_meeting_id,
     create_date_time,
     meeting_status,
     meeting_id,
-  } = meeting;
+  } = props.meeting;
+
   return (
     <div className="meeting-bubble">
       <div className="title">{meeting_title || "Unnamed Meeting"}</div>
@@ -40,17 +47,11 @@ const MeetingBubble = (meeting: MeetingBubbleProps) => {
               status="AVAILABLE"
               external_meeting_id={external_meeting_id}
             />{" "}
-            <JoinMeeting 
-              meetingId={meeting_id} 
+            <MapJoinMeetingButton
+              user={user}
               externalMeetingId={external_meeting_id}
-            />{" "}
-            <Button
-              variant="danger"
-              title="End Meeting"
-            >
-              <FontAwesomeIcon icon={faPhone} />
-              {"  "}
-            </Button>{" "}
+              meetingId={meeting_id}
+            />
             <MeetingNotes meetingDetail={meeting} />{" "}
           </div>
         ) : (

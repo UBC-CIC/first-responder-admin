@@ -1,26 +1,26 @@
-import { useContext, useEffect, useState } from "react";
-import { API } from "aws-amplify";
-import { Col, Container, Modal, Row } from "react-bootstrap";
 import { makeStyles } from "@material-ui/core";
 import {
-  useAudioVideo,
-  useMeetingManager,
-  useRosterState,
-  VideoTileGrid,
+    useAudioVideo,
+    useMeetingManager,
+    useRosterState,
+    VideoTileGrid
 } from "amazon-chime-sdk-component-library-react";
 import { MeetingSessionStatusCode } from "amazon-chime-sdk-js";
-import { AttendeeDetails } from "../../types/meetingTypes";
-import { getServiceDeskProfile } from "../../common/graphql/queries";
+import { API } from "aws-amplify";
+import { useEffect, useState } from "react";
+import { Col, Container, Modal, Row } from "react-bootstrap";
 import { joinMeeting } from "../../common/graphql/mutations";
+import { getServiceDeskProfile } from "../../common/graphql/queries";
 import { AttendeeType, JoinMeetingInfo } from "../../common/types/API";
-import fetchMeetingAttendees from "./fetchMeetingAttendees";
-import UserContext from "../../context/UserContext";
+import { UserContextType } from "../../context/UserContext";
+import { AttendeeDetails } from "../../types/meetingTypes";
 import Spinner from "../common/Spinner";
-import MeetingControls from "./MeetingControls";
-import RosterDisplay from "./RosterDisplay";
+import Chat from "../meeting/Chat";
+import fetchMeetingAttendees from "../meeting/fetchMeetingAttendees";
+import MeetingControls from "../meeting/MeetingControls";
+import RosterDisplay from "../meeting/RosterDisplay";
 import Colors from "../styling/Colors";
-import Chat from "./Chat";
-import "./MeetingView.css";
+import "../meeting/MeetingView.css";
 
 const useStyles = makeStyles({
   snackBar: {
@@ -49,10 +49,11 @@ const useStyles = makeStyles({
   selectText: { fontFamily: "Montserrat", textAlign: "center" },
 });
 
-export const MeetingView = (props: {
+export const MapMeetingView = (props: {
   meetingId: string;
   externalMeetingId: string;
   handleMeetingEnd: () => void;
+  user: UserContextType;
 }) => {
   const classes = useStyles();
   const audioVideo = useAudioVideo();
@@ -60,7 +61,7 @@ export const MeetingView = (props: {
   const { roster } = useRosterState();
   const [attendees, setAttendees] = useState([] as AttendeeDetails[]);
   const [attendeeId, setAttendeeId] = useState<string>();
-  const { user } = useContext(UserContext);
+  const user = props.user.user;
   const [show, setShow] = useState(false);
   const [callStarted, setCallStarted] = useState(false);
   const { handleMeetingEnd } = props;
@@ -330,4 +331,4 @@ export const MeetingView = (props: {
   );
 };
 
-export default MeetingView;
+export default MapMeetingView;

@@ -1,11 +1,16 @@
-import { Hamburger } from "amazon-chime-sdk-component-library-react";
+import {
+  Hamburger,
+  MeetingProvider,
+  lightTheme,
+} from "amazon-chime-sdk-component-library-react";
 import { API, Auth } from "aws-amplify";
 import Location from "aws-sdk/clients/location";
 import mapboxgl from "mapbox-gl";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Accordion, Collapse } from "react-bootstrap";
 import ReactDOM from "react-dom";
 import { useParams } from "react-router";
+import { ThemeProvider } from "styled-components";
 import { getMeetingDetailsByStatus } from "../../common/graphql/queries";
 import {
   onCreateMeetingDetail,
@@ -16,6 +21,7 @@ import {
   GeolocationCoordinates,
   MeetingDetail,
 } from "../../common/types/API";
+import UserContext from "../../context/UserContext";
 import LocationServiceHelper from "./LocationHelper";
 import MeetingBubble from "./MeetingBubble";
 import MeetingList from "./MeetingList";
@@ -81,6 +87,7 @@ const MapPage = () => {
   const [container, setContainer] = useState<
     HTMLDivElement | null | undefined
   >();
+  const user = useContext(UserContext);
   const [map, setMap] = useState<mapboxgl.Map | undefined>();
   const [items, updateItems] = useState<Array<MeetingDetail>>(
     new Array<MeetingDetail>()
@@ -267,7 +274,13 @@ const MapPage = () => {
         let markerElement = currMarker.getElement();
 
         const placeholder = document.createElement("div");
-        const meetingBubble = <MeetingBubble {...meeting} />;
+        const meetingBubble = (
+          <ThemeProvider theme={lightTheme}>
+            <MeetingProvider>
+              <MeetingBubble user={user} meeting={meeting} />
+            </MeetingProvider>
+          </ThemeProvider>
+        );
         ReactDOM.render(meetingBubble, placeholder);
         currMarker.setPopup(
           new mapboxgl.Popup({ offset: 18 }).setDOMContent(placeholder)
