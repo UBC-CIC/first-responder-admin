@@ -175,6 +175,8 @@ async function newCall(
       attendeeResponse
     );
   }
+  throw new Error("error creating new call");
+
 }
 
 // Handles a new attendee joins an existing call by creating an attendee with Chime and add the attendee to the meeting in DynamoDB.
@@ -265,6 +267,7 @@ async function joinExistingCall(
       console.log("Found meeting, but chime has expired it", e);
     }
   }
+  throw new Error("error joining existing call");
 }
 
 export async function generateExternalMeetingId(

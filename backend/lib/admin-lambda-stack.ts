@@ -83,7 +83,8 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
       handler: 'notify-specialist.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
       environment: {
-        JOIN_PHONE_NUMBER: "+1 (888) 599-8558"
+        JOIN_PHONE_NUMBER: "+1 (888) 599-8558",
+        CALL_URL: "https://localhost:3000/call"
       },
       role: lambdaRole,
       memorySize: 512,

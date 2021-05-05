@@ -6,15 +6,21 @@ const db = new AWS.DynamoDB.DocumentClient({ region: 'ca-central-1' });
 const chime = new AWS.Chime({ region: 'us-east-1', endpoint: 'service.chime.aws.amazon.com' });
 
 const JOIN_PHONE_NUMBER = process.env.JOIN_PHONE_NUMBER || "";
+const CALL_URL = process.env.CALL_URL || "";
+
 const { v4: uuid } = require('uuid');
 
-const sendSMS = ({
+const sendSMS = (meetingId: string, {
   phone_number,
   first_name,
   last_name,
 }: SpecialistProfile) => {
+  const phoneB64 = Buffer.from(phone_number).toString("base64");
+  const meetingB64 = Buffer.from(meetingId).toString("base64");
   const params = {
-    Message: `STARS: ${first_name} ${last_name}, you have been requested to assist in an emergency. Please call ${JOIN_PHONE_NUMBER} to join the meeting.` /* required */,
+    Message: `STARS: ${first_name} ${last_name}, you have been requested to assist in an emergency. 
+    Please visit ${CALL_URL}?p=${phoneB64}&m=${meetingB64}
+    or call ${JOIN_PHONE_NUMBER} to join the meeting.`,
     PhoneNumber: phone_number,
   };
 
@@ -59,7 +65,7 @@ export const handler = async (
     try {
       await dao.saveMeetingDetails(meeting);
   
-      await sendSMS(specialist);
+      await sendSMS(meeting.external_meeting_id, specialist);
       return true;
 
     } catch(e) {
