@@ -9,7 +9,7 @@ import mapboxgl from "mapbox-gl";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Accordion, Collapse } from "react-bootstrap";
 import ReactDOM from "react-dom";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { ThemeProvider } from "styled-components";
 import { getMeetingDetailsByStatus } from "../../common/graphql/queries";
 import {
@@ -80,10 +80,15 @@ const clearMarkersFromMap = (markers: mapboxgl.Marker[]) => {
   markers.forEach((marker) => marker.remove());
 };
 
+const useQuery = () => {
+  const params = new URLSearchParams(useLocation().search);
+  return params;
+}
+
 const MapPage = () => {
-  const { lat, long } = useParams<{ lat: string; long: string }>();
-  const initLat = parseFloat(lat);
-  const initLong = parseFloat(long);
+  const params = useQuery();
+  const initLat = parseFloat(params.get("lat") || "");
+  const initLong = parseFloat(params.get("long") || "");
   const [container, setContainer] = useState<
     HTMLDivElement | null | undefined
   >();
@@ -105,10 +110,7 @@ const MapPage = () => {
   const handleZoom = (location: GeolocationCoordinates) => {
     if (location.latitude && location.longitude)
       map?.flyTo({
-        center:
-          initLat && initLong
-            ? [initLong, initLat]
-            : [location.longitude, location.latitude],
+        center: [location.longitude, location.latitude],
         essential: false,
         animate: true,
         duration: 1000,
@@ -234,7 +236,9 @@ const MapPage = () => {
           (builtMap: mapboxgl.Map) => {
             navigator.geolocation.getCurrentPosition((pos) => {
               builtMap.flyTo({
-                center: [pos.coords.longitude, pos.coords.latitude],
+                center: !isNaN(initLat) && !isNaN(initLong)
+                ? [initLong, initLat]
+                : [pos.coords.longitude, pos.coords.latitude],
                 essential: false,
                 animate: true,
                 duration: 1000,
