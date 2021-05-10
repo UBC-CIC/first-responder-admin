@@ -288,11 +288,30 @@ export class FirstResponderAdminAppSyncStack extends Stack {
         // Define Lambda DataSource and Resolver - make sure mutations are defined in schema.graphql
         //
         // Resolver for Chime meeting operations
-        api.addLambdaDataSource('JoinMeetingDataSource', joinMeetingFunction)
-            .createResolver({
-                typeName: 'Mutation',
-                fieldName: 'joinMeeting'
-            });  
+        api.addLambdaDataSource('JoinMeetingDataSource', joinMeetingFunction).createResolver({
+            typeName: 'Mutation',
+            fieldName: 'joinMeeting'
+        });
+
+        const notifySpecialistFunction = new lambda.Function(this, 'notifySpecialistFunction', {
+            functionName: "FirstResponder-Notify-Specialist-AppSync",
+            code: new lambda.AssetCode('build/src'),
+            handler: 'notify-specialist.handler',
+            runtime: lambda.Runtime.NODEJS_10_X,
+            environment: {
+              JOIN_PHONE_NUMBER: "+1 (888) 599-8558",
+              CALL_URL: "https://localhost:3000/call"
+            },
+            role: lambdaRole,
+            memorySize: 512,
+            timeout: cdk.Duration.seconds(30)
+          });
+
+        // Resolver for specialist notifications
+        api.addLambdaDataSource('NotifySpecialistDataSource', notifySpecialistFunction).createResolver({
+            typeName: 'Mutation',
+            fieldName: 'notifySpecialist'
+        });
 
         // Cloudformation Output
 

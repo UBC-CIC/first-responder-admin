@@ -77,20 +77,6 @@ export class FirstResponderAdminLambdaStack extends cdk.Stack {
         },
     });
 
-    const notifySpecialistFunction = new lambda.Function(this, 'notifySpecialistFunction', {
-      functionName: "FirstResponder-Notify-Specialist",
-      code: new lambda.AssetCode('build/src'),
-      handler: 'notify-specialist.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-      environment: {
-        JOIN_PHONE_NUMBER: "+1 (888) 599-8558",
-        CALL_URL: "https://localhost:3000/call"
-      },
-      role: lambdaRole,
-      memorySize: 512,
-      timeout: cdk.Duration.seconds(30)
-    });
-
     const generateExternalMeetingId = new lambda.Function(this, 'generateExternalMeetingId', {
         functionName: "FirstResponder-Generate-Meeting-Id",
         code: new lambda.AssetCode('build/src'),
