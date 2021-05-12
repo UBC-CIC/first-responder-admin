@@ -12,7 +12,7 @@ export type SpecialistProfileInput = {
   profile_picture?: string | null,
   notes?: string | null,
   user_status?: SpecialistStatus | null,
-  is_paged?: boolean | null,
+  call_status?: SpecialistCallStatus | null,
   location?: GeolocationCoordinatesInput | null,
   availability?: SpecialistAvailabilityInput | null,
   created_date_time?: string | null,
@@ -23,6 +23,13 @@ export enum SpecialistStatus {
   AVAILABLE = "AVAILABLE",
   NOT_AVAILABLE = "NOT_AVAILABLE",
   OFFLINE = "OFFLINE",
+}
+
+
+export enum SpecialistCallStatus {
+  PAGED = "PAGED",
+  IN_CALL = "IN_CALL",
+  NOT_IN_CALL = "NOT_IN_CALL",
 }
 
 
@@ -53,7 +60,7 @@ export type SpecialistProfile = {
   profile_picture?: string | null,
   notes?: string | null,
   user_status?: SpecialistStatus | null,
-  is_paged?: boolean | null,
+  call_status?: SpecialistCallStatus | null,
   availability?: SpecialistAvailability,
   created_date_time?: string | null,
   updated_date_time?: string | null,
@@ -268,7 +275,7 @@ export type CreateSpecialistProfileMutation = {
     profile_picture?: string | null,
     notes?: string | null,
     user_status?: SpecialistStatus | null,
-    is_paged?: boolean | null,
+    call_status?: SpecialistCallStatus | null,
     availability?:  {
       __typename: "SpecialistAvailability",
       overrides?:  Array< {
@@ -310,7 +317,7 @@ export type UpdateSpecialistProfileMutation = {
     profile_picture?: string | null,
     notes?: string | null,
     user_status?: SpecialistStatus | null,
-    is_paged?: boolean | null,
+    call_status?: SpecialistCallStatus | null,
     availability?:  {
       __typename: "SpecialistAvailability",
       overrides?:  Array< {
@@ -352,7 +359,7 @@ export type DeleteSpecialistProfileMutation = {
     profile_picture?: string | null,
     notes?: string | null,
     user_status?: SpecialistStatus | null,
-    is_paged?: boolean | null,
+    call_status?: SpecialistCallStatus | null,
     availability?:  {
       __typename: "SpecialistAvailability",
       overrides?:  Array< {
@@ -594,7 +601,7 @@ export type GetSpecialistProfileQuery = {
     profile_picture?: string | null,
     notes?: string | null,
     user_status?: SpecialistStatus | null,
-    is_paged?: boolean | null,
+    call_status?: SpecialistCallStatus | null,
     availability?:  {
       __typename: "SpecialistAvailability",
       overrides?:  Array< {
@@ -640,7 +647,7 @@ export type ListSpecialistProfilesByStatusQuery = {
       profile_picture?: string | null,
       notes?: string | null,
       user_status?: SpecialistStatus | null,
-      is_paged?: boolean | null,
+      call_status?: SpecialistCallStatus | null,
       availability?:  {
         __typename: "SpecialistAvailability",
         overrides?:  Array< {
@@ -686,7 +693,7 @@ export type GetSpecialistProfilesByStatusQuery = {
       profile_picture?: string | null,
       notes?: string | null,
       user_status?: SpecialistStatus | null,
-      is_paged?: boolean | null,
+      call_status?: SpecialistCallStatus | null,
       availability?:  {
         __typename: "SpecialistAvailability",
         overrides?:  Array< {
@@ -733,7 +740,7 @@ export type ListSpecialistProfilesQuery = {
       profile_picture?: string | null,
       notes?: string | null,
       user_status?: SpecialistStatus | null,
-      is_paged?: boolean | null,
+      call_status?: SpecialistCallStatus | null,
       availability?:  {
         __typename: "SpecialistAvailability",
         overrides?:  Array< {

@@ -1,6 +1,6 @@
 import AWS = require("aws-sdk");
 import { AttendeeJoinType, AttendeeState, AttendeeType, MeetingDetailsDao } from "./ddb/meeting-dao";
-import { SpecialistProfile } from "./ddb/specialist-profile-dao";
+import { SpecialistCallStatus, SpecialistProfile, SpecialistProfileDao } from "./ddb/specialist-profile-dao";
 const SNS = new AWS.SNS({ apiVersion: "2010-03-31" });
 const db = new AWS.DynamoDB.DocumentClient({ region: 'ca-central-1' });
 const chime = new AWS.Chime({ region: 'us-east-1', endpoint: 'service.chime.aws.amazon.com' });
@@ -62,8 +62,14 @@ export const handler = async (
         organization
     });
 
+    const specialistProfileDao = new SpecialistProfileDao(db);
+
+    // Set the user page flag - this flag is cleared when the meeting ends.
+    specialist.call_status = SpecialistCallStatus.PAGED;
+
     try {
       await dao.saveMeetingDetails(meeting);
+      await specialistProfileDao.saveSpecialistProfile(specialist);
   
       await sendSMS(meeting.external_meeting_id, specialist);
       return true;

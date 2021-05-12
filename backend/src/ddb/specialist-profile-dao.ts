@@ -10,7 +10,7 @@ export type SpecialistProfile = {
     "profile_picture": string; // S3 link to the user profile picture (e.g. "s3://test-bucket/abc.jpg")
     "notes": string; // Any notes (e.g. "Specialist in Radiology.")
     "user_status": SpecialistStatus; // Indicates the current user availability - automatically updated every 30 minutes based on availability schedule.
-    "is_paged": boolean; // true if the user has been paged
+    "call_status": SpecialistCallStatus; // Indicates whether the user is in a call or not.
     "availability": SpecialistAvailability; // Stores their availability schedule and overrides. 
     "created_date_time": string; // When this user was created (ISO8601 format)
     "updated_date_time": string; // When this user was updated (ISO8601 format)
@@ -45,6 +45,12 @@ export enum SpecialistStatus {
     AVAILABLE = "AVAILABLE", // User is available per their schedule
     NOT_AVAILABLE = "NOT_AVAILABLE", // User is not available per their schedule
     OFFLINE = "OFFLINE", // User has manually went offline
+}
+
+export enum SpecialistCallStatus {
+    PAGED = "PAGED", // User has been paged but not joined the call
+    IN_CALL = "IN_CALL", // User is in an active call
+    NOT_IN_CALL = "NOT_IN_CALL", // User is not in a call
 }
 
 export enum AttendeeType {
@@ -138,6 +144,20 @@ export class SpecialistProfileDao {
         };
         const result = await this.db.get(params).promise();
         return result?.Item as SpecialistProfile;
+    }
+
+    /**
+     * Updates a specialist call status.
+     * 
+     * @param phoneNumber The phone number of the specialist
+     * @param callStatus The new call status of the specialist
+     */
+    async updateSpecialistCallStatus(phoneNumber: string, callStatus: SpecialistCallStatus): Promise<void> {
+        const specialistProfile = await this.getSpecialistProfile(phoneNumber);
+        if (specialistProfile) {
+            specialistProfile.call_status = callStatus;
+        }
+        await this.saveSpecialistProfile(specialistProfile);
     }
 
     /**

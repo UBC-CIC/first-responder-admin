@@ -10,7 +10,7 @@ mutation CreateSpecialistProfile($input: SpecialistProfileInput!) {
     profile_picture
     notes
     user_status
-    is_paged
+    call_status
     availability {
       overrides {
         start_time
@@ -42,7 +42,7 @@ mutation UpdateSpecialistProfile($input: SpecialistProfileInput!) {
     profile_picture
     notes
     user_status
-    is_paged
+    call_status
     availability {
       overrides {
         start_time
@@ -74,7 +74,7 @@ mutation DeleteSpecialistProfile($input: SpecialistProfileInput!) {
     profile_picture
     notes
     user_status
-    is_paged
+    call_status
     availability {
       overrides {
         start_time

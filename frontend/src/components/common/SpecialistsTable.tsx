@@ -1,7 +1,7 @@
 import { Button, Table } from 'react-bootstrap';
 import { faPhoneSquareAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { SpecialistProfile, GeolocationCoordinates } from '../../common/types/API';
+import { SpecialistProfile, GeolocationCoordinates, SpecialistCallStatus } from '../../common/types/API';
 import './Specialists.css';
 import { notifySpecialist } from "../../common/graphql/mutations";
 import reverse from "reverse-geocode";
@@ -25,7 +25,7 @@ export const SpecialistsTable = (props: { items: Array<SpecialistProfile>, exter
           });
         console.log(res);
         
-        
+        specialist.call_status = SpecialistCallStatus.PAGED;
     }
 
     const getLocation = (location?: GeolocationCoordinates) => {
@@ -52,7 +52,7 @@ export const SpecialistsTable = (props: { items: Array<SpecialistProfile>, exter
                 </thead>
                 <tbody>
                     {props.items && props.items.map((specialist: SpecialistProfile | null) => (
-                        <tr key={specialist?.email}>
+                        <tr key={specialist?.phone_number}>
                             <td>
                                 {specialist?.phone_number}
                             </td>
@@ -75,7 +75,7 @@ export const SpecialistsTable = (props: { items: Array<SpecialistProfile>, exter
                                 {specialist?.notes}
                             </td>
                             <td>
-                                {specialist?.is_paged ? "Paged" : "Free"}
+                                {specialist?.call_status ? specialist?.call_status : "Unknown"}
                             </td>
                             <td>
                                 <Button variant="light" onClick={() => handlePage(specialist, props.external_meeting_id)}>

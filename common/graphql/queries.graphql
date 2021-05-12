@@ -10,7 +10,7 @@ query GetSpecialistProfile($phoneNumber: String!) {
     profile_picture
     notes
     user_status
-    is_paged
+    call_status
     availability {
       overrides {
         start_time
@@ -51,7 +51,7 @@ query ListSpecialistProfilesByStatus(
       profile_picture
       notes
       user_status
-      is_paged
+      call_status
       created_date_time
       updated_date_time
       location {
@@ -74,7 +74,7 @@ query GetSpecialistProfilesByStatus($userStatus: SpecialistStatus) {
       profile_picture
       notes
       user_status
-      is_paged
+      call_status
       created_date_time
       updated_date_time
       location {
@@ -97,7 +97,7 @@ query ListSpecialistProfiles($limit: Int, $nextToken: String) {
       profile_picture
       notes
       user_status
-      is_paged
+      call_status
       created_date_time
       updated_date_time
       location {

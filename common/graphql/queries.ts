@@ -14,7 +14,7 @@ export const getSpecialistProfile = /* GraphQL */ `
       profile_picture
       notes
       user_status
-      is_paged
+      call_status
       availability {
         overrides {
           start_time
@@ -57,7 +57,7 @@ export const listSpecialistProfilesByStatus = /* GraphQL */ `
         profile_picture
         notes
         user_status
-        is_paged
+        call_status
         availability {
           overrides {
             start_time
@@ -94,7 +94,7 @@ export const getSpecialistProfilesByStatus = /* GraphQL */ `
         profile_picture
         notes
         user_status
-        is_paged
+        call_status
         availability {
           overrides {
             start_time
@@ -131,7 +131,7 @@ export const listSpecialistProfiles = /* GraphQL */ `
         profile_picture
         notes
         user_status
-        is_paged
+        call_status
         availability {
           overrides {
             start_time

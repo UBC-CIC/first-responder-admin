@@ -14,7 +14,7 @@ export const createSpecialistProfile = /* GraphQL */ `
       profile_picture
       notes
       user_status
-      is_paged
+      call_status
       availability {
         overrides {
           start_time
@@ -48,7 +48,7 @@ export const updateSpecialistProfile = /* GraphQL */ `
       profile_picture
       notes
       user_status
-      is_paged
+      call_status
       availability {
         overrides {
           start_time
@@ -82,7 +82,7 @@ export const deleteSpecialistProfile = /* GraphQL */ `
       profile_picture
       notes
       user_status
-      is_paged
+      call_status
       availability {
         overrides {
           start_time

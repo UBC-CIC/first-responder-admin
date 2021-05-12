@@ -212,7 +212,7 @@ type SpecialistProfile @aws_cognito_user_pools
 	profile_picture: String
 	notes: String
 	user_status: SpecialistStatus
-	is_paged: Boolean
+	call_status: SpecialistCallStatus
 	availability: SpecialistAvailability
 	created_date_time: AWSDateTime
 	updated_date_time: AWSDateTime
@@ -230,7 +230,7 @@ input SpecialistProfileInput {
 	profile_picture: String
 	notes: String
 	user_status: SpecialistStatus
-	is_paged: Boolean
+	call_status: SpecialistCallStatus
 	location: GeolocationCoordinatesInput
 	availability: SpecialistAvailabilityInput
 	created_date_time: AWSDateTime
@@ -241,6 +241,12 @@ enum SpecialistStatus {
 	AVAILABLE
 	NOT_AVAILABLE
 	OFFLINE
+}
+
+enum SpecialistCallStatus {
+	PAGED
+	IN_CALL
+	NOT_IN_CALL
 }
 
 type ServiceDeskProfile @aws_cognito_user_pools
