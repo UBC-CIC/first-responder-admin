@@ -253,6 +253,8 @@ export class FirstResponderAdminAppSyncStack extends Stack {
                                 'kms:GenerateDataKey',
                                 // SNS
                                 'sns:*',
+                                // SES
+                                'ses:*',
                                 // STS
                                 'sts:AssumeRole',
                                 // CloudWatch
@@ -300,7 +302,8 @@ export class FirstResponderAdminAppSyncStack extends Stack {
             runtime: lambda.Runtime.NODEJS_10_X,
             environment: {
               JOIN_PHONE_NUMBER: "+1 (888) 599-8558",
-              CALL_URL: "https://localhost:3000/call"
+              CALL_URL: "https://localhost:3000/call",
+              SES_FROM_ADDRESS: "fristrespondertest@gmail.com"
             },
             role: lambdaRole,
             memorySize: 512,
