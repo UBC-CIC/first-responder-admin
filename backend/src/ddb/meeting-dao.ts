@@ -271,6 +271,7 @@ export class MeetingDetailsDao {
             console.log(`Updating existing meeting with meeting ID ${meetingId}`);
             for (let attendee of existingMeeting.attendees) {
                 if (attendee.attendee_id === attendeeId) {
+                    if (attendee.attendee_state !== AttendeeState.KICKED)
                     attendee.attendee_state = AttendeeState.LEFT;
                 }
                 await this.saveMeetingDetails(existingMeeting);
