@@ -266,6 +266,7 @@ type Mutation @aws_cognito_user_pools
 	createMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
 	updateMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
 	deleteMeetingDetail(input: MeetingDetailInput, condition: ModelMeetingDetailConditionInput): MeetingDetail
+	publishNewMeetingDetail(input: MeetingDetailInput!): MeetingDetail
 	publishMeetingDetailUpdates(input: MeetingDetailInput!): MeetingDetail
     notifySpecialist(input: NotifySpecialistInput): Boolean
     joinMeeting(input: JoinMeetingInput): JoinMeetingInfo
@@ -295,7 +296,7 @@ type Query @aws_cognito_user_pools
 type Subscription @aws_cognito_user_pools
 @aws_iam {
 	onCreateMeetingDetail: MeetingDetail
-		@aws_subscribe(mutations: ["createMeetingDetail","publishMeetingDetailUpdates"])
+		@aws_subscribe(mutations: ["createMeetingDetail","publishNewMeetingDetail"])
 	onUpdateMeetingDetail: MeetingDetail
 		@aws_subscribe(mutations: ["updateMeetingDetail","publishMeetingDetailUpdates"])
 	onDeleteMeetingDetail: MeetingDetail

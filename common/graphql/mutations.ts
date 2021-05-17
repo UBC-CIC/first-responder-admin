@@ -215,6 +215,40 @@ export const deleteMeetingDetail = /* GraphQL */ `
     }
   }
 `;
+export const publishNewMeetingDetail = /* GraphQL */ `
+  mutation PublishNewMeetingDetail($input: MeetingDetailInput!) {
+    publishNewMeetingDetail(input: $input) {
+      meeting_id
+      attendees {
+        phone_number
+        attendee_id
+        attendee_type
+        attendee_join_type
+        attendee_state
+        user_role
+        organization
+        first_name
+        last_name
+        username
+        location {
+          latitude
+          longitude
+        }
+      }
+      create_date_time
+      end_date_time
+      call_id
+      external_meeting_id
+      meeting_status
+      meeting_title
+      meeting_comments
+      location {
+        latitude
+        longitude
+      }
+    }
+  }
+`;
 export const publishMeetingDetailUpdates = /* GraphQL */ `
   mutation PublishMeetingDetailUpdates($input: MeetingDetailInput!) {
     publishMeetingDetailUpdates(input: $input) {

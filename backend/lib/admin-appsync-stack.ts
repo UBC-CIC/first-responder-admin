@@ -141,6 +141,13 @@ export class FirstResponderAdminAppSyncStack extends Stack {
         // None DataSource
         //
         // Add None DataSource for Local Resolver - to publish notification triggered by meeting-detail DDB
+        const newMeetingDetailNoneDataSource = api.addNoneDataSource('NewMeetingDetailNoneDataSource');
+        newMeetingDetailNoneDataSource.createResolver({
+            typeName: 'Mutation',
+            fieldName: 'publishNewMeetingDetail',
+            requestMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/None.publishNewMeetingDetail.req.vtl`),
+            responseMappingTemplate: MappingTemplate.fromFile(`${meetingDetailResolverPath}/None.publishNewMeetingDetail.res.vtl`)
+        });
         const meetingDetailNoneDataSource = api.addNoneDataSource('MeetingDetailNoneDataSource');
         meetingDetailNoneDataSource.createResolver({
             typeName: 'Mutation',
