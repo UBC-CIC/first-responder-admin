@@ -139,11 +139,13 @@ export class MeetingDetailsDao {
             }
         }
         if (existingAttendee) {
+            console.log("Updating an existing attendee...");
             // Updates an existing attendee.
             existingAttendee.attendee_state = attendeeState;
             existingAttendee.attendee_join_type = attendeeJoinType;
             existingAttendee.attendee_id = attendeeId;
         } else {
+            console.log("Adding a new attendee...");
             // Adds a new attendee.
             const attendee = await this.getAttendeeForMeetingByPhoneNumber(attendeeId, phoneNumber, attendeeJoinType, attendeeState);
             meetingDetails.attendees.push(attendee);
@@ -152,6 +154,7 @@ export class MeetingDetailsDao {
             // visible to service desk that they are in an active call. This status will be 
             // reset once they leave a meeting or the meeting ends.
             if (attendee.attendee_type === AttendeeType.SPECIALIST) {
+                console.log("Attendee is a specialist so updating their profile");
                 const specialistDao = new SpecialistProfileDao(this.db);
                 await specialistDao.updateSpecialistCallStatus(attendee.phone_number, SpecialistCallStatus.IN_CALL);
             }
