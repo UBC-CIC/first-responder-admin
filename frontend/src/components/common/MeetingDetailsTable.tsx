@@ -4,6 +4,7 @@ import {
   faHeadset,
   faMapMarkerAlt,
   faRocket,
+  faPhoneAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,7 +32,7 @@ import { API } from "aws-amplify";
 import MeetingNotes from "./MeetingNotes";
 import {
   updateMeetingDetail,
-  joinMeeting,
+  endMeeting
 } from "../../common/graphql/mutations";
 import reverse from "reverse-geocode";
 
@@ -129,22 +130,20 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
     return false;
   };
 
-  // TODO - Testing code to be cleaned up
-  const onJoinMeeting = async (meetingId?: string | null) => {
+  const onEndMeeting = async (meetingId?: string | null) => {
     try {
-      console.log("Joining meeting " + meetingId);
+      console.log("End meeting " + meetingId);
 
       let res = await API.graphql({
-        query: joinMeeting,
+        query: endMeeting,
         variables: {
           input: {
-            phone_number: "+phone_number", // required
-            meeting_id: meetingId, // required for joining existing meeting
+            meeting_id: meetingId
           },
         },
       });
     } catch (e) {
-      console.log("joinMeeting errors:", e.errors);
+      console.log("End meeting errors:", e.errors);
     }
   };
 
@@ -245,6 +244,9 @@ export const MeetingDetailsTable = (props: { items: Array<MeetingDetail> }) => {
                     meetingId={item.meeting_id} 
                     externalMeetingId={item.external_meeting_id}
                   />{" "}
+                  <Button variant="danger" title="End Meeting" onClick={() => onEndMeeting(item.meeting_id)}>
+                      <FontAwesomeIcon icon={faPhoneAlt} />{"  "}
+                   </Button>{" "}
                   {item.location ? <OverlayTrigger
                     overlay={
                       <Tooltip id={`tooltip-${item.meeting_id}`}>

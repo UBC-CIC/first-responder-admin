@@ -143,6 +143,11 @@ input JoinMeetingInput {
 	attendee_type: AttendeeType
 }
 
+# [input] EndMeetingInput
+input EndMeetingInput {
+    meeting_id: String
+}
+
 type MediaPlacement {
 	AudioFallbackUrl: String
     AudioHostUrl: String
@@ -270,6 +275,7 @@ type Mutation @aws_cognito_user_pools
 	publishMeetingDetailUpdates(input: MeetingDetailInput!): MeetingDetail
     notifySpecialist(input: NotifySpecialistInput): Boolean
     joinMeeting(input: JoinMeetingInput): JoinMeetingInfo
+    endMeeting(input: EndMeetingInput): Boolean
 }
 
 # [type] Query

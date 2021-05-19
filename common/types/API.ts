@@ -224,6 +224,10 @@ export type MediaPlacement = {
   TurnControlUrl?: string | null,
 };
 
+export type EndMeetingInput = {
+  meeting_id?: string | null,
+};
+
 export type SpecialistConnection = {
   __typename: "SpecialistConnection",
   items?:  Array<SpecialistProfile | null > | null,
@@ -624,6 +628,14 @@ export type JoinMeetingMutation = {
     } | null,
     media_region?: string | null,
   } | null,
+};
+
+export type EndMeetingMutationVariables = {
+  input?: EndMeetingInput | null,
+};
+
+export type EndMeetingMutation = {
+  endMeeting?: boolean | null,
 };
 
 export type GetSpecialistProfileQueryVariables = {

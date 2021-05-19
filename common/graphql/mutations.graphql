@@ -285,3 +285,6 @@ mutation JoinMeeting($input: JoinMeetingInput) {
     media_region
   }
 }
+mutation EndMeeting($input: EndMeetingInput) {
+  endMeeting(input: $input)
+}
