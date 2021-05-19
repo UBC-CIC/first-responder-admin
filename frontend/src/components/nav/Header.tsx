@@ -13,7 +13,7 @@ export const Header = (props: AppAuthStateProps) => {
 
             <Navbar.Brand>
                 <NavLink className='nav-link' activeClassName='activeRoute' to='/dashboard'>
-                    <span className="brand-logo"><i>STARS</i><span className="brand-logo-sub">Service Desk</span></span>
+                    <span className="brand-logo"><i>Service Desk</i></span>
                 </NavLink>
             </Navbar.Brand>
 
@@ -57,7 +57,7 @@ export const Header = (props: AppAuthStateProps) => {
     ) : (
         <Navbar collapseOnSelect fixed="top" expand='lg'>
             <Navbar.Brand>
-                <span className="brand-logo"><i>STARS</i><span className="brand-logo-sub">Service Desk</span></span>
+                <span className="brand-logo"><i>Service Desk</i></span>
             </Navbar.Brand>
         </Navbar>
     )

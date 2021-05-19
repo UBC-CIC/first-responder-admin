@@ -3,7 +3,7 @@ import { FirstResponderProfileDao } from "./first-responder-profile-dao";
 import { ServiceDeskProfileDao } from "./service-desk-profile-dao";
 import { SpecialistCallStatus, SpecialistProfileDao } from "./specialist-profile-dao";
 
-const DEFAULT_ORGANIZATION = "STARS";
+const DEFAULT_ORGANIZATION = "Specialist_Organization";
 
 export type Attendee = {
     "phone_number": string;

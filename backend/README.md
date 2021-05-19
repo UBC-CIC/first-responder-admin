@@ -44,7 +44,7 @@ cdk deploy --all
 
 If you have a profile configured and/or want to deploy a particular stack, you can refer to the following commands.
 ```
-cdk deploy FirstResponderAdminDynamoStack --profile stars
+cdk deploy FirstResponderAdminDynamoStack --profile <profile-name>
 ```
 
 Clean (run this from the root):

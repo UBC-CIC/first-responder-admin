@@ -42,7 +42,7 @@ const sendSES = (meetingId: string, specialist: SpecialistProfile) => {
         },
         Subject: {
             Charset: 'UTF-8',
-            Data: 'STARS: Emergency Assistence Meeting Request'
+            Data: 'Emergency Responder: Emergency Assistence Meeting Request'
         }
     },
     Source: process.env.SES_FROM_ADDRESS!
@@ -59,7 +59,7 @@ function constructMessage(meetingId: string, {
 }: SpecialistProfile){
   const phoneB64 = Buffer.from(phone_number).toString("base64");
   const meetingB64 = Buffer.from(meetingId).toString("base64");
-  const message =  `STARS: ${first_name} ${last_name}, you have been requested to assist in an emergency.
+  const message =  `Emergency Responder: ${first_name} ${last_name}, you have been requested to assist in an emergency.
     Please visit ${CALL_URL}?p=${phoneB64}&m=${meetingB64}
     or call ${JOIN_PHONE_NUMBER} to join the meeting.`
 
