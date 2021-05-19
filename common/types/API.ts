@@ -511,6 +511,47 @@ export type DeleteMeetingDetailMutation = {
   } | null,
 };
 
+export type PublishNewMeetingDetailMutationVariables = {
+  input?: MeetingDetailInput,
+};
+
+export type PublishNewMeetingDetailMutation = {
+  publishNewMeetingDetail?:  {
+    __typename: "MeetingDetail",
+    meeting_id: string,
+    attendees?:  Array< {
+      __typename: "Attendee",
+      phone_number?: string | null,
+      attendee_id?: string | null,
+      attendee_type?: AttendeeType | null,
+      attendee_join_type?: AttendeeJoinType | null,
+      attendee_state?: AttendeeState | null,
+      user_role?: string | null,
+      organization?: string | null,
+      first_name?: string | null,
+      last_name?: string | null,
+      username?: string | null,
+      location?:  {
+        __typename: "GeolocationCoordinates",
+        latitude?: number | null,
+        longitude?: number | null,
+      } | null,
+    } | null > | null,
+    create_date_time?: string | null,
+    end_date_time?: string | null,
+    call_id?: string | null,
+    external_meeting_id?: string | null,
+    meeting_status?: string | null,
+    meeting_title?: string | null,
+    meeting_comments?: string | null,
+    location?:  {
+      __typename: "GeolocationCoordinates",
+      latitude?: number | null,
+      longitude?: number | null,
+    } | null,
+  } | null,
+};
+
 export type PublishMeetingDetailUpdatesMutationVariables = {
   input?: MeetingDetailInput,
 };

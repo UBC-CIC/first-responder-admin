@@ -1,5 +1,5 @@
 import { DynamoDBStreamEvent } from './meeting-detail/type/dynamodb-type';
-import { publishMeetingDetail } from './meeting-detail/publish-meetingdetail-updates';
+import { publishCreateMeeting, publishUpdateMeeting } from './meeting-detail/publish-meetingdetail-updates';
 
 // Lambda triggered by DynamoDB stream of meeting-detail table
 // assuming DynamoDB stream is enabled and its trigger is configured with batch size 1,
@@ -20,17 +20,17 @@ export const handler = async (event: DynamoDBStreamEvent) => {
     const newImage = record.dynamodb?.NewImage;
     const eventSourceARN = record.eventSourceARN;
 
-    // Only creation events are needed for subscrition for now, so update events/delete events are ignored.
     if (newImage && oldImage && eventSourceARN) {
-        return {
-            statusCode: 200, 
-            body: 'DynamoDBStreamEvent is for record being updated'
-        };
+        // Update events are published to AppSync
+        console.log("DynamoDBStreamEvent is an update event.");
+        return await publishUpdateMeeting(newImage);
     }
 
     if (newImage && eventSourceARN) {
+        // Creation events are published to AppSync
         if (eventSourceARN.includes('meeting-detail')) {
-            return await publishMeetingDetail(newImage);
+            console.log("DynamoDBStreamEvent is an create event.");
+            return await publishCreateMeeting(newImage);
         } else {
             return {
                 statusCode: 500,

@@ -112,7 +112,9 @@ export class MeetingDetailsDao {
 
         // We want to update the specialist status to make sure they don't get dispatched to multiple calls.
         if (attendee.attendee_type == AttendeeType.SPECIALIST) {
-
+            console.log("Attendee is a specialist so updating their profile");
+            const specialistDao = new SpecialistProfileDao(this.db);
+            await specialistDao.updateSpecialistCallStatus(attendee.phone_number, SpecialistCallStatus.IN_CALL);
         }
     }
 
@@ -139,11 +141,22 @@ export class MeetingDetailsDao {
             }
         }
         if (existingAttendee) {
+            console.log("Updating an existing attendee...");
             // Updates an existing attendee.
             existingAttendee.attendee_state = attendeeState;
             existingAttendee.attendee_join_type = attendeeJoinType;
             existingAttendee.attendee_id = attendeeId;
+
+            // If attendee is a specialist, we also want to update their call status to make it 
+            // visible to service desk that they are in an active call. This status will be 
+            // reset once they leave a meeting or the meeting ends.
+            if (existingAttendee.attendee_type === AttendeeType.SPECIALIST) {
+                console.log("Attendee is a specialist so updating their profile");
+                const specialistDao = new SpecialistProfileDao(this.db);
+                await specialistDao.updateSpecialistCallStatus(existingAttendee.phone_number, SpecialistCallStatus.IN_CALL);
+            }
         } else {
+            console.log("Adding a new attendee...");
             // Adds a new attendee.
             const attendee = await this.getAttendeeForMeetingByPhoneNumber(attendeeId, phoneNumber, attendeeJoinType, attendeeState);
             meetingDetails.attendees.push(attendee);
@@ -152,6 +165,7 @@ export class MeetingDetailsDao {
             // visible to service desk that they are in an active call. This status will be 
             // reset once they leave a meeting or the meeting ends.
             if (attendee.attendee_type === AttendeeType.SPECIALIST) {
+                console.log("Attendee is a specialist so updating their profile");
                 const specialistDao = new SpecialistProfileDao(this.db);
                 await specialistDao.updateSpecialistCallStatus(attendee.phone_number, SpecialistCallStatus.IN_CALL);
             }

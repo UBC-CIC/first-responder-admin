@@ -97,6 +97,7 @@ export class SpecialistProfileDao {
      * @param newStatus The new status to use. If not provided, the user status is automatically calculated.
      */
     async updateUserStatus(phoneNumber: string, newStatus?: SpecialistStatus): Promise<Boolean> {
+        console.log(`Updating user status for phone number ${phoneNumber}`);
         const userProfile = await this.getSpecialistProfile(phoneNumber);
         userProfile.created_date_time = new Date().toISOString();
         if (newStatus) {
@@ -104,12 +105,7 @@ export class SpecialistProfileDao {
         } else {
             userProfile.user_status = this.getUpdatedUserStatus(userProfile);
         }
-
-        const params = {
-            TableName: 'specialist-profile',
-            Item: userProfile
-        };
-        await this.db.put(params).promise();
+        await this.saveSpecialistProfile(userProfile);
         return true;
     }
 
@@ -119,6 +115,7 @@ export class SpecialistProfileDao {
      * @param userProfile The user profile to save.
      */
     async saveSpecialistProfile(userProfile: SpecialistProfile): Promise<void> {
+        console.log(`saveSpecialistProfile...`);
         const params = {
             TableName: 'specialist-profile',
             Item: userProfile
@@ -153,8 +150,10 @@ export class SpecialistProfileDao {
      * @param callStatus The new call status of the specialist
      */
     async updateSpecialistCallStatus(phoneNumber: string, callStatus: SpecialistCallStatus): Promise<void> {
+        console.log(`Getting specialist call status for ${phoneNumber}`);
         const specialistProfile = await this.getSpecialistProfile(phoneNumber);
         if (specialistProfile) {
+            console.log(`Specialist profile found ${phoneNumber}`);
             specialistProfile.call_status = callStatus;
         }
         await this.saveSpecialistProfile(specialistProfile);
