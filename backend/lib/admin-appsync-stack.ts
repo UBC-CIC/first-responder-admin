@@ -220,7 +220,7 @@ export class FirstResponderAdminAppSyncStack extends Stack {
         });
 
 
-                // Define Lambda Role and Data Source
+        // Define Lambda Role and Data Source
         const lambdaRole = new Role(this, 'FirstResponderAppSyncLambdaRole', {
             roleName: 'FirstResponderAppSyncLambdaRole',
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -281,7 +281,7 @@ export class FirstResponderAdminAppSyncStack extends Stack {
         });
     
         const joinMeetingFunction = new lambda.Function(this, 'joinMeetingFunction', {
-            functionName: "FirstResponder-Data-ChimeMeeting",
+            functionName: "FirstResponder-Data-ChimeMeeting-Join",
             code: new lambda.AssetCode('build/src'),
             handler: 'data-create.handler',
             runtime: lambda.Runtime.NODEJS_10_X,
@@ -300,6 +300,28 @@ export class FirstResponderAdminAppSyncStack extends Stack {
         api.addLambdaDataSource('JoinMeetingDataSource', joinMeetingFunction).createResolver({
             typeName: 'Mutation',
             fieldName: 'joinMeeting'
+        });
+
+        const endMeetingFunction = new lambda.Function(this, 'endMeetingFunction', {
+            functionName: "FirstResponder-Data-ChimeMeeting-End",
+            code: new lambda.AssetCode('build/src'),
+            handler: 'data-cleanup.handler',
+            runtime: lambda.Runtime.NODEJS_10_X,
+            environment: {
+              TABLE_NAME: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
+              PRIMARY_KEY: 'meeting_id',
+            },
+            role: lambdaRole,
+            memorySize: 512,
+            timeout: cdk.Duration.seconds(30)
+          });
+
+        // Define Lambda DataSource and Resolver - make sure mutations are defined in schema.graphql
+        //
+        // Resolver for Chime meeting operations
+        api.addLambdaDataSource('EndMeetingDataSource', endMeetingFunction).createResolver({
+            typeName: 'Mutation',
+            fieldName: 'endMeeting'
         });
 
         const notifySpecialistFunction = new lambda.Function(this, 'notifySpecialistFunction', {
@@ -324,7 +346,6 @@ export class FirstResponderAdminAppSyncStack extends Stack {
         });
 
         // Cloudformation Output
-
         new CfnOutput(this, "GraphQLEndpoint", {
             value: api.graphqlUrl
         });
