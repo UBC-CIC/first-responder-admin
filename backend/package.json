@@ -15,7 +15,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^10.17.55",
-    "typescript": "~3.7.2"
+    "typescript": "^3.7.7"
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "^1.94.1",
@@ -26,6 +26,7 @@
     "@aws-cdk/aws-lambda": "^1.94.1",
     "@aws-cdk/aws-lambda-event-sources": "^1.94.1",
     "@aws-cdk/aws-s3": "^1.94.1",
+    "@aws-cdk/aws-s3-deployment": "^1.94.1",
     "@aws-cdk/core": "^1.94.1",
     "aws-sdk": "^2.893.0"
   }

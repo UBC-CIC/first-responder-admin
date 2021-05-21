@@ -7,8 +7,6 @@ The Emergency Service Desk serves to assist emergency responders in connecting w
 - [Dependencies](#dependencies)
 - [Deployment](#Deployment)
 - [Development Instructions](#development)
-- [Installation](#installation)
-- [Usage](#usage)
 
 ## Dependencies
 - This project is a pre-requisite for the [First Responder Mobile App](https://github.com/UBC-CIC/first-responder-mobile-app)
@@ -16,6 +14,10 @@ The Emergency Service Desk serves to assist emergency responders in connecting w
 ## Deployment
 - TODO
 
+## Development
+To start the development build: 
+> \> ```cd frontend```
 
+> \> ```npm start```
 ## License
 This project is distributed under the [MIT License](./LICENSE).

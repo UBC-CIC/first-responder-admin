@@ -1,13 +1,15 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
 import { Role, ServicePrincipal, PolicyDocument, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
-import { Bucket, BucketEncryption } from '@aws-cdk/aws-s3';
+import { Bucket, BucketEncryption, } from '@aws-cdk/aws-s3';
 import events = require('@aws-cdk/aws-events');
 import eventsTargets = require('@aws-cdk/aws-events-targets');
 import { FirstResponderAdminDynamoStack } from './admin-dynamodb-stack';
-
+import s3deploy = require('@aws-cdk/aws-s3-deployment');
 // The Lambdas for PSTN stack must be created in us-east-1 or us-west-2 since Chime only supports one of these two regions.
 //
+
+
 export class FirstResponderAdminLambdaPSTNStack extends cdk.Stack {
   constructor(app: cdk.App, id: string) {
     super(app, id, {
@@ -16,20 +18,28 @@ export class FirstResponderAdminLambdaPSTNStack extends cdk.Stack {
       },
     });
 
+
     // Contains audio clips that are used as part of the Chime PSTN network.
     const pstnAudioFilesBucket = new Bucket(this, 'FirstResponderAudio', {
-      bucketName: `first-responder-audio-assets`,
       encryption: BucketEncryption.S3_MANAGED
     });
+
+    const PSTN_BUCKET_NAME = pstnAudioFilesBucket.bucketName;
+  
     pstnAudioFilesBucket.addToResourcePolicy(
       new PolicyStatement({
-        resources: [
-          `arn:aws:s3:::${pstnAudioFilesBucket.bucketName}/*`,
+        resources: [  
+          `arn:aws:s3:::${PSTN_BUCKET_NAME}/*`,
         ],
         actions: ["s3:GetObject", "s3:PutObject", "s3:PutObjectAcl"],
         principals: [new ServicePrincipal("voiceconnector.chime.amazonaws.com")],
       })
     )
+
+    new s3deploy.BucketDeployment(this, "DeployAudioFiles", {
+      destinationBucket: pstnAudioFilesBucket, 
+      sources: [s3deploy.Source.asset('./audio')]
+    });
 
     const lambdaRole = new Role(this, 'FirstResponderLambdaPSTNRole', {
         roleName: 'FirstResponderLambdaPSTNRole',
@@ -90,7 +100,7 @@ export class FirstResponderAdminLambdaPSTNStack extends cdk.Stack {
       environment: {
         TABLE_NAME: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
         PRIMARY_KEY: 'meeting_id',
-        BUCKET_NAME: pstnAudioFilesBucket.bucketName,
+        BUCKET_NAME: PSTN_BUCKET_NAME,
       },
       role: lambdaRole,
       memorySize: 512,
@@ -105,7 +115,7 @@ export class FirstResponderAdminLambdaPSTNStack extends cdk.Stack {
       environment: {
         TABLE_NAME: FirstResponderAdminDynamoStack.MEETING_DETAIL_TABLE_NAME,
         PRIMARY_KEY: 'meeting_id',
-        BUCKET_NAME: pstnAudioFilesBucket.bucketName,
+        BUCKET_NAME: PSTN_BUCKET_NAME,
       },
       role: lambdaRole,
       memorySize: 512,

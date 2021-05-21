@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const chime = new AWS.Chime({ region: 'us-east-1', endpoint: 'service.chime.aws.amazon.com' });
 const db = new AWS.DynamoDB.DocumentClient({ region: 'ca-central-1' });
 const TABLE_NAME = process.env.TABLE_NAME || '';
+const BUCKET_NAME = process.env.BUCKET_NAME || '';
 
 // Handler for the PSTN number SIP media application that allows users to join an existing meeting 
 // after entering the meeting ID.
@@ -202,12 +203,12 @@ const playAudioAndGetDigitsAction = {
         "TerminatorDigits": ["#"],
         "AudioSource": {
             "Type": "S3",
-            "BucketName": "first-responder-audio-assets",
+            "BucketName": BUCKET_NAME,
             "Key": "pstn-meeting-pin.wav"
         },
         "FailureAudioSource": {
             "Type": "S3",
-            "BucketName": "first-responder-audio-assets",
+            "BucketName": BUCKET_NAME,
             "Key": "pstn-meeting-pin.wav"
         }
     }
@@ -219,7 +220,7 @@ const playAudioAction = {
         "ParticipantTag": "LEG-A",
         "AudioSource": {
             "Type": "S3",
-            "BucketName": "first-responder-audio-assets",
+            "BucketName": BUCKET_NAME,
             "Key": ""
         }
     }

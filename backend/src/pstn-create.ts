@@ -6,6 +6,8 @@ const { v4: uuidv4 } = require('uuid');
 const chime = new AWS.Chime({ region: 'us-east-1', endpoint: 'service.chime.aws.amazon.com' });
 const db = new AWS.DynamoDB.DocumentClient({ region: 'ca-central-1' });
 
+const BUCKET_NAME = process.env.BUCKET_NAME || '';
+
 // Handler for the PSTN number SIP media application that automatically creates a new meeting upon dial-in.
 //
 export const handler = async (event: any = {}, context: any, callback: any): Promise<any> => {
@@ -145,7 +147,7 @@ const playAudioAction = {
         "ParticipantTag": "LEG-A",
         "AudioSource": {
             "Type": "S3",
-            "BucketName": "first-responder-audio-assets",
+            "BucketName": BUCKET_NAME,
             "Key": ""
         }
     }
