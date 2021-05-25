@@ -47,6 +47,11 @@ cdk deploy FirstResponderAdminCognitoStack --profile firstresponder
 cdk deploy FirstResponderAdminAppSyncStack --profile firstresponder
 ```
 
+Create an AWS Location Services map.
+```
+aws location create-map --configuration "Style=VectorEsriTopographic" --map-name firstrespondermap --pricing-plan "RequestBasedUsage" --region us-east-1 --profile firstresponder
+```
+
 ### Provisiong Phone Numbers
 
 > :warning: **Head's Up**: Phone number provisioning is not immediately available with a new account. Please file an AWS Support Case to get access to phone number provisioning as needed (note that you can still connect the mobile app without provisioning a phone number).
@@ -59,6 +64,13 @@ Manually provision phone numbers that first-responders or specialists can call t
 - On the next step, search for an available phone number using the filters provided. Note that in a production setting, we recommend provisioning a toll-free number. 
 - Provision **two phone numbers** (one will be used to create new meetings, the other will be used to join existing meetings)
 
+Save phone numbers to parameter store.
+```
+aws ssm put-parameter --name /firstresponder/joinPhoneNumber --value <provisioned join phone number> --type String --overwrite --profile firstresponder
+aws ssm put-parameter --name /firstresponder/joinPhoneNumber --value <provisioned create phone number> --type String --overwrite --profile firstresponder
+```
+
+If you deployed the Mobile App, if must be re-deployed after updating phone numbers.
 ### Set Up Amazon Chime SIP Media Application
 > :warning: **Head's Up**: Perform this step only if you have been able to successfully provision a phone number.
 
