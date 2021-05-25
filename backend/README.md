@@ -1,68 +1,84 @@
 # First Responder Admin Backend
 
-Contains infrastructure and Lambda functions that runs the First Responder Admin backend.
+The `backend` folder contains AWS CDK stacks and AWS Lambda function code that will manage the data stores and corresponding interactions with the Service Desk dashboard, handle incoming Amazon Chime PSTN or app triggered calls, handle the paging of specialists, and cleanup disconnected calls.
 
-### `backend`
+## Deployment
 
-Contains backend code and backend infrastructure stacks.\
-For `cdk deploy`
-```
-Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`
-Stacks: 
- - FirstResponderAdminLambdaStack 
- - FirstResponderAdminDynamoStack
- - FirstResponderAdminCognitoStack
- - FirstResponderAdminAppSyncStack
-```
-
-### `router` 
-Defines code and infrastructure for cross region delivery US Chime SIP Media Application regions to CA.
-
-
-## Setup
-
+### Install
 Install the core dependencies:
 ```
-npm install -g aws-cdk
 npm install
-npm run build
 ```
 
-Install dependencies required by the Lambda functions. Note that this generates a separate `node_modules` directory because everything under the `src` folder will be uploaded to Lambda and we want to exclude the packages (e.g. `aws-sdk`) that already comes with Lambda:
+Install dependencies required by the AWS Lambda functions. Note that this generates a separate `node_modules` directory in the `src` folder. This is done because everything under the `src` folder will be uploaded to AWS Lambda and we want to exclude the packages (e.g. `aws-sdk`) that already comes with AWS Lambda:
 ```
 cd src/
 npm install
+cd ..
 ```
 
-Deploy (run this from the root). Make sure to deploy to the correct account/region by running `aws configure` if you have not already done so.
+### CDK Deployment
+Initialize the CDK stacks (required only if you have not deployed this stack before). Note that by default, all stacks are created in `ca-central-1`, except for the the PSTN stack which must be created in `us-east-1` due to region restriction in the AWS Chime SDK:
+```
+cdk synth --profile firstresponder
+cdk bootstrap aws://YOUR_AWS_ACCOUNT_ID/ca-central-1 --profile firstresponder
+cdk bootstrap aws://YOUR_AWS_ACCOUNT_ID/us-east-1 --profile firstresponder
+```
+
+Deploy the CDK stacks (this will take ~10 min):
 ```
 npm run build
-cdk synth
-cdk ls
-cdk deploy --all
+cdk deploy --all --profile firstresponder
 ```
 
-If you have a profile configured and/or want to deploy a particular stack, you can refer to the following commands.
+You may also deploy the stacks individually:
 ```
-cdk deploy FirstResponderAdminDynamoStack --profile <profile-name>
+cdk deploy FirstResponderAdminDynamoStack  --profile firstresponder
+cdk deploy FirstResponderAdminLambdaPSTNStack  --profile firstresponder
+cdk deploy FirstResponderAdminLambdaStack  --profile firstresponder
+cdk deploy FirstResponderAdminCognitoStack --profile firstresponder
+cdk deploy FirstResponderAdminAppSyncStack --profile firstresponder
 ```
 
-Clean (run this from the root):
-```
-npm run clean
-```
+### Provisiong Phone Numbers
 
-Misc CDK commands:
-```
-$ cdk ls
-<list all stacks in this program>
+> :warning: **Head's Up**: Phone number provisioning is not immediately available with a new account. Please file an AWS Support Case to get access to phone number provisioning as needed (note that you can still connect the mobile app without provisioning a phone number).
 
-$ cdk synth
-<generates and outputs cloudformation template>
+Manually provision phone numbers that first-responders or specialists can call to join the meeting in the event they cannot use the mobile app:
+- On the AWS console, navigate to the Amazon Chime page.
+- On the left pane, click "Phone number management".
+- On the right pane, click "Orders" then "Provision phone numbers".
+- In the popup, select "Business Calling". 
+- On the next step, search for an available phone number using the filters provided. Note that in a production setting, we recommend provisioning a toll-free number. 
+- Provision **two phone numbers** (one will be used to create new meetings, the other will be used to join existing meetings)
 
-$ cdk deploy
-<deploys stack to your account>
+### Set Up Amazon Chime SIP Media Application
+> :warning: **Head's Up**: Perform this step only if you have been able to successfully provision a phone number.
 
-$ cdk diff
-<shows diff against deployed stack>
-```
+Amazon Chime's SIP media application will allow you to route an incoming call to the Lambda function you deployed earlier. 
+
+We will create **two SIP media applications** (one to handle new meetings, one to join existing meetings).
+
+#### SIP Media Application (Create Meeting)
+- On the AWS console, navigate to the Amazon Chime page.
+- On the left pane, click "Phone number management".
+- Click "Create" to create a SIP media application with the following parameters:
+    - **Name**: "JoinMeetingSIP"
+    - **AWS region**: US East (N. Virginia)
+    - **Lambda function ARN**: arn:aws:lambda:us-east-1:YOUR_AWS_ACCOUNT_ID:function:FirstResponder-PSTN-Create
+- Create a SIP rule:
+    - **Name**: CreateMeetingSIPRule
+    - **Trigger Type**: To phone number
+    - **Phone number**: Choose one of the provisioned phone numbers
+
+#### SIP Media Application (Join Meeting)
+- On the AWS console, navigate to the Amazon Chime page.
+- On the left pane, click "Phone number management".
+- Click "Create" to create a SIP media application with the following parameters:
+    - **Name**: "JoinMeetingSIP"
+    - **AWS region**: US East (N. Virginia)
+    - **Lambda function ARN**: arn:aws:lambda:us-east-1:503829950931:function:FirstResponder-PSTN-Join
+- Create a SIP rule:
+    - **Name**: JoinMeetingSIPRule
+    - **Trigger Type**: To phone number
+    - **Phone number**: Choose one of the provisioned phone numbers
