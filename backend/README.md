@@ -2,6 +2,13 @@
 
 The `backend` folder contains AWS CDK stacks and AWS Lambda function code that will manage the data stores and corresponding interactions with the Service Desk dashboard, handle incoming Amazon Chime PSTN or app triggered calls, handle the paging of specialists, and cleanup disconnected calls.
 
+## Table of Contents
+- [Deployment](#deployment)
+    - [Install](#install)
+    - [CDK Deployment](#cdk-deployment)
+    - [Provisiong Phone Numbers](#provisiong-phone-numbers)
+    - [Set Up Amazon Chime SIP Media Application](#set-up-amazon-chime-sip-media-application)
+
 ## Deployment
 
 ### Install

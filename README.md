@@ -8,7 +8,6 @@ This project is a pre-requisite for the [First Responder Mobile App](https://git
 ## Table of Contents
 - [Dependencies](#Dependencies)
 - [Deployment](#Deployment)
-- [Development Instructions](#Development)
 
 ## Dependencies
 - Install the [AWS CLI](https://aws.amazon.com/cli/) tool.
