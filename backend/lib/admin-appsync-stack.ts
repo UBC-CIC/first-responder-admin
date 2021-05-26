@@ -36,7 +36,7 @@ export class FirstResponderAdminAppSyncStack extends Stack {
         const userPool = UserPool.fromUserPoolId(this, 'UserPool', userPoolId);
         const api = new GraphqlApi(this, 'firstResponderAdminsGraphQLAPI', {
             name: 'firstResponderAdminsGraphQLAPI',
-            schema: Schema.fromAsset('../common/graphql/schema.graphql'),
+            schema: Schema.fromAsset('src/common/graphql/schema.graphql'),
             authorizationConfig: {
                 defaultAuthorization: {
                     authorizationType: authorizationType,

@@ -14,7 +14,14 @@ When a DDB table schema changes or a new table is added we need to update the gr
 
 ## Steps
 
-First make changes to schema in `schema.graphql` file. Then execute the types and operations using below commands.
+1. First make changes to schema in `schema.graphql` file. Then execute the types and operations using below commands.
+1. Follow  [Command to generate typescript types](#command-to-generate-typescript-types) section to generate `types/API.ts` file.
+1. Follow  [Command to generate typescript graphql operations](#command-to-generate-typescript-graphql-operations) section to generate `types/API.ts` file.
+1. Build frontend to copy over the common folder changes done in backend to frontend.
+```
+cd frontend
+npm run build
+```
 
 ### Command to generate typescript types
 

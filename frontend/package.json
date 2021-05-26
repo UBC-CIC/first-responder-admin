@@ -49,11 +49,11 @@
     "yup": "^0.32.9"
   },
   "scripts": {
-    "start": "cp -R ../common/ ./src/common && react-scripts start",
-    "build": "cp -R ../common/ ./src/common && react-scripts build",
+    "start": "mkdir -p src/common/graphql src/common/types && cp -R ../backend/src/common/graphql/*.ts ./src/common/graphql && cp -R ../backend/src/common/types/*.ts ./src/common/types && react-scripts start",
+    "build": "mkdir -p src/common/graphql src/common/types && cp -R ../backend/src/common/graphql/*.ts ./src/common/graphql && cp -R ../backend/src/common/types/*.ts ./src/common/types && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "clean": "rm -rf build && rm -rf src/common"
+    "clean": "rm -rf build"
   },
   "eslintConfig": {
     "extends": [

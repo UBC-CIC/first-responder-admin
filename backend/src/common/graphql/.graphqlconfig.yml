@@ -3,7 +3,7 @@
 # We don't use other amplify cli at all.
 #
 # Usage :
-# cd first-responder-admin/common
+# cd first-responder-admin/backend/src/common
 # amplify codegen types
 # amplify codegen statements (This generates graphql file.)
 # To generate statements in typescript run command

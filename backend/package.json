@@ -4,7 +4,7 @@
   "description": "Backend for the First Responder App",
   "private": true,
   "scripts": {
-    "build": "cp -R ../common src && tsc && mkdir -p build/src && cp src/package.json build/src/package.json && cd build/src && npm install --only=production",
+    "build": "tsc && mkdir -p build/src && cp src/package.json build/src/package.json && cd build/src && npm install --only=production",
     "watch": "tsc -w",
     "cdk": "cdk",
     "clean": "rm -rf build"

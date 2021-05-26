@@ -101,3 +101,17 @@ We will create **two SIP media applications** (one to handle new meetings, one t
     - **Name**: JoinMeetingSIPRule
     - **Trigger Type**: To phone number
     - **Phone number**: Choose one of the provisioned phone numbers
+
+#### Updating GraphQL Schema
+
+The `backend/src/common` folder contains the GraphQL schema that is used by both the backend and frontend website.
+
+After performing any model changes to `schema.graphql`, run the following commands from within the `common` directory:
+```
+amplify codegen types                                       # generates backend/src/common/types/API.ts
+amplify-graphql-docs-generator --schema graphql/schema.graphql --output ./graphql --language typescript --separateFiles --maxDepth 10                               # generates backend/src/common/graphql/mutation.ts, backend/src/common/graphql/query.ts, backend/src/common/graphql/subscriptions.ts
+```
+
+Double check that the `*.ts` and `*.graphql` files have been properly updated.
+
+More detailed instructions in [here](src/common/README.md).

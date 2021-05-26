@@ -2,8 +2,11 @@
 
 Contains React code that runs the First Responder Admin Service Desk website.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-## Setup
+## Deployment
+
+[![amplifybutton](https://oneclick.amplifyapp.com/button.svg)](https://console.aws.amazon.com/amplify/home#/deploy?repo=https://github.com/UBC-CIC/first-responder-admin/tree/main)
+
+## Development Setup
 ### Prerequisites
 
 * Ensure graphql dependencies are available.

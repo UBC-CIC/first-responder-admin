@@ -21,20 +21,6 @@ This project is a pre-requisite for the [First Responder Mobile App](https://git
 The `backend` folder contains AWS CDK stacks and AWS Lambda function code that will manage the data stores and corresponding interactions with the Service Desk dashboard, handle incoming Amazon Chime PSTN or app triggered calls, handle the paging of specialists, and cleanup disconnected calls.
 
 Run `cd backend` and follow the instructions in [backend/README.md](./backend/README.md)
-
-### Common
-The `common` folder contains the GraphQL schema that is used by both the backend and frontend website.
-
-After performing any model changes to `schema.graphql`, run the following commands from within the `common` directory:
-```
-amplify codegen types
-amplify codegen statements
-amplify-graphql-docs-generator --schema graphql/schema.graphql --output ./graphql --language typescript --separateFiles --maxDepth 10
-```
-
-Double check that the `*.ts` and `*.graphql` files have been properly updated.
-
-
 ### Frontend
 The `frontend` folder contains the Service Desk dashboard as a React app.
 
