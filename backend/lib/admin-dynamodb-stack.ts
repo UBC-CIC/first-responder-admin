@@ -18,6 +18,10 @@ export class FirstResponderAdminDynamoStack extends cdk.Stack {
 
     private static MEETING_DETAIL_TABLE_ID = "MeetingDetailDynamoTable"
     public static MEETING_DETAIL_TABLE_NAME = "meeting-detail"
+
+    public static MEETING_DATA_TABLE_NAME = "meeting-data"
+    private static MEETING_DATA_TABLE_ID = "MeetingDataDynamoTable"
+
     public static MEETING_STATUS_GLOBAL_INDEX_NAME = "meetingStatusGsi"
 
     constructor(app: cdk.App, id: string) {
@@ -80,6 +84,16 @@ export class FirstResponderAdminDynamoStack extends cdk.Stack {
             pointInTimeRecovery: true,
             stream: StreamViewType.NEW_AND_OLD_IMAGES,
         });
+
+        const meetingDataTable = new dynamodb.Table(this, FirstResponderAdminDynamoStack.MEETING_DATA_TABLE_ID, {
+          tableName: FirstResponderAdminDynamoStack.MEETING_DATA_TABLE_NAME,
+          partitionKey: {
+            name: 'id',
+            type: dynamodb.AttributeType.STRING
+          },
+          billingMode: BillingMode.PAY_PER_REQUEST,
+          pointInTimeRecovery: true,
+      });
         const meetingStatusGsiProps: dynamodb.GlobalSecondaryIndexProps = {
             indexName: FirstResponderAdminDynamoStack.MEETING_STATUS_GLOBAL_INDEX_NAME,
             partitionKey: {

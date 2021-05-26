@@ -38,6 +38,7 @@ export class FirstResponderAdminLambdaPSTNStack extends cdk.Stack {
 
     new s3deploy.BucketDeployment(this, "DeployAudioFiles", {
       destinationBucket: pstnAudioFilesBucket, 
+      contentType:"audio/wav",
       sources: [s3deploy.Source.asset('./audio')]
     });
 
