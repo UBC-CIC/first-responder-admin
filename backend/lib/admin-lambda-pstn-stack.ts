@@ -21,7 +21,7 @@ export class FirstResponderAdminLambdaPSTNStack extends cdk.Stack {
 
     // Contains audio clips that are used as part of the Chime PSTN network.
     const pstnAudioFilesBucket = new Bucket(this, 'FirstResponderAudio', {
-      encryption: BucketEncryption.S3_MANAGED
+      encryption: BucketEncryption.S3_MANAGED,
     });
 
     const PSTN_BUCKET_NAME = pstnAudioFilesBucket.bucketName;
@@ -37,8 +37,7 @@ export class FirstResponderAdminLambdaPSTNStack extends cdk.Stack {
     )
 
     new s3deploy.BucketDeployment(this, "DeployAudioFiles", {
-      destinationBucket: pstnAudioFilesBucket, 
-      contentType:"audio/wav",
+      destinationBucket: pstnAudioFilesBucket,
       sources: [s3deploy.Source.asset('./audio')]
     });
 
