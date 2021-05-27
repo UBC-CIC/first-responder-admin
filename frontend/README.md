@@ -10,7 +10,7 @@ Contains React code that runs the First Responder Admin Service Desk website.
 ### Prerequisites
 
 * Ensure graphql dependencies are available.
-Follow the instructions [here](../common/README.md) to do so.
+Follow the instructions [here](..backend/src/common/README.md) to do so.
 * Make sure backend infrastructure and code is deployed. If its not deployed follow these [instructions](../backend/README.md) to do so.
 * Once the backend is deployed, update [`aws-exports.json`](./src/aws-exports.json) to point to correct AppSync API and Cognito user pool.
 
