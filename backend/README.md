@@ -47,6 +47,10 @@ cdk deploy FirstResponderAdminCognitoStack --profile firstresponder
 cdk deploy FirstResponderAdminAppSyncStack --profile firstresponder
 ```
 
+Upload the audio files that play when a user joins a meeting over PSTN.
+- In the S3 Console, after having deployed the FirstResponderAdminLambdaPSTNStack, you will have created an S3 Bucket named firstresponderadminlambd-firstresponderaudiofiles-{xxxxxxxx}.
+- Upload the files located [here](src/backend/audio) into the bucket.
+
 Create an AWS Location Services map.
 ```
 aws location create-map --configuration "Style=VectorEsriTopographic" --map-name firstrespondermap --pricing-plan "RequestBasedUsage" --region us-east-1 --profile firstresponder
