@@ -8,6 +8,8 @@ The `backend` folder contains AWS CDK stacks and AWS Lambda function code that w
     - [CDK Deployment](#cdk-deployment)
     - [Provisiong Phone Numbers](#provisiong-phone-numbers)
     - [Set Up Amazon Chime SIP Media Application](#set-up-amazon-chime-sip-media-application)
+    - [Set Up Amazon Simple Email Service](#set-up-amazon-simple-email-service)
+    - [Updating GraphQL Schema](#updating-graphql-schema)
 
 ## Deployment
 
@@ -74,7 +76,7 @@ aws ssm put-parameter --name /firstresponder/joinPhoneNumber --value <provisione
 aws ssm put-parameter --name /firstresponder/joinPhoneNumber --value <provisioned create phone number> --type String --overwrite --profile firstresponder
 ```
 
-If you deployed the Mobile App, if must be re-deployed after updating phone numbers.
+If you deployed the Mobile App, it must be re-deployed after updating phone numbers.
 ### Set Up Amazon Chime SIP Media Application
 > :warning: **Head's Up**: Perform this step only if you have been able to successfully provision a phone number.
 
@@ -106,14 +108,33 @@ We will create **two SIP media applications** (one to handle new meetings, one t
     - **Trigger Type**: To phone number
     - **Phone number**: Choose one of the provisioned phone numbers
 
-#### Updating GraphQL Schema
+
+### Set Up Amazon Simple Email Service
+> :warning: **Head's Up**: Before you send email through Amazon SES, you need to verify that you own the "From" address. If your account is still in the Amazon SES sandbox, you also need to verify your "To" addresses. You can verify email addresses or entire domains. For more information, see [Verifying identities in Amazon SES](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-addresses-and-domains.html).
+
+- Verify that you own the "From" address:
+    - On the AWS console, navigate to the Amazon Simple Email Service page.
+    - On the left pane, click **Domains** or **Email Addresses** depending on whether you want to verify email addresses or entire domains. The notification lambda in this project currently only supports email address.
+    - Click **Verify a New Domain/Email Address** button on top, fill the domain or email address you would like to verify
+    - Get Email Addresses for verifying domain or Email Addresses for verifying email address
+    - Configure the verified email address in the FirstResponderAdminAppSyncStack stack `SES_FROM_ADDRESS` for `notifySpecialistFunction`
+- [Escape Sandbox](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html)
+    - One the Amazon Simple Email Service page, choose **Sending Statistics** under **Email Sending**
+    - For Your account details, choose **Edit your account details**
+    - In the account details modal, fill out the account details, and **Submit for review**
+
+
+### Updating GraphQL Schema
 
 The `backend/src/common` folder contains the GraphQL schema that is used by both the backend and frontend website.
 
 After performing any model changes to `schema.graphql`, run the following commands from within the `common` directory:
 ```
-amplify codegen types                                       # generates backend/src/common/types/API.ts
-amplify-graphql-docs-generator --schema graphql/schema.graphql --output ./graphql --language typescript --separateFiles --maxDepth 10                               # generates backend/src/common/graphql/mutation.ts, backend/src/common/graphql/query.ts, backend/src/common/graphql/subscriptions.ts
+# generates backend/src/common/types/API.ts
+amplify codegen types
+
+# generates backend/src/common/graphql/mutation.ts, backend/src/common/graphql/query.ts, backend/src/common/graphql/subscriptions.ts
+amplify-graphql-docs-generator --schema graphql/schema.graphql --output ./graphql --language typescript --separateFiles --maxDepth 10
 ```
 
 Double check that the `*.ts` and `*.graphql` files have been properly updated.
